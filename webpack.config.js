@@ -15,7 +15,7 @@ module.exports = {
     devServer: {
         contentBase: './dist',
     },
-    devtool: 'eval-source-map',
+    devtool: 'source-map',
     resolve: {
         extensions: [ '.ts', '.js']
     },
