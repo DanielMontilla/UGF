@@ -1,12 +1,10 @@
-import { rgb, renderType } from "../util";
+import { pipelineName, rgb } from "../types";
 import GameObject from "./gameObject";
 
 export default class Rectangle extends GameObject {
-   public width: number;
-   public height: number;
    public color: rgb;
 
-   public renderType: renderType;
+   public renderType: pipelineName;
 
    constructor(
       x: number = 100,
@@ -15,15 +13,13 @@ export default class Rectangle extends GameObject {
       height: number = 100,
       color: rgb = { r: 0.5, g: 0, b: 0.5 }
    ) {
-      super(x, y);
-      this.width = width;
-      this.height = height;
+      super(x, y, width, height);
       this.color = color;
 
-      this.renderType = `primitive`;
+      this.renderType = `shape`;
    }
 
-   public getBufferData(): Float32Array {
+   public getPositionData(): Float32Array {
       
       let x1 = this.x;
       let y1 = this.y;

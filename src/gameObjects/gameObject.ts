@@ -1,15 +1,24 @@
-import { renderType } from '../util';
+import { pipelineName } from "../types";
 
 export default abstract class GameObject {
-
    public x: number;
    public y: number;
+   public width: number;
+   public height: number;
 
-   public abstract renderType: renderType;
-   public abstract getBufferData(): Float32Array;
+   public abstract renderType: pipelineName;
 
-   constructor(x: number = 0, y: number = 0) {
+   constructor(
+      x: number = 0,
+      y: number = 0,
+      width: number = 0,
+      height: number = 0
+   ) {
       this.x = x;
       this.y = y;
+      this.width = width;
+      this.height = height;
    }
+
+   public abstract getPositionData(): Float32Array;
 }

@@ -1,10 +1,13 @@
+export const attributes = ['a_position'] as const;
+export const uniforms = ['u_projection', 'u_color'] as const;
+
 export const vertexShader = `
     precision mediump float;
 
-    attribute vec2 a_vertexPosition;
+    attribute vec2 ${attributes[0]};
 
-    uniform mat3 u_projection;
-    uniform vec3 u_color;
+    uniform mat3 ${uniforms[0]};
+    uniform vec3 ${uniforms[1]};
 
     varying vec3 v_fragColor;
 
@@ -12,7 +15,7 @@ export const vertexShader = `
     {
         v_fragColor = u_color;
 
-        gl_Position = vec4((u_projection * vec3(a_vertexPosition, 1)).xy, 0, 1);
+        gl_Position = vec4((${uniforms[0]} * vec3(${attributes[0]}, 1)).xy, 0, 1);
     }
 `;
 

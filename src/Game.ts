@@ -1,7 +1,7 @@
 import GameObject from './gameObjects/gameObject';
 import Rectangle from './gameObjects/Rectangle';
 import Sprite from './gameObjects/Sprite';
-import Renderer from './Renderer';
+import Renderer from './Renderer/Renderer';
 import { nothing } from './util';
 
 export default class Game {
