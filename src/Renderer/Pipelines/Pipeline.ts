@@ -1,27 +1,71 @@
-import { attributeData, pipelineName } from "../../types";
 import Renderer from "../Renderer";
-import { createProgram } from "../util";
+import { createProgram, createShader } from "../../webgl-utils";
+import Entity from "../../Entities/Entity";
 
-/**
- * @description works as lookup class for rendering diferent gameobjects
- */
-export default abstract class Pipeline {
+export default abstract class Pipeline <
+   A extends string = string, 
+   U extends string = string
+> {
 
-   public readonly name: pipelineName;
+   public readonly name: PipelineName;
+
    public readonly program: WebGLProgram;
-   protected context = Renderer.context;
+   public readonly vertexShader: WebGLShader;
+   public readonly fragmentShader: WebGLShader;
 
-   constructor(name: pipelineName, vertexShaderSource: string, fragmentShaderSource: string) {
-      this.name = name;
-      this.program = createProgram(this.context, vertexShaderSource, fragmentShaderSource);
+   public readonly renderer: Renderer;
 
-      this.init();
+   protected attributes = < Record<A, attributeInfo> > {};
+   protected uniforms   = < Record<U, uniformInfo> > {};
+
+   public constructor(
+      renderer: Renderer,
+      name: PipelineName,
+      vsSource: string,
+      fsSource: string,
+      attribArr: readonly string[],
+      uniformArr: readonly string[]
+   ) {
+      let gl = renderer.gl;
+
+      this.renderer        = renderer;
+      this.name            = name;
+      this.vertexShader    = createShader(gl, 'vertex', vsSource);
+      this.fragmentShader  = createShader(gl, 'fragment', fsSource);
+      this.program         = createProgram(gl, this.vertexShader, this.fragmentShader);
+
+      /* |--------------------------< GENERATING ATTRIBUTE DATA >--------------------------| */
+      for (const attribID of attribArr) {
+
+         let location   = gl.getAttribLocation(this.program, attribID);
+         let info       = <WebGLActiveInfo> gl.getActiveAttrib(this.program, location)
+         let buffer     = <WebGLBuffer> gl.createBuffer();
+         let size       = info.size + 1;
+         let type       = info.type;
+
+         this.attributes[attribID as A] = {
+            location : location,
+            buffer   : buffer,
+            size     : size,
+            type     : type
+         }
+      }
+
+      /* |--------------------------< GENERATING UNIFORM DATA >--------------------------| */
+      for (const [index, uniformID] of uniformArr.entries()) {
+
+         let location  = <WebGLUniformLocation> gl.getUniformLocation(this.program, uniformID);
+         let info       = <WebGLActiveInfo> gl.getActiveUniform(this.program, index);
+         let size       = info.size;
+         let type       = info.type;
+
+         this.uniforms[uniformID as U] = {
+            location : location,
+            size     : size,
+            type     : type
+         }
+      }
    }
 
-   /**
-    * @description handles setting up the following:
-    *    1. global uniforms
-    *    2. creating attributeData objects
-    */
-   protected abstract init(): void;
+   public abstract prepDraw(e: Entity): number;
 }

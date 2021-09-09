@@ -1,25 +1,47 @@
 /* UTILITY TYPES */
-type PartialRecord<K extends keyof string, T> = Partial<Record<K, T>>;
+type Dictionary<K extends string, T> = { [P in K]?: T }
+type rgb = [r: number, g: number, b: number];
 
-export type rgb = { r: number, g: number, b: number };
-export type pipelineName = `shape` | `sprite`;
+type PipelineName = 'sprite' | 'polygon';
 
-type attributeData = {
-   id?: string
-   location: number; // location inside shader program
-   buffer: WebGLBuffer; // buffer object for attribute
-   size: number; // Amount of data units per component
-   type: number; // type of data
-};
+interface attributeInfo {
+   location: number;
+   buffer: WebGLBuffer;
+   size: number;
+   type: number;
+}
 
-type uniformData = {
-   id?: string;
-   value?: number | number[]; // if the uniform is global then value != undefined
+interface uniformInfo {
    location: WebGLUniformLocation;
+   size: number;
+   type: number;
 }
 
-interface ProgramDetail {
-   program: WebGLProgram;
-   attributes: Record<string, attributeData>;
-   uniforms: Record<string, uniformData>;
-}
+type keyCode =
+   | 'a'
+   | 'b'
+   | 'c'
+   | 'd'
+   | 'e'
+   | 'f'
+   | 'g'
+   | 'h'
+   | 'i'
+   | 'g'
+   | 'k'
+   | 'l'
+   | 'm'
+   | 'n'
+   | 'o'
+   | 'p'
+   | 'q'
+   | 'r'
+   | 's'
+   | 'u'
+   | 'v'
+   | 'w'
+   | 'x'
+   | 'y'
+   | 'z';
+
+type keyEvent = 'keydown' | 'keyup';
