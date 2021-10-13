@@ -1,8 +1,11 @@
 import Surface from './Surface';
 import Sprite from './Entities/Sprite';
-import { createCanvas, createContext, createProgram } from './webgl-utils';
-import { vertexShader as vs, fragmentShader as fs } from './Shaders/Polygon';
-import { rand } from './util';
+import { createCanvas, createContext, createOrthoMatrix, createProgram, createTexture } from './webgl-utils';
+import { vertexShader as rectangle_vs, fragmentShader as rectangle_fs } from './Shaders/Rectangle';
+import { vertexShader as sprite_vs, fragmentShader as sprite_fs } from './Shaders/Sprite';
+import { mapValue, rand } from './util';
+import Texture from './Renderer/Textures/Texture';
+import SpritePipeline from './Renderer/Pipelines/SpritePipeline';
 
 /* LOADING (ASSETS) PHASE */
 const loadImage = async (path: string) => {
@@ -13,50 +16,69 @@ const loadImage = async (path: string) => {
 };
 
 let start = async () => {
-   let s = new Surface(1200, 900, [1, 1, 1]);
-   let spriteSource = await loadImage('assets/debug.png');
-   let imageSource = await loadImage('assets/download.jpg');
-   let sp = new Sprite(s, 100, 100, spriteSource);
-   sp.scale(3);
-   let [speedx, speedy] = [0, 0];
-   let ms = 250;
 
-   let w_key = s.addKeyInput('w');
-   let a_key = s.addKeyInput('a');
-   let s_key = s.addKeyInput('s');
-   let d_key = s.addKeyInput('d');
+   let s = new Surface(1200, 850, [0.15, 0.15, 0.15]);
+   // let gl = s.renderer.gl;
+   // console.log(gl.getParameter(gl.MAX_COMBINED_TEXTURE_IMAGE_UNITS));
+   // console.log(gl.getParameter(gl.MAX_VERTEX_TEXTURE_IMAGE_UNITS));
+   // console.log(gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS));
+
+   let sprites: Sprite[] = [];
+   let size = 64
+   let scale = 2;
+   let amount = 2**6;
+
+   let texture = new Texture(s, await loadImage('./assets/test_sheet.png'), Texture.createFrameData(size, size, 2, 2));
+
+   for (let i = 0; i < amount; i++) {
+      let sprite = new Sprite(
+         s, 
+         rand(0, s.width - size * scale),
+         rand(0, s.height - size * scale),
+         texture
+      ).setSpeed([
+         rand(-100, 100),
+         rand(-100, 100)
+      ]);
+
+      setInterval(sprite.randomFrame, rand(0, 1000, true));
+
+      sprites.push(sprite)
+   }
+
+   let fpsText = <HTMLElement>document.getElementById('fps');
+   let amountText = <HTMLElement>document.getElementById('amount');
+
+   amountText.innerHTML = `Amount: ${amount}`;
 
    s.update = (dt: number) => {
-      [speedx, speedy] = [0, 0];
+      sprites.forEach( p => {
+         
+         if (p.x <= 0 || p.x + p.width >= s.width) p.speed.x *= -1;
+         if (p.y <= 0 || p.y + p.height >= s.height) p.speed.y *= -1;
+         
+         p.x += p.speed.x * dt;
+         p.y += p.speed.y * dt;
 
-      if (w_key.pressed) speedy -= ms;
-      if (a_key.pressed) speedx -= ms;
-      if (s_key.pressed) speedy += ms;
-      if (d_key.pressed) speedx += ms;
+      });
 
-      sp.x += speedx * dt;
-      sp.y += speedy * dt;
+      (<string>fpsText.innerHTML) = `FPS: ${s.fps.toPrecision(3)}`;
    };
-
-   
 }
 
-start();
-
-const idk = () => {
+const learningDrawElements = () => {
    let canvas        = createCanvas(1200, 900);
    let gl            = createContext(canvas);
-   let projection    = [ 2 / canvas.width, 0, 0, 0, -2 / canvas.height, 0, -1, 1, 1 ];
-   let program       = createProgram(gl, vs, fs);
+   let projection    = createOrthoMatrix(canvas.width, canvas.height);
+   let program       = createProgram(gl, rectangle_vs, rectangle_fs);
 
    const MAX_QUAD_AMOUNT   = 1000;
    const VERTEX_PER_QUAD   = 4;
-   const VERTEX_ELEMENTS   = 5
-   const VERTEX_SIZE       = 4 * VERTEX_ELEMENTS;
-   const MAX_VERTEX_AMOUNT = MAX_QUAD_AMOUNT * VERTEX_PER_QUAD * VERTEX_ELEMENTS;
+   const UNIT_PER_VERTEX   = 5;
+   const VERTEX_SIZE       = 4 * UNIT_PER_VERTEX;
+   const MAX_VERTEX_AMOUNT = MAX_QUAD_AMOUNT * VERTEX_PER_QUAD * UNIT_PER_VERTEX;
 
    gl.useProgram(program);
-
 
    class Rectangle {
       x: number
@@ -120,7 +142,7 @@ const idk = () => {
    let colorLocation       = gl.getAttribLocation(program, 'a_color');
    let projectionLocation  = gl.getUniformLocation(program, 'u_projection');
 
-   gl.uniformMatrix3fv(projectionLocation, false, projection);
+   gl.uniformMatrix4fv(projectionLocation, false, projection);
 
    let vbo = <WebGLBuffer> gl.createBuffer();
    gl.bindBuffer(gl.ARRAY_BUFFER, vbo);
@@ -150,8 +172,8 @@ const idk = () => {
       entities.forEach((r, i) => {
          r.x += r.speed[0] * dt;
          r.y += r.speed[1] * dt;
-         let offset = i * VERTEX_ELEMENTS * VERTEX_PER_QUAD;
-         createQuad(r.x, r.y, r.width, r.height, r.color).forEach( (v, j) =>  vao.set(v, offset + j * VERTEX_ELEMENTS) )
+         let offset = i * UNIT_PER_VERTEX * VERTEX_PER_QUAD;
+         createQuad(r.x, r.y, r.width, r.height, r.color).forEach( (v, j) =>  vao.set(v, offset + j * UNIT_PER_VERTEX) )
       });
 
       gl.bindBuffer(gl.ARRAY_BUFFER, vbo);
@@ -171,4 +193,151 @@ const idk = () => {
    requestAnimationFrame(draw);
 }
 
-// idk();
+const learningTextures = async () => {
+   let canvas        = createCanvas(1200, 900);
+   let gl            = createContext(canvas);
+   let projection    = createOrthoMatrix(canvas.width, canvas.height);
+   let program       = createProgram(gl, sprite_vs, sprite_fs);
+
+   const MAX_QUAD          = 2**10;
+   const UNIT_SIZE         = 4;
+   const UNITS_PER_VERTEX  = 5;  // [x, y, texture_index, texcord_x, texcord_y]
+   const VERTEX_PER_QUAD   = 4;
+   const INDICES_PER_QUAD  = 6;
+
+   const VERTEX_SIZE       = UNIT_SIZE       * UNITS_PER_VERTEX;
+   const UNITS_PER_QUAD    = VERTEX_PER_QUAD * UNITS_PER_VERTEX;
+   const MAX_INDICES       = MAX_QUAD        * INDICES_PER_QUAD;
+   const MAX_UNIT          = UNITS_PER_QUAD  * MAX_QUAD;
+   const MAX_SIZE          = MAX_UNIT        * UNIT_SIZE;
+
+   let vao     = new Float32Array(MAX_UNIT);
+   let vbo    = <WebGLBuffer> gl.createBuffer();
+   let iao    = new Uint16Array(MAX_INDICES);
+   let ibo    = <WebGLBuffer> gl.createBuffer();
+      
+   gl.useProgram(program);
+
+   class Sprite {
+      x: number
+      y: number
+      width: number
+      height: number
+      texture: WebGLTexture;
+      unit: number;
+
+      constructor(x: number, y: number, unit: number, source: HTMLImageElement) {
+         this.x         = x;
+         this.y         = y;
+         this.width     = source.width;
+         this.height    = source.height;
+         this.unit      = unit;
+         this.texture   = createTexture(gl, source, unit);
+      }
+
+      scale = (n: number) => {
+         this.width *= n;
+         this.height *= n;
+         return this;
+      }
+   }
+
+   let spritesList: Sprite[] = [
+      new Sprite(100, 100, 0, await loadImage('./assets/debug.png')).scale(5),
+      new Sprite(500, 300, 1, await loadImage('./assets/guy.png')).scale(5)
+   ];
+
+   const createQuadData = (sprite: Sprite) => {
+      let [ x, y, width, height, unit ] = [
+         sprite.x,
+         sprite.y,
+         sprite.width,
+         sprite.height,
+         sprite.unit
+      ]
+
+      let quad = [
+         x           , y         , unit, 0, 0,  // v1
+         x + width   , y         , unit, 1, 0,  // v2
+         x           , y + height, unit, 0, 1,  // v3
+         x + width   , y + height, unit, 1, 1  // v4
+      ]
+      
+      return quad;
+   };
+
+   for (let i = 0; i < MAX_QUAD; i++) {
+      let offset = 4 * i;  // SIZE OF QUAD * CURRENT QUAD INDEX
+
+      iao.set([
+         0 + offset, 1 + offset, 2 + offset,
+         2 + offset, 1 + offset, 3 + offset
+      ], INDICES_PER_QUAD * i)
+   }
+
+   let positionLocation    = gl.getAttribLocation(program, 'a_position');
+   let texcoordLocation    = gl.getAttribLocation(program, 'a_texCoord');
+   let texIndexLocation    = gl.getAttribLocation(program, 'a_texIndex');
+   let projectionLocation  = gl.getUniformLocation(program, 'u_projection');
+   let texturesLocation    = gl.getUniformLocation(program, 'u_textures');
+
+   gl.uniformMatrix4fv(projectionLocation, false, projection);
+   // gl.uniform1i(textureLocation, 0);
+   gl.uniform1iv(texturesLocation, new Int32Array([0, 1, 2, 3]));
+
+   gl.bindBuffer(gl.ARRAY_BUFFER, vbo);
+   
+   gl.enableVertexAttribArray(positionLocation);
+   gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, VERTEX_SIZE, 0);
+   gl.enableVertexAttribArray(texIndexLocation);
+   gl.vertexAttribPointer(texIndexLocation, 1, gl.FLOAT, false, VERTEX_SIZE, UNIT_SIZE * 2);
+   gl.enableVertexAttribArray(texcoordLocation);
+   gl.vertexAttribPointer(texcoordLocation, 2, gl.FLOAT, false, VERTEX_SIZE, UNIT_SIZE * 3);
+   
+   gl.bufferData(gl.ARRAY_BUFFER, MAX_SIZE, gl.DYNAMIC_DRAW);
+   
+   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ibo);
+   gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(iao), gl.STATIC_DRAW);
+
+   gl.clearColor(0, 0, 0, 1);
+   gl.viewport(0, 0, canvas.width, canvas.height);
+   gl.clear(gl.COLOR_BUFFER_BIT);
+
+   gl.enable(gl.BLEND);
+   gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+   
+   let previousTime = performance.now();
+
+   const update = (dt: number) => {
+
+   }
+
+   const draw = (currentTime: number) => {
+      let dt = (currentTime - previousTime) * 0.001;
+
+      gl.clear(gl.COLOR_BUFFER_BIT);
+
+      spritesList.forEach( (s, i) => {
+         vao.set(createQuadData(s), i * UNITS_PER_QUAD)
+      })
+
+      gl.bindBuffer(gl.ARRAY_BUFFER, vbo);
+      gl.bufferSubData(gl.ARRAY_BUFFER, 0, vao);
+
+      gl.drawElements(
+         gl.TRIANGLES,
+         INDICES_PER_QUAD * spritesList.length, 
+         gl.UNSIGNED_SHORT,
+         0
+      );
+
+      previousTime = currentTime;
+      requestAnimationFrame(draw);
+   }
+
+   requestAnimationFrame(draw);
+}
+
+// learningTextures();
+
+start();

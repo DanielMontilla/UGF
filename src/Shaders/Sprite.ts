@@ -1,25 +1,53 @@
-export const attributes = ['a_position', 'a_texCoord'] as const;
-export const uniforms = ['u_projection', 'u_texture'] as const;
+export const attributes = ['a_position', 'a_texCoord', 'a_texIndex'] as const;
+export const uniforms = ['u_projection', 'u_textures'] as const;
 
 export const vertexShader = `
    precision mediump float;
-   attribute vec2 ${attributes[0]};
+
+   attribute vec3 ${attributes[0]};
    attribute vec2 ${attributes[1]};
-   uniform mat3 ${uniforms[0]};
+   attribute float ${attributes[2]};
+
+   uniform mat4 ${uniforms[0]};
+
    varying vec2 v_texCoord;
+   varying float v_texIndex;
+
    void main()
    {
-      gl_Position = vec4((${uniforms[0]} * vec3(${attributes[0]}, 1)).xy, 0, 1);
+      gl_Position = ${uniforms[0]} * vec4(${attributes[0]}, 1);
       v_texCoord = ${attributes[1]};
+      v_texIndex = ${attributes[2]};
    }
 ` as const;
 
 export const fragmentShader = `
    precision mediump float;
+   
+   uniform sampler2D ${uniforms[1]}[4];
+
    varying vec2 v_texCoord;
-   uniform sampler2D ${uniforms[1]};
+   varying float v_texIndex;
+
+   vec4 getTexture(sampler2D textures[4], int index, vec2 texCoord) {
+
+      vec4 color = vec4(0);
+      
+      // TODO: binary search
+
+      for (int i = 0; i < 4; ++i) {
+        vec4 sampler = texture2D(u_textures[i], texCoord);
+        if (i == index) {
+          color += sampler;
+        }
+      }
+
+      return color;
+  }
+
    void main()
    {
-      gl_FragColor = texture2D(${uniforms[1]}, v_texCoord);
+      int index = int(v_texIndex);
+      gl_FragColor = getTexture(${uniforms[1]}, index, v_texCoord);
    }
 ` as const;

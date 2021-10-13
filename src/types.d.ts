@@ -2,11 +2,10 @@
 type Dictionary<K extends string, T> = { [P in K]?: T }
 type rgb = [r: number, g: number, b: number];
 
-type PipelineName = 'sprite' | 'polygon';
+type EntityType = 'sprite' | 'rectangle';
 
 interface attributeInfo {
    location: number;
-   buffer: WebGLBuffer;
    size: number;
    type: number;
 }
@@ -37,6 +36,7 @@ type keyCode =
    | 'q'
    | 'r'
    | 's'
+   | 't'
    | 'u'
    | 'v'
    | 'w'
@@ -45,3 +45,5 @@ type keyCode =
    | 'z';
 
 type keyEvent = 'keydown' | 'keyup';
+
+type frame = [ x1: number, y1: number, x2: number, y2: number ];
