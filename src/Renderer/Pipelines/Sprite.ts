@@ -2,8 +2,6 @@ import Pipeline from "./Pipeline";
 import Renderer from "../Renderer";
 import Sprite from "../../Entities/Sprite";
 
-import { setAttribute } from "../../webgl-utils";
-
 import {
    vertexShader   as vsSource,
    fragmentShader as fsSource,
@@ -16,7 +14,7 @@ export default class SpritePipeline extends Pipeline <
    typeof uniforArr[number]
 > {
    // TODO: change UNIT_SIZE to FLOAT_SIZE and add INT_SIZE for texIndex attribute
-   public static readonly MAX_ELEMS         = 2**15;
+   public static readonly MAX_ELEMS          = 2**15;
    private static readonly UNIT_SIZE         = 4;  // sizeof(float) = 4 bytes = sizeof(unit)
    private static readonly UNIT_PER_VERTEX   = 6;  // [ x, y, z, unit, texcoordX, texcoordY ].length = 6
    private static readonly VERTEX_PER_ELEM   = 4;  // A quad has 4 corners aka 4 vertices
@@ -49,7 +47,9 @@ export default class SpritePipeline extends Pipeline <
       /* SETTING UP UNIFORMS */
       let u_projection  = this.uniforms.u_projection;
       let u_textures    = this.uniforms.u_textures;
+      let u_camera      = this.uniforms.u_camera;
       gl.uniformMatrix4fv(u_projection.location, false, renderer.projection);
+      gl.uniformMatrix4fv(u_camera.location, false, this.renderer.getCameraTransalation());
       
       let texUnitArr: number[] = [];
       for (let i = 0; i < PIPE.MAX_TEXTURE_UNITS; i++) texUnitArr.push(i);
@@ -86,13 +86,14 @@ export default class SpritePipeline extends Pipeline <
    }
    // TODO: add mechanisim to detect object change and only alter necesary values in vao
    public flush(sprites: Sprite[]) {
-
       if (!sprites.length) return;
 
       let gl      = this.renderer.gl;
       const PIPE  = SpritePipeline;
       gl.useProgram(this.program);
       
+      gl.uniformMatrix4fv(this.uniforms.u_camera.location, false, this.renderer.getCameraTransalation());
+
       for (let i = 0; i < sprites.length; i++) {
          const sprite = sprites[i];
          this.vao.set(this.createQuadData(sprite), i * PIPE.UNIT_PER_ELEM)

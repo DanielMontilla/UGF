@@ -3,14 +3,12 @@ import Rectangle from "./Entities/Rectangle";
 import Sprite from "./Entities/Sprite";
 import InputHandler from "./Input/InputHandler";
 import Key from "./Input/Key";
+import Camera from "./Renderer/Camera";
 import Renderer from "./Renderer/Renderer";
-import Texture from "./Renderer/Textures/Texture";
+import Texture from "./Renderer/Texture";
 import { emptyFunc } from "./util";
 import { createCanvas } from "./webgl-utils";
 
-/**
- * @description singleton class that manages surface objects
- */
 export default class Surface {
 
    public readonly width: number;
@@ -20,6 +18,7 @@ export default class Surface {
    public entityLists: Record<EntityType, Entity[]>;
 
    public readonly renderer: Renderer;
+   public readonly camera: Camera;
    public readonly inputHandler: InputHandler;
 
    public update: (dt: number) => void;
@@ -40,6 +39,7 @@ export default class Surface {
          sprite:     []
       }
 
+      this.camera       = new Camera(this);
       this.renderer     = new Renderer(this);
       this.inputHandler = new InputHandler(this.canvas);
       this.previousTime = performance.now();
@@ -78,5 +78,17 @@ export default class Surface {
       onUpCallback?: () => void
       ): Key => {
       return this.inputHandler.addKey(keyCode, onDownCallback, onUpCallback);
+   }
+
+   // TODO: add config/layout parameter
+   public createTexture = async (path: string) => {
+      let img: HTMLImageElement;
+      let texture: Texture;
+
+      img = new Image();
+      img.src = path;
+      await img.decode();
+
+      return new Texture(img);
    }
 }

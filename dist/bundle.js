@@ -1,32 +1,1621 @@
-/*
- * ATTENTION: An "eval-source-map" devtool has been used.
- * This devtool is neither made for production nor for readable output files.
- * It uses "eval()" calls to create a separate source file with attached SourceMaps in the browser devtools.
- * If you are trying to read the output file, select a different devtool (https://webpack.js.org/configuration/devtool/)
- * or disable the default devtool with "devtool: false".
- * If you are looking for production-ready output files, see mode: "production" (https://webpack.js.org/configuration/mode/).
- */
 /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
+
+/***/ "./src/Entities/Entity.ts":
+/*!********************************!*\
+  !*** ./src/Entities/Entity.ts ***!
+  \********************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+var Entity = /** @class */ (function () {
+    function Entity(surface) {
+        this.surface = surface;
+        this.layer = 0;
+    }
+    return Entity;
+}());
+exports.default = Entity;
+
+
+/***/ }),
+
+/***/ "./src/Entities/Rectangle.ts":
+/*!***********************************!*\
+  !*** ./src/Entities/Rectangle.ts ***!
+  \***********************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+var Entity_1 = __importDefault(__webpack_require__(/*! ./Entity */ "./src/Entities/Entity.ts"));
+var Rectangle = /** @class */ (function (_super) {
+    __extends(Rectangle, _super);
+    function Rectangle(surface, x, y, width, height, color) {
+        var _this = _super.call(this, surface) || this;
+        _this.scale = function (num) {
+            _this.width *= num;
+            _this.height *= num;
+        };
+        _this.x = x;
+        _this.y = y;
+        _this.width = width;
+        _this.height = height;
+        _this.color = color;
+        surface.addEntity(_this);
+        return _this;
+    }
+    return Rectangle;
+}(Entity_1.default));
+exports.default = Rectangle;
+
+
+/***/ }),
+
+/***/ "./src/Entities/Sprite.ts":
+/*!********************************!*\
+  !*** ./src/Entities/Sprite.ts ***!
+  \********************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+var util_1 = __webpack_require__(/*! ../util */ "./src/util.ts");
+var Entity_1 = __importDefault(__webpack_require__(/*! ./Entity */ "./src/Entities/Entity.ts"));
+var Sprite = /** @class */ (function (_super) {
+    __extends(Sprite, _super);
+    function Sprite(surface, x, y, texture, frame) {
+        if (frame === void 0) { frame = 0; }
+        var _this = _super.call(this, surface) || this;
+        _this.textureID = '';
+        _this.scale = function (num) {
+            _this.width *= num;
+            _this.height *= num;
+            return _this;
+        };
+        _this.nextFrame = function () {
+            if (_this.frameExists(_this.frame + 1)) {
+                _this.frame++;
+            }
+            else {
+                _this.frame = 0;
+            }
+        };
+        _this.randomFrame = function () {
+            var original = _this.frame;
+            while (original == _this.frame) {
+                _this.frame = util_1.rand(0, _this.texture.frameData.length - 1, true);
+            }
+        };
+        _this.texture = texture;
+        _this.frame = _this.frameExists(frame) ? frame : 0;
+        _this.x = x;
+        _this.y = y;
+        _this.width = texture.img.width;
+        _this.height = texture.img.height;
+        surface.addEntity(_this);
+        return _this;
+    }
+    Sprite.prototype.frameExists = function (frame) {
+        if (frame < 0 || frame > this.texture.frameData.length - 1)
+            return false;
+        return true;
+    };
+    return Sprite;
+}(Entity_1.default));
+exports.default = Sprite;
+
+
+/***/ }),
+
+/***/ "./src/Input/InputHandler.ts":
+/*!***********************************!*\
+  !*** ./src/Input/InputHandler.ts ***!
+  \***********************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+var Key_1 = __importDefault(__webpack_require__(/*! ./Key */ "./src/Input/Key.ts"));
+var InputHandler = /** @class */ (function () {
+    function InputHandler(canvas) {
+        var _this = this;
+        this.keyResgistry = {};
+        this.addKey = function (keyCode, onDownCallback, onUpCallback) {
+            var key = new Key_1.default(keyCode, onDownCallback, onUpCallback);
+            _this.keyResgistry[key.code] = key;
+            return key;
+        };
+        this.keyBoardEventCallback = function (keyCode, event) {
+            var key = _this.keyResgistry[keyCode];
+            if (!key)
+                return;
+            switch (event) {
+                case 'keydown':
+                    key.onDown();
+                    break;
+                case 'keyup':
+                    key.onUp();
+                    break;
+            }
+        };
+        this.canvas = canvas;
+        this.canvas.tabIndex = 0;
+        this.canvas.focus();
+        this.canvas.addEventListener('keydown', function (e) { _this.keyBoardEventCallback(e.key, 'keydown'); });
+        this.canvas.addEventListener('keyup', function (e) { _this.keyBoardEventCallback(e.key, 'keyup'); });
+    }
+    return InputHandler;
+}());
+exports.default = InputHandler;
+
+
+/***/ }),
+
+/***/ "./src/Input/Key.ts":
+/*!**************************!*\
+  !*** ./src/Input/Key.ts ***!
+  \**************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+var util_1 = __webpack_require__(/*! ../util */ "./src/util.ts");
+var Key = /** @class */ (function () {
+    function Key(code, onDownCallback, onUpCallback) {
+        if (onDownCallback === void 0) { onDownCallback = util_1.emptyFunc; }
+        if (onUpCallback === void 0) { onUpCallback = util_1.emptyFunc; }
+        this.code = code;
+        this.onDownCallback = onDownCallback;
+        this.onUpCallback = onUpCallback;
+        this.onDownOnceCallback = util_1.emptyFunc;
+        this.pressed = false;
+    }
+    Key.prototype.onDown = function () {
+        if (!this.pressed)
+            this.onDownOnce();
+        this.onDownCallback();
+    };
+    Key.prototype.onUp = function () {
+        this.pressed = false;
+        this.onUpCallback();
+    };
+    Key.prototype.onDownOnce = function () {
+        this.pressed = true;
+        this.onDownOnceCallback();
+    };
+    return Key;
+}());
+exports.default = Key;
+
+
+/***/ }),
+
+/***/ "./src/Math/Vec2.ts":
+/*!**************************!*\
+  !*** ./src/Math/Vec2.ts ***!
+  \**************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+var Vec2 = /** @class */ (function () {
+    function Vec2(x, y) {
+        var _this = this;
+        if (x === void 0) { x = 0; }
+        if (y === void 0) { y = 0; }
+        this.x = x;
+        this.y = y;
+        this.reset = function () {
+            _this.x = 0;
+            _this.y = 0;
+        };
+        this.add = function (v) {
+            var x, y;
+            if (v instanceof Array) {
+                x = v[0];
+                y = v[1];
+            }
+            else {
+                x = v.x;
+                y = v.y;
+            }
+            ;
+            _this.x += x;
+            _this.y += y;
+            return _this;
+        };
+    }
+    /* <------------------------------------| FACTORY METHODS |------------------------------------> */
+    Vec2.all = function (n) {
+        return new Vec2(n, n);
+    };
+    return Vec2;
+}());
+exports.default = Vec2;
+
+
+/***/ }),
+
+/***/ "./src/Renderer/Camera.ts":
+/*!********************************!*\
+  !*** ./src/Renderer/Camera.ts ***!
+  \********************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+var Vec2_1 = __importDefault(__webpack_require__(/*! ../Math/Vec2 */ "./src/Math/Vec2.ts"));
+var Camera = /** @class */ (function () {
+    function Camera(surface, position, zoom) {
+        if (position === void 0) { position = Vec2_1.default.all(0); }
+        if (zoom === void 0) { zoom = 0; }
+        this.surface = surface;
+        this.position = position;
+        this.zoom = zoom;
+    }
+    Object.defineProperty(Camera.prototype, "x", {
+        get: function () {
+            return this.position.x;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(Camera.prototype, "y", {
+        get: function () {
+            return this.position.y;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Camera.prototype.move = function (x, y) {
+        this.position.add([x, y]);
+    };
+    return Camera;
+}());
+exports.default = Camera;
+
+
+/***/ }),
+
+/***/ "./src/Renderer/Pipelines/Pipeline.ts":
+/*!********************************************!*\
+  !*** ./src/Renderer/Pipelines/Pipeline.ts ***!
+  \********************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __values = (this && this.__values) || function(o) {
+    var s = typeof Symbol === "function" && Symbol.iterator, m = s && o[s], i = 0;
+    if (m) return m.call(o);
+    if (o && typeof o.length === "number") return {
+        next: function () {
+            if (o && i >= o.length) o = void 0;
+            return { value: o && o[i++], done: !o };
+        }
+    };
+    throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
+};
+var __read = (this && this.__read) || function (o, n) {
+    var m = typeof Symbol === "function" && o[Symbol.iterator];
+    if (!m) return o;
+    var i = m.call(o), r, ar = [], e;
+    try {
+        while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
+    }
+    catch (error) { e = { error: error }; }
+    finally {
+        try {
+            if (r && !r.done && (m = i["return"])) m.call(i);
+        }
+        finally { if (e) throw e.error; }
+    }
+    return ar;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+var webgl_utils_1 = __webpack_require__(/*! ../../webgl-utils */ "./src/webgl-utils.ts");
+var Pipeline = /** @class */ (function () {
+    function Pipeline(renderer, vsSource, fsSource, attribArr, uniformArr) {
+        var e_1, _a, e_2, _b;
+        this.attributes = {};
+        this.uniforms = {};
+        var gl = renderer.gl;
+        this.renderer = renderer;
+        this.vertexShader = webgl_utils_1.createShader(gl, 'vertex', vsSource);
+        this.fragmentShader = webgl_utils_1.createShader(gl, 'fragment', fsSource);
+        this.program = webgl_utils_1.createProgram(gl, this.vertexShader, this.fragmentShader);
+        try {
+            /* |--------------------------< GENERATING ATTRIBUTE DATA >--------------------------| */
+            for (var attribArr_1 = __values(attribArr), attribArr_1_1 = attribArr_1.next(); !attribArr_1_1.done; attribArr_1_1 = attribArr_1.next()) {
+                var attribID = attribArr_1_1.value;
+                var location_1 = gl.getAttribLocation(this.program, attribID);
+                var info = gl.getActiveAttrib(this.program, location_1);
+                var size = info.size + 1;
+                var type = info.type;
+                this.attributes[attribID] = {
+                    location: location_1,
+                    size: size,
+                    type: type
+                };
+            }
+        }
+        catch (e_1_1) { e_1 = { error: e_1_1 }; }
+        finally {
+            try {
+                if (attribArr_1_1 && !attribArr_1_1.done && (_a = attribArr_1.return)) _a.call(attribArr_1);
+            }
+            finally { if (e_1) throw e_1.error; }
+        }
+        try {
+            /* |--------------------------< GENERATING UNIFORM DATA >--------------------------| */
+            for (var _c = __values(uniformArr.entries()), _d = _c.next(); !_d.done; _d = _c.next()) {
+                var _e = __read(_d.value, 2), index = _e[0], uniformID = _e[1];
+                var location_2 = gl.getUniformLocation(this.program, uniformID);
+                var info = gl.getActiveUniform(this.program, index);
+                var size = info.size;
+                var type = info.type;
+                this.uniforms[uniformID] = {
+                    location: location_2,
+                    size: size,
+                    type: type
+                };
+            }
+        }
+        catch (e_2_1) { e_2 = { error: e_2_1 }; }
+        finally {
+            try {
+                if (_d && !_d.done && (_b = _c.return)) _b.call(_c);
+            }
+            finally { if (e_2) throw e_2.error; }
+        }
+    }
+    return Pipeline;
+}());
+exports.default = Pipeline;
+
+
+/***/ }),
+
+/***/ "./src/Renderer/Pipelines/Rectangle.ts":
+/*!*********************************************!*\
+  !*** ./src/Renderer/Pipelines/Rectangle.ts ***!
+  \*********************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var __read = (this && this.__read) || function (o, n) {
+    var m = typeof Symbol === "function" && o[Symbol.iterator];
+    if (!m) return o;
+    var i = m.call(o), r, ar = [], e;
+    try {
+        while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
+    }
+    catch (error) { e = { error: error }; }
+    finally {
+        try {
+            if (r && !r.done && (m = i["return"])) m.call(i);
+        }
+        finally { if (e) throw e.error; }
+    }
+    return ar;
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+var Pipeline_1 = __importDefault(__webpack_require__(/*! ./Pipeline */ "./src/Renderer/Pipelines/Pipeline.ts"));
+var Rectangle_1 = __webpack_require__(/*! ../../Shaders/Rectangle */ "./src/Shaders/Rectangle.ts");
+var RectanglePipeline = /** @class */ (function (_super) {
+    __extends(RectanglePipeline, _super);
+    function RectanglePipeline(renderer) {
+        var _this = _super.call(this, renderer, Rectangle_1.vertexShader, Rectangle_1.fragmentShader, Rectangle_1.attributes, Rectangle_1.uniforms) || this;
+        var PIPE = RectanglePipeline;
+        var gl = _this.renderer.gl;
+        gl.useProgram(_this.program);
+        _this.vao = new Float32Array(PIPE.MAX_UNIT);
+        _this.vbo = gl.createBuffer();
+        _this.iao = new Uint16Array(PIPE.MAX_INDICES);
+        _this.ibo = gl.createBuffer();
+        /* SETTING UP UNIFORMS */
+        var u_projection = _this.uniforms.u_projection;
+        gl.uniformMatrix4fv(u_projection.location, false, renderer.projection);
+        /* SETTING UP ATTRIBUTES */
+        var a_position = _this.attributes.a_position;
+        var a_color = _this.attributes.a_color;
+        gl.bindBuffer(gl.ARRAY_BUFFER, _this.vbo);
+        gl.enableVertexAttribArray(a_position.location);
+        gl.vertexAttribPointer(a_position.location, 3, gl.FLOAT, false, PIPE.VERTEX_SIZE, 0);
+        gl.enableVertexAttribArray(a_color.location);
+        gl.vertexAttribPointer(a_color.location, 3, gl.FLOAT, false, PIPE.VERTEX_SIZE, PIPE.UNIT_SIZE * 3);
+        gl.bufferData(gl.ARRAY_BUFFER, PIPE.MAX_SIZE, gl.DYNAMIC_DRAW);
+        /* SETTING UP INDEX BUFFER/ARRAY OBJECT */
+        for (var i = 0; i < PIPE.MAX_QUAD; i++) {
+            var offset = 4 * i;
+            _this.iao.set([
+                0 + offset, 1 + offset, 2 + offset,
+                2 + offset, 1 + offset, 3 + offset
+            ], PIPE.INDICES_PER_QUAD * i);
+        }
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, _this.ibo);
+        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, _this.iao, gl.STATIC_DRAW);
+        return _this;
+    }
+    // TODO: add mechanisim to detect object change and only alter necesary values in vao
+    RectanglePipeline.prototype.flush = function (rectangles) {
+        if (!rectangles.length)
+            return;
+        var gl = this.renderer.gl;
+        var PIPE = RectanglePipeline;
+        gl.useProgram(this.program);
+        for (var i = 0; i < rectangles.length; i++) {
+            var rectangle = rectangles[i];
+            this.vao.set(this.createQuadData(rectangle), i * PIPE.UNITS_PER_QUAD);
+        }
+        ;
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.vbo);
+        gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.vao);
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.ibo);
+        gl.drawElements(gl.TRIANGLES, PIPE.INDICES_PER_QUAD * rectangles.length, gl.UNSIGNED_SHORT, 0);
+    };
+    ;
+    RectanglePipeline.prototype.createQuadData = function (rect) {
+        var _a = __read([rect.x, rect.y, rect.layer, rect.width, rect.height], 5), x = _a[0], y = _a[1], z = _a[2], width = _a[3], height = _a[4];
+        var _b = __read(rect.color, 3), r = _b[0], g = _b[1], b = _b[2];
+        return [
+            x, y, z, r, g, b,
+            x + width, y, z, r, g, b,
+            x, y + height, z, r, g, b,
+            x + width, y + height, z, r, g, b // ↘ Vertex
+        ];
+    };
+    /* CONSTANTS */
+    RectanglePipeline.MAX_QUAD = Math.pow(2, 10); // TODO: Set up flusing system to have an unlimited amount of quads
+    RectanglePipeline.UNIT_SIZE = 4; // sizeof(float) = 4 bytes = sizeof(unit)
+    RectanglePipeline.UNITS_PER_VERTEX = 6; // [ x, y, z, r, g, b ].length = 6
+    RectanglePipeline.VERTEX_PER_QUAD = 4; // A quad has 4 corners aka 4 vertices
+    RectanglePipeline.INDICES_PER_QUAD = 6; // To create a quad we need 2 triangles wich require 3 verticies each, 3 * 2 = 6
+    RectanglePipeline.VERTEX_SIZE = RectanglePipeline.UNITS_PER_VERTEX * RectanglePipeline.UNIT_SIZE;
+    RectanglePipeline.UNITS_PER_QUAD = RectanglePipeline.VERTEX_PER_QUAD * RectanglePipeline.UNITS_PER_VERTEX;
+    RectanglePipeline.MAX_INDICES = RectanglePipeline.INDICES_PER_QUAD * RectanglePipeline.MAX_QUAD;
+    RectanglePipeline.MAX_UNIT = RectanglePipeline.UNITS_PER_QUAD * RectanglePipeline.MAX_QUAD;
+    RectanglePipeline.MAX_SIZE = RectanglePipeline.MAX_UNIT * RectanglePipeline.UNIT_SIZE;
+    return RectanglePipeline;
+}(Pipeline_1.default));
+exports.default = RectanglePipeline;
+
+
+/***/ }),
+
+/***/ "./src/Renderer/Pipelines/Sprite.ts":
+/*!******************************************!*\
+  !*** ./src/Renderer/Pipelines/Sprite.ts ***!
+  \******************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var __read = (this && this.__read) || function (o, n) {
+    var m = typeof Symbol === "function" && o[Symbol.iterator];
+    if (!m) return o;
+    var i = m.call(o), r, ar = [], e;
+    try {
+        while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
+    }
+    catch (error) { e = { error: error }; }
+    finally {
+        try {
+            if (r && !r.done && (m = i["return"])) m.call(i);
+        }
+        finally { if (e) throw e.error; }
+    }
+    return ar;
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+var Pipeline_1 = __importDefault(__webpack_require__(/*! ./Pipeline */ "./src/Renderer/Pipelines/Pipeline.ts"));
+var Sprite_1 = __webpack_require__(/*! ../../Shaders/Sprite */ "./src/Shaders/Sprite.ts");
+var SpritePipeline = /** @class */ (function (_super) {
+    __extends(SpritePipeline, _super);
+    function SpritePipeline(renderer) {
+        var _this = _super.call(this, renderer, Sprite_1.vertexShader, Sprite_1.fragmentShader, Sprite_1.attributes, Sprite_1.uniforms) || this;
+        var PIPE = SpritePipeline;
+        var gl = _this.renderer.gl;
+        gl.useProgram(_this.program);
+        _this.vao = new Float32Array(PIPE.MAX_UNIT);
+        _this.vbo = gl.createBuffer();
+        _this.iao = new Uint16Array(PIPE.MAX_INDICES);
+        _this.ibo = gl.createBuffer();
+        /* SETTING UP UNIFORMS */
+        var u_projection = _this.uniforms.u_projection;
+        var u_textures = _this.uniforms.u_textures;
+        var u_camera = _this.uniforms.u_camera;
+        gl.uniformMatrix4fv(u_projection.location, false, renderer.projection);
+        gl.uniformMatrix4fv(u_camera.location, false, _this.renderer.getCameraTransalation());
+        var texUnitArr = [];
+        for (var i = 0; i < PIPE.MAX_TEXTURE_UNITS; i++)
+            texUnitArr.push(i);
+        gl.uniform1iv(u_textures.location, new Int32Array(texUnitArr));
+        /* SETTING UP ATTRIBUTES */
+        var a_position = _this.attributes.a_position;
+        var a_texIndex = _this.attributes.a_texIndex;
+        var a_texCord = _this.attributes.a_texCoord;
+        gl.bindBuffer(gl.ARRAY_BUFFER, _this.vbo);
+        gl.enableVertexAttribArray(a_position.location);
+        gl.vertexAttribPointer(a_position.location, 3, gl.FLOAT, false, PIPE.VERTEX_SIZE, 0);
+        gl.enableVertexAttribArray(a_texIndex.location);
+        gl.vertexAttribPointer(a_texIndex.location, 1, gl.FLOAT, false, PIPE.VERTEX_SIZE, PIPE.UNIT_SIZE * 3);
+        gl.enableVertexAttribArray(a_texCord.location);
+        gl.vertexAttribPointer(a_texCord.location, 2, gl.FLOAT, false, PIPE.VERTEX_SIZE, PIPE.UNIT_SIZE * 4);
+        gl.bufferData(gl.ARRAY_BUFFER, PIPE.MAX_SIZE, gl.DYNAMIC_DRAW);
+        /* SETTING UP INDEX BUFFER/ARRAY OBJECT */
+        for (var i = 0; i < PIPE.MAX_ELEMS; i++) {
+            var offset = 4 * i;
+            _this.iao.set([
+                0 + offset, 1 + offset, 2 + offset,
+                2 + offset, 1 + offset, 3 + offset
+            ], PIPE.INDICES_PER_ELEM * i);
+        }
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, _this.ibo);
+        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, _this.iao, gl.STATIC_DRAW);
+        return _this;
+    }
+    // TODO: add mechanisim to detect object change and only alter necesary values in vao
+    SpritePipeline.prototype.flush = function (sprites) {
+        if (!sprites.length)
+            return;
+        var gl = this.renderer.gl;
+        var PIPE = SpritePipeline;
+        gl.useProgram(this.program);
+        gl.uniformMatrix4fv(this.uniforms.u_camera.location, false, this.renderer.getCameraTransalation());
+        for (var i = 0; i < sprites.length; i++) {
+            var sprite = sprites[i];
+            this.vao.set(this.createQuadData(sprite), i * PIPE.UNIT_PER_ELEM);
+        }
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.vbo);
+        gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.vao);
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.ibo);
+        gl.drawElements(gl.TRIANGLES, PIPE.INDICES_PER_ELEM * sprites.length, gl.UNSIGNED_SHORT, 0);
+    };
+    SpritePipeline.prototype.createQuadData = function (sprite) {
+        var _a = __read([
+            sprite.x,
+            sprite.y,
+            sprite.layer,
+            sprite.width,
+            sprite.height,
+            sprite.texture,
+            sprite.frame
+        ], 7), x = _a[0], y = _a[1], layer = _a[2], width = _a[3], height = _a[4], texture = _a[5], frame = _a[6];
+        var _b = __read([
+            texture.unit,
+            texture.frameData[frame][0],
+            texture.frameData[frame][1],
+            texture.frameData[frame][2],
+            texture.frameData[frame][3]
+        ], 5), unit = _b[0], tx1 = _b[1], ty1 = _b[2], tx2 = _b[3], ty2 = _b[4];
+        var quad = [
+            x, y, layer, unit, tx1, ty1,
+            x + width, y, layer, unit, tx2, ty1,
+            x, y + height, layer, unit, tx1, ty2,
+            x + width, y + height, layer, unit, tx2, ty2 // v4
+        ];
+        return quad;
+    };
+    // TODO: change UNIT_SIZE to FLOAT_SIZE and add INT_SIZE for texIndex attribute
+    SpritePipeline.MAX_ELEMS = Math.pow(2, 15);
+    SpritePipeline.UNIT_SIZE = 4; // sizeof(float) = 4 bytes = sizeof(unit)
+    SpritePipeline.UNIT_PER_VERTEX = 6; // [ x, y, z, unit, texcoordX, texcoordY ].length = 6
+    SpritePipeline.VERTEX_PER_ELEM = 4; // A quad has 4 corners aka 4 vertices
+    SpritePipeline.INDICES_PER_ELEM = 6; // To create a quad we need 2 triangles wich require 3 verticies each, 3 * 2 = 6
+    SpritePipeline.MAX_TEXTURE_UNITS = 4;
+    SpritePipeline.VERTEX_SIZE = SpritePipeline.UNIT_PER_VERTEX * SpritePipeline.UNIT_SIZE;
+    SpritePipeline.UNIT_PER_ELEM = SpritePipeline.VERTEX_PER_ELEM * SpritePipeline.UNIT_PER_VERTEX;
+    SpritePipeline.MAX_INDICES = SpritePipeline.INDICES_PER_ELEM * SpritePipeline.MAX_ELEMS;
+    SpritePipeline.MAX_UNIT = SpritePipeline.UNIT_PER_ELEM * SpritePipeline.MAX_ELEMS;
+    SpritePipeline.MAX_SIZE = SpritePipeline.MAX_UNIT * SpritePipeline.UNIT_SIZE;
+    return SpritePipeline;
+}(Pipeline_1.default));
+exports.default = SpritePipeline;
+
+
+/***/ }),
+
+/***/ "./src/Renderer/Renderer.ts":
+/*!**********************************!*\
+  !*** ./src/Renderer/Renderer.ts ***!
+  \**********************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __read = (this && this.__read) || function (o, n) {
+    var m = typeof Symbol === "function" && o[Symbol.iterator];
+    if (!m) return o;
+    var i = m.call(o), r, ar = [], e;
+    try {
+        while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
+    }
+    catch (error) { e = { error: error }; }
+    finally {
+        try {
+            if (r && !r.done && (m = i["return"])) m.call(i);
+        }
+        finally { if (e) throw e.error; }
+    }
+    return ar;
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+var Sprite_1 = __importDefault(__webpack_require__(/*! ./Pipelines/Sprite */ "./src/Renderer/Pipelines/Sprite.ts"));
+var Rectangle_1 = __importDefault(__webpack_require__(/*! ./Pipelines/Rectangle */ "./src/Renderer/Pipelines/Rectangle.ts"));
+var webgl_utils_1 = __webpack_require__(/*! ../webgl-utils */ "./src/webgl-utils.ts");
+var Texture_1 = __importDefault(__webpack_require__(/*! ./Texture */ "./src/Renderer/Texture.ts"));
+var Renderer = /** @class */ (function () {
+    function Renderer(surface) {
+        var _this = this;
+        this.draw = function () {
+            var gl = _this.gl;
+            gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+            _this.pipelines.sprite.flush(_this.entityLists.sprite);
+            _this.pipelines.rectangle.flush(_this.entityLists.rectangle);
+        };
+        this.getCameraTransalation = function () { return webgl_utils_1.createTranslationMatrix(_this.camera.x, _this.camera.y); };
+        this.surface = surface;
+        this.camera = surface.camera;
+        this.gl = webgl_utils_1.createContext(surface.canvas);
+        this.projection = webgl_utils_1.createOrthoMatrix(surface.width, surface.height);
+        this.entityLists = surface.entityLists;
+        // Initilizing other systems
+        Texture_1.default.init(this.gl);
+        this.pipelines = {
+            rectangle: new Rectangle_1.default(this),
+            sprite: new Sprite_1.default(this)
+        };
+        // Setting up surface for drawing
+        var gl = this.gl;
+        var _a = __read(surface.background, 3), r = _a[0], g = _a[1], b = _a[2];
+        gl.enable(gl.BLEND);
+        gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+        gl.clearColor(r, g, b, 1);
+        gl.viewport(0, 0, surface.width, surface.height);
+        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+    }
+    return Renderer;
+}());
+exports.default = Renderer;
+
+
+/***/ }),
+
+/***/ "./src/Renderer/Texture.ts":
+/*!*********************************!*\
+  !*** ./src/Renderer/Texture.ts ***!
+  \*********************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (this && this.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (_) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
+var __read = (this && this.__read) || function (o, n) {
+    var m = typeof Symbol === "function" && o[Symbol.iterator];
+    if (!m) return o;
+    var i = m.call(o), r, ar = [], e;
+    try {
+        while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
+    }
+    catch (error) { e = { error: error }; }
+    finally {
+        try {
+            if (r && !r.done && (m = i["return"])) m.call(i);
+        }
+        finally { if (e) throw e.error; }
+    }
+    return ar;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+var webgl_utils_1 = __webpack_require__(/*! ../webgl-utils */ "./src/webgl-utils.ts");
+var util_1 = __webpack_require__(/*! ../util */ "./src/util.ts");
+/**
+ * TODO:
+ *    - Add mechanisim to avoid texture duplication in case of user error.
+ */
+var Texture = /** @class */ (function () {
+    function Texture(img, config) {
+        if (Texture.nextUnit > Texture.MAX_TEXTURE_UNITS)
+            throw new Error('no more texture units :(');
+        if (!Texture.gl)
+            throw new Error('call Texture.init method first');
+        if (Texture.paths.includes(img.src))
+            console.warn('texture already exists, you\'re duplicating');
+        this.img = img;
+        this.unit = Texture.nextUnit;
+        this.glTexture = webgl_utils_1.createTexture(Texture.gl, img, this.unit);
+        this.frameData = (config) ? Texture.createFrameData(config.height, config.width, config.cols, config.rows) : [[0, 0, 1, 1]];
+        Texture.paths.push(img.src);
+        Texture.nextUnit++;
+    }
+    Texture.MAX_TEXTURE_UNITS = 16;
+    Texture.nextUnit = 0;
+    Texture.paths = [];
+    Texture.init = function (gl) {
+        if (Texture.gl)
+            throw new Error('already initiated texture class');
+        Texture.gl = gl;
+    };
+    /* <------------------------------------| UTLITY METHODS |------------------------------------> */
+    /**
+     * @param height sheet height
+     * @param width sheet width
+     * @param cols number of columns
+     * @param rows number of rows
+     */
+    Texture.createFrameData = function (height, width, cols, rows) {
+        var frameData = [];
+        var _a = __read([
+            height / rows,
+            width / cols
+        ], 2), spriteHeight = _a[0], spriteWidth = _a[1];
+        var heightRange = { min: 0, max: height };
+        var widthRange = { min: 0, max: width };
+        var normalRange = { min: 0, max: 1 };
+        for (var row = 0; row < rows; row++) {
+            for (var col = 0; col < cols; col++) {
+                frameData.push([
+                    util_1.mapValue(col * spriteWidth, widthRange, normalRange),
+                    util_1.mapValue(row * spriteHeight, heightRange, normalRange),
+                    util_1.mapValue(col * spriteWidth + spriteWidth, widthRange, normalRange),
+                    util_1.mapValue(row * spriteHeight + spriteHeight, heightRange, normalRange) // y2
+                ]);
+            }
+        }
+        return frameData;
+    };
+    /* <------------------------------------| FACTORY METHODS |------------------------------------> */
+    Texture.fromPath = function (path, config) { return __awaiter(void 0, void 0, void 0, function () {
+        var img;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, util_1.loadImage(path)];
+                case 1:
+                    img = _a.sent();
+                    return [2 /*return*/, new Texture(img, config)];
+            }
+        });
+    }); };
+    return Texture;
+}());
+exports.default = Texture;
+
+
+/***/ }),
+
+/***/ "./src/Shaders/Rectangle.ts":
+/*!**********************************!*\
+  !*** ./src/Shaders/Rectangle.ts ***!
+  \**********************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.fragmentShader = exports.vertexShader = exports.uniforms = exports.attributes = void 0;
+exports.attributes = ['a_position', 'a_color'];
+exports.uniforms = ['u_projection'];
+exports.vertexShader = "\n   precision mediump float;\n\n   attribute vec3 " + exports.attributes[0] + ";\n   attribute vec3 " + exports.attributes[1] + ";\n\n   uniform mat4 " + exports.uniforms[0] + ";\n\n   varying vec3 v_color;\n   \n   void main()\n   {\n      gl_Position = " + exports.uniforms[0] + " * vec4(" + exports.attributes[0] + ", 1);\n      v_color = " + exports.attributes[1] + ";\n   }\n";
+exports.fragmentShader = "\n   precision mediump float;\n\n   varying vec3 v_color;\n\n   void main()\n   {\n      gl_FragColor = vec4(v_color, 1);\n   }\n";
+
+
+/***/ }),
+
+/***/ "./src/Shaders/Sprite.ts":
+/*!*******************************!*\
+  !*** ./src/Shaders/Sprite.ts ***!
+  \*******************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.fragmentShader = exports.vertexShader = exports.uniforms = exports.attributes = void 0;
+exports.attributes = ['a_position', 'a_texCoord', 'a_texIndex'];
+exports.uniforms = ['u_projection', 'u_textures', 'u_camera'];
+exports.vertexShader = "\n   precision mediump float;\n\n   attribute vec3 " + exports.attributes[0] + ";\n   attribute vec2 " + exports.attributes[1] + ";\n   attribute float " + exports.attributes[2] + ";\n\n   uniform mat4 " + exports.uniforms[0] + ";\n   uniform mat4 " + exports.uniforms[2] + ";\n\n   varying vec2 v_texCoord;\n   varying float v_texIndex;\n\n   void main()\n   {\n      gl_Position = (" + exports.uniforms[0] + " * " + exports.uniforms[2] + ") * vec4(" + exports.attributes[0] + ", 1);\n      v_texCoord = " + exports.attributes[1] + ";\n      v_texIndex = " + exports.attributes[2] + ";\n   }\n";
+exports.fragmentShader = "\n   precision mediump float;\n   \n   uniform sampler2D " + exports.uniforms[1] + "[4];\n\n   varying vec2 v_texCoord;\n   varying float v_texIndex;\n\n   vec4 getTexture(sampler2D textures[4], int index, vec2 texCoord) {\n\n      vec4 color = vec4(0);\n      \n      // TODO: binary search\n\n      for (int i = 0; i < 4; ++i) {\n        vec4 sampler = texture2D(u_textures[i], texCoord);\n        if (i == index) {\n          color += sampler;\n        }\n      }\n\n      return color;\n  }\n\n   void main()\n   {\n      int index = int(v_texIndex);\n      gl_FragColor = getTexture(" + exports.uniforms[1] + ", index, v_texCoord);\n   }\n";
+
+
+/***/ }),
+
+/***/ "./src/Surface.ts":
+/*!************************!*\
+  !*** ./src/Surface.ts ***!
+  \************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (this && this.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (_) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+var Rectangle_1 = __importDefault(__webpack_require__(/*! ./Entities/Rectangle */ "./src/Entities/Rectangle.ts"));
+var Sprite_1 = __importDefault(__webpack_require__(/*! ./Entities/Sprite */ "./src/Entities/Sprite.ts"));
+var InputHandler_1 = __importDefault(__webpack_require__(/*! ./Input/InputHandler */ "./src/Input/InputHandler.ts"));
+var Camera_1 = __importDefault(__webpack_require__(/*! ./Renderer/Camera */ "./src/Renderer/Camera.ts"));
+var Renderer_1 = __importDefault(__webpack_require__(/*! ./Renderer/Renderer */ "./src/Renderer/Renderer.ts"));
+var Texture_1 = __importDefault(__webpack_require__(/*! ./Renderer/Texture */ "./src/Renderer/Texture.ts"));
+var util_1 = __webpack_require__(/*! ./util */ "./src/util.ts");
+var webgl_utils_1 = __webpack_require__(/*! ./webgl-utils */ "./src/webgl-utils.ts");
+var Surface = /** @class */ (function () {
+    function Surface(width, height, background) {
+        var _this = this;
+        if (width === void 0) { width = 1200; }
+        if (height === void 0) { height = 900; }
+        if (background === void 0) { background = [1, 1, 1]; }
+        this.fps = 0;
+        /**
+         * @description main game loop. Callback order:
+         *    1. update
+         *    2. draw
+         * @param currentTime number, basically performance.now()
+         */
+        this.loop = function (currentTime) {
+            var timeElapsed = currentTime - _this.previousTime;
+            _this.fps = 1000 / timeElapsed;
+            _this.update(timeElapsed *= 0.001);
+            _this.renderer.draw();
+            _this.previousTime = currentTime;
+            requestAnimationFrame(_this.loop);
+        };
+        this.addKeyInput = function (keyCode, onDownCallback, onUpCallback) {
+            return _this.inputHandler.addKey(keyCode, onDownCallback, onUpCallback);
+        };
+        // TODO: add config/layout parameter
+        this.createTexture = function (path) { return __awaiter(_this, void 0, void 0, function () {
+            var img, texture;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        img = new Image();
+                        img.src = path;
+                        return [4 /*yield*/, img.decode()];
+                    case 1:
+                        _a.sent();
+                        return [2 /*return*/, new Texture_1.default(img)];
+                }
+            });
+        }); };
+        this.width = width;
+        this.height = height;
+        this.canvas = webgl_utils_1.createCanvas(width, height);
+        this.update = util_1.emptyFunc;
+        this.background = background;
+        this.entityLists = {
+            rectangle: [],
+            sprite: []
+        };
+        this.camera = new Camera_1.default(this);
+        this.renderer = new Renderer_1.default(this);
+        this.inputHandler = new InputHandler_1.default(this.canvas);
+        this.previousTime = performance.now();
+        requestAnimationFrame(this.loop);
+    }
+    Surface.prototype.addEntity = function (e) {
+        var entityType = 'rectangle';
+        if (e instanceof Rectangle_1.default)
+            entityType = 'rectangle';
+        if (e instanceof Sprite_1.default)
+            entityType = 'sprite';
+        this.entityLists[entityType].push(e);
+    };
+    return Surface;
+}());
+exports.default = Surface;
+
+
+/***/ }),
 
 /***/ "./src/main.ts":
 /*!*********************!*\
   !*** ./src/main.ts ***!
   \*********************/
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
-eval("\r\nObject.defineProperty(exports, \"__esModule\", ({ value: true }));\r\nvar shaders_1 = __webpack_require__(/*! ./shaders */ \"./src/shaders.ts\");\r\n// 0. Creating & setting up canvas element\r\nvar surface = document.createElement('canvas');\r\nsurface.width = 900;\r\nsurface.height = 600;\r\ndocument.body.appendChild(surface);\r\n// 1. Gettings context\r\nvar gl = surface.getContext('webgl');\r\n// 1a. Error correction\r\nif (!gl)\r\n    console.error(\"couldn't get webgl context\");\r\n// let vertexShaderText: string = [\r\n//     'precision mediump float;',\r\n//     '',\r\n//     'attribute vec2 vertexPosition;',\r\n//     'attribute vec3 vertexColor;',\r\n//     'varying vec3 fragColor;',\r\n//     '',\r\n//     'void main()',\r\n//     '{',\r\n//     '  fragColor = vertexColor;',\r\n//     '  gl_Position = vec4(vertexPosition, 0.0, 1.0);',\r\n//     '}'\r\n// ].join('\\n');\r\n// let fragmentShaderText: string = [\r\n//     'precision mediump float;',\r\n//     '',\r\n//     'varying vec3 fragColor;',\r\n//     'void main()',\r\n//     '{',\r\n//     '  gl_FragColor = vec4(fragColor, 1.0);',\r\n//     '}'\r\n// ].join('\\n');\r\n// 2. Create and setup shaders\r\nfunction createShader(gl, type, source) {\r\n    var shader = gl.createShader(type); // 2a. create shader\r\n    gl.shaderSource(shader, source); // 2b. specify source\r\n    gl.compileShader(shader); // 2c. compile shader\r\n    // 2d. error checking\r\n    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {\r\n        console.error(\"Error compiling shader \", gl.getShaderInfoLog(shader));\r\n        gl.deleteShader(shader);\r\n    }\r\n    return shader;\r\n}\r\nvar vertexShader = createShader(gl, gl.VERTEX_SHADER, shaders_1.vertexShader);\r\nvar fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, shaders_1.fragmentShader);\r\n// 3. creating program\r\nfunction createProgram(gl, vertextShader, fragmentShader) {\r\n    var program = gl.createProgram(); // 3a. create program\r\n    // 3b. attach shaders\r\n    gl.attachShader(program, vertexShader);\r\n    gl.attachShader(program, fragmentShader);\r\n    gl.linkProgram(program); // 3c. linking program\r\n    // 3d. error checking\r\n    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {\r\n        console.error(\"Error compiling program \", gl.getProgramInfoLog(program));\r\n        gl.deleteProgram(program);\r\n    }\r\n    return program;\r\n}\r\nvar program = createProgram(gl, vertexShader, fragmentShader);\r\ngl.useProgram(program); // 3e. use program\r\n// TODO: research this\r\ngl.validateProgram(program);\r\nif (!gl.getProgramParameter(program, gl.VALIDATE_STATUS))\r\n    console.error(\"Validate Error: \", gl.getProgramInfoLog(program));\r\n// 4. Setup attributes & uniforms\r\n// 4a. get attribute locations\r\nvar positionAttribLocation = gl.getAttribLocation(program, \"a_vertexPosition\");\r\nvar colorAttribLocation = gl.getAttribLocation(program, \"a_vertexColor\");\r\n// 4b. enable attributes\r\ngl.enableVertexAttribArray(positionAttribLocation);\r\ngl.enableVertexAttribArray(colorAttribLocation);\r\n// 4c. get uniform locations\r\nvar resolutionUniformLocation = gl.getUniformLocation(program, \"u_resolution\");\r\n// 5. Create & setup buffer (vertex buffer object)\r\nvar vbo = gl.createBuffer(); // 5a. create buffer\r\ngl.bindBuffer(gl.ARRAY_BUFFER, vbo); // 5b. bind buffer\r\n// 5c. setup buffer data\r\nvar vertices = new Float32Array([\r\n    //  x,      y,      r,      g,      b\r\n    0, 0, 1, 0, 0,\r\n    900, 0, 0, 1, 0,\r\n    0, 600, 0, 0, 1,\r\n]);\r\ngl.bufferData(// 5cii. pass in data to buffer\r\ngl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);\r\n// 5d. setup buffer/data layout\r\nvar byteSize = Float32Array.BYTES_PER_ELEMENT;\r\nvar stride = 5 * Float32Array.BYTES_PER_ELEMENT;\r\ngl.vertexAttribPointer(// 5di. vertex position data layout\r\npositionAttribLocation, // Attribute index (position within shader attributes)\r\n2, // Amount of elements per data (x, y => 2 elements)\r\ngl.FLOAT, // Type of data\r\nfalse, // Normalize data? (between -1 & 1)\r\nstride, // Stride: How many bytes per data unit (5 vertex * sizeof(float))\r\nbyteSize * 0 // Inner element offset in BYTES\r\n);\r\ngl.vertexAttribPointer(// 5dii. vertex color data layout\r\ncolorAttribLocation, // Attribute index (position within shader attributes)\r\n3, // Amount of elements per data (r, g, b => 3 elements)\r\ngl.FLOAT, // Type of data\r\nfalse, // Normalize data? (between -1 & 1)\r\nstride, // Stride: How many bytes per vertex (5 vertex * sizeof(float))\r\nbyteSize * 2 // Inner element offset in BYTES\r\n);\r\n// 6. setup viewport\r\ngl.viewport(0, 0, gl.canvas.width, gl.canvas.height);\r\ngl.uniform2f(resolutionUniformLocation, gl.canvas.width, gl.canvas.height);\r\n// 7. draw\r\n// 7a. clear canvas\r\ngl.clearColor(0.84, 0.81, 0.92, 1);\r\ngl.clear(gl.COLOR_BUFFER_BIT);\r\n// 7b. draw\r\ngl.drawArrays(gl.TRIANGLES, 0, 3);\r\n//# sourceURL=[module]\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIndlYnBhY2s6Ly93ZWJnbC8uL3NyYy9tYWluLnRzP2NkNDkiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7QUFBQSx5RUFHa0I7QUFFbEIsMENBQTBDO0FBQzFDLElBQU0sT0FBTyxHQUFHLFFBQVEsQ0FBQyxhQUFhLENBQUMsUUFBUSxDQUFDLENBQUM7QUFDakQsT0FBTyxDQUFDLEtBQUssR0FBRyxHQUFHLENBQUM7QUFDcEIsT0FBTyxDQUFDLE1BQU0sR0FBRyxHQUFHLENBQUM7QUFDckIsUUFBUSxDQUFDLElBQUksQ0FBQyxXQUFXLENBQUMsT0FBTyxDQUFDLENBQUM7QUFFbkMsc0JBQXNCO0FBQ3RCLElBQU0sRUFBRSxHQUEwQixPQUFPLENBQUMsVUFBVSxDQUFDLE9BQU8sQ0FBQyxDQUFDO0FBRTlELHVCQUF1QjtBQUN2QixJQUFJLENBQUMsRUFBRTtJQUFFLE9BQU8sQ0FBQyxLQUFLLENBQUMsNEJBQTRCLENBQUM7QUFFcEQsbUNBQW1DO0FBQ25DLGtDQUFrQztBQUNsQyxVQUFVO0FBQ1Ysd0NBQXdDO0FBQ3hDLHFDQUFxQztBQUNyQyxpQ0FBaUM7QUFDakMsVUFBVTtBQUNWLHFCQUFxQjtBQUNyQixXQUFXO0FBQ1gsb0NBQW9DO0FBQ3BDLHlEQUF5RDtBQUN6RCxVQUFVO0FBQ1YsZ0JBQWdCO0FBRWhCLHFDQUFxQztBQUNyQyxrQ0FBa0M7QUFDbEMsVUFBVTtBQUNWLGlDQUFpQztBQUNqQyxxQkFBcUI7QUFDckIsV0FBVztBQUNYLGdEQUFnRDtBQUNoRCxVQUFVO0FBQ1YsZ0JBQWdCO0FBRWhCLDhCQUE4QjtBQUM5QixTQUFTLFlBQVksQ0FDakIsRUFBeUIsRUFDekIsSUFDa0QsRUFDbEQsTUFBYztJQUVkLElBQUksTUFBTSxHQUFnQixFQUFFLENBQUMsWUFBWSxDQUFDLElBQUksQ0FBQyxDQUFDLENBQUMsb0JBQW9CO0lBRXJFLEVBQUUsQ0FBQyxZQUFZLENBQUMsTUFBTSxFQUFFLE1BQU0sQ0FBQyxDQUFDLENBQUMscUJBQXFCO0lBQ3RELEVBQUUsQ0FBQyxhQUFhLENBQUMsTUFBTSxDQUFDLENBQUMsQ0FBQyxxQkFBcUI7SUFFL0MscUJBQXFCO0lBQ3JCLElBQUksQ0FBQyxFQUFFLENBQUMsa0JBQWtCLENBQUMsTUFBTSxFQUFFLEVBQUUsQ0FBQyxjQUFjLENBQUMsRUFBRTtRQUNuRCxPQUFPLENBQUMsS0FBSyxDQUFDLHlCQUF5QixFQUFFLEVBQUUsQ0FBQyxnQkFBZ0IsQ0FBQyxNQUFNLENBQUMsQ0FBQyxDQUFDO1FBQ3RFLEVBQUUsQ0FBQyxZQUFZLENBQUMsTUFBTSxDQUFDLENBQUM7S0FDM0I7SUFDRCxPQUFPLE1BQU07QUFDakIsQ0FBQztBQUVELElBQUksWUFBWSxHQUFHLFlBQVksQ0FBQyxFQUFFLEVBQUUsRUFBRSxDQUFDLGFBQWEsRUFBRSxzQkFBUSxDQUFDLENBQUM7QUFDaEUsSUFBSSxjQUFjLEdBQUcsWUFBWSxDQUFDLEVBQUUsRUFBRSxFQUFFLENBQUMsZUFBZSxFQUFFLHdCQUFRLENBQUMsQ0FBQztBQUVwRSxzQkFBc0I7QUFDdEIsU0FBUyxhQUFhLENBQ2xCLEVBQXlCLEVBQ3pCLGFBQTBCLEVBQzFCLGNBQTJCO0lBRTNCLElBQUksT0FBTyxHQUFpQixFQUFFLENBQUMsYUFBYSxFQUFFLENBQUMsQ0FBQyxxQkFBcUI7SUFFckUscUJBQXFCO0lBQ3JCLEVBQUUsQ0FBQyxZQUFZLENBQUMsT0FBTyxFQUFFLFlBQVksQ0FBQyxDQUFDO0lBQ3ZDLEVBQUUsQ0FBQyxZQUFZLENBQUMsT0FBTyxFQUFFLGNBQWMsQ0FBQyxDQUFDO0lBRXpDLEVBQUUsQ0FBQyxXQUFXLENBQUMsT0FBTyxDQUFDLENBQUMsQ0FBQyxzQkFBc0I7SUFFL0MscUJBQXFCO0lBQ3JCLElBQUksQ0FBQyxFQUFFLENBQUMsbUJBQW1CLENBQUMsT0FBTyxFQUFFLEVBQUUsQ0FBQyxXQUFXLENBQUMsRUFBRTtRQUNsRCxPQUFPLENBQUMsS0FBSyxDQUFDLDBCQUEwQixFQUFFLEVBQUUsQ0FBQyxpQkFBaUIsQ0FBQyxPQUFPLENBQUMsQ0FBQztRQUN4RSxFQUFFLENBQUMsYUFBYSxDQUFDLE9BQU8sQ0FBQztLQUM1QjtJQUVELE9BQU8sT0FBTztBQUVsQixDQUFDO0FBRUQsSUFBSSxPQUFPLEdBQUcsYUFBYSxDQUFDLEVBQUUsRUFBRSxZQUFZLEVBQUUsY0FBYyxDQUFDLENBQUM7QUFFOUQsRUFBRSxDQUFDLFVBQVUsQ0FBQyxPQUFPLENBQUMsQ0FBQyxDQUFDLGtCQUFrQjtBQUUxQyxzQkFBc0I7QUFDdEIsRUFBRSxDQUFDLGVBQWUsQ0FBQyxPQUFPLENBQUMsQ0FBQztBQUM1QixJQUFJLENBQUMsRUFBRSxDQUFDLG1CQUFtQixDQUFDLE9BQU8sRUFBRSxFQUFFLENBQUMsZUFBZSxDQUFDO0lBQ3BELE9BQU8sQ0FBQyxLQUFLLENBQUMsa0JBQWtCLEVBQUUsRUFBRSxDQUFDLGlCQUFpQixDQUFDLE9BQU8sQ0FBQyxDQUFDLENBQUM7QUFFckUsaUNBQWlDO0FBQ2pDLDhCQUE4QjtBQUM5QixJQUFJLHNCQUFzQixHQUFHLEVBQUUsQ0FBQyxpQkFBaUIsQ0FBQyxPQUFPLEVBQUUsa0JBQWtCLENBQUMsQ0FBQztBQUMvRSxJQUFJLG1CQUFtQixHQUFHLEVBQUUsQ0FBQyxpQkFBaUIsQ0FBQyxPQUFPLEVBQUUsZUFBZSxDQUFDLENBQUM7QUFFekUsd0JBQXdCO0FBQ3hCLEVBQUUsQ0FBQyx1QkFBdUIsQ0FBQyxzQkFBc0IsQ0FBQyxDQUFDO0FBQ25ELEVBQUUsQ0FBQyx1QkFBdUIsQ0FBQyxtQkFBbUIsQ0FBQyxDQUFDO0FBRWhELDRCQUE0QjtBQUM1QixJQUFJLHlCQUF5QixHQUFHLEVBQUUsQ0FBQyxrQkFBa0IsQ0FBQyxPQUFPLEVBQUUsY0FBYyxDQUFDLENBQUM7QUFFL0Usa0RBQWtEO0FBQ2xELElBQUksR0FBRyxHQUFnQixFQUFFLENBQUMsWUFBWSxFQUFFLENBQUMsQ0FBQyxvQkFBb0I7QUFDOUQsRUFBRSxDQUFDLFVBQVUsQ0FBQyxFQUFFLENBQUMsWUFBWSxFQUFFLEdBQUcsQ0FBQyxDQUFDLENBQUMsa0JBQWtCO0FBRXZELHdCQUF3QjtBQUN4QixJQUFJLFFBQVEsR0FBRyxJQUFJLFlBQVksQ0FBQztJQUM1QixxQ0FBcUM7SUFDakMsQ0FBQyxFQUFLLENBQUMsRUFBSyxDQUFDLEVBQU8sQ0FBQyxFQUFPLENBQUM7SUFDN0IsR0FBRyxFQUFLLENBQUMsRUFBSyxDQUFDLEVBQU8sQ0FBQyxFQUFPLENBQUM7SUFDL0IsQ0FBQyxFQUFNLEdBQUcsRUFBTyxDQUFDLEVBQU8sQ0FBQyxFQUFPLENBQUM7Q0FDekMsQ0FBQyxDQUFDO0FBRUgsRUFBRSxDQUFDLFVBQVUsQ0FBRSwrQkFBK0I7QUFDMUMsRUFBRSxDQUFDLFlBQVksRUFDZixRQUFRLEVBQ1IsRUFBRSxDQUFDLFdBQVcsQ0FDakIsQ0FBQztBQUVGLCtCQUErQjtBQUMvQixJQUFJLFFBQVEsR0FBRyxZQUFZLENBQUMsaUJBQWlCLENBQUM7QUFDOUMsSUFBSSxNQUFNLEdBQUcsQ0FBQyxHQUFHLFlBQVksQ0FBQyxpQkFBaUIsQ0FBQztBQUNoRCxFQUFFLENBQUMsbUJBQW1CLENBQUUsbUNBQW1DO0FBQ3ZELHNCQUFzQixFQUFHLHNEQUFzRDtBQUMvRSxDQUFDLEVBQXVCLG1EQUFtRDtBQUMzRSxFQUFFLENBQUMsS0FBSyxFQUFnQixlQUFlO0FBQ3ZDLEtBQUssRUFBbUIsbUNBQW1DO0FBQzNELE1BQU0sRUFBa0Isa0VBQWtFO0FBQzFGLFFBQVEsR0FBRyxDQUFDLENBQVksZ0NBQWdDO0NBQzNELENBQUM7QUFFRixFQUFFLENBQUMsbUJBQW1CLENBQUUsaUNBQWlDO0FBQ3JELG1CQUFtQixFQUFLLHNEQUFzRDtBQUM5RSxDQUFDLEVBQXVCLHNEQUFzRDtBQUM5RSxFQUFFLENBQUMsS0FBSyxFQUFnQixlQUFlO0FBQ3ZDLEtBQUssRUFBbUIsbUNBQW1DO0FBQzNELE1BQU0sRUFBa0IsK0RBQStEO0FBQ3ZGLFFBQVEsR0FBRyxDQUFDLENBQVksZ0NBQWdDO0NBQzNELENBQUM7QUFFRixvQkFBb0I7QUFDcEIsRUFBRSxDQUFDLFFBQVEsQ0FBQyxDQUFDLEVBQUUsQ0FBQyxFQUFFLEVBQUUsQ0FBQyxNQUFNLENBQUMsS0FBSyxFQUFFLEVBQUUsQ0FBQyxNQUFNLENBQUMsTUFBTSxDQUFDLENBQUM7QUFFckQsRUFBRSxDQUFDLFNBQVMsQ0FBQyx5QkFBeUIsRUFBRSxFQUFFLENBQUMsTUFBTSxDQUFDLEtBQUssRUFBRSxFQUFFLENBQUMsTUFBTSxDQUFDLE1BQU0sQ0FBQyxDQUFDO0FBRzNFLFVBQVU7QUFDVixtQkFBbUI7QUFDbkIsRUFBRSxDQUFDLFVBQVUsQ0FBQyxJQUFJLEVBQUUsSUFBSSxFQUFFLElBQUksRUFBRSxDQUFDLENBQUMsQ0FBQztBQUNuQyxFQUFFLENBQUMsS0FBSyxDQUFDLEVBQUUsQ0FBQyxnQkFBZ0IsQ0FBQyxDQUFDO0FBRTlCLFdBQVc7QUFDWCxFQUFFLENBQUMsVUFBVSxDQUFDLEVBQUUsQ0FBQyxTQUFTLEVBQUUsQ0FBQyxFQUFFLENBQUMsQ0FBQyxDQUFDIiwiZmlsZSI6Ii4vc3JjL21haW4udHMuanMiLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQge1xyXG4gICAgdmVydGV4U2hhZGVyIGFzIHZzU291cmNlLFxyXG4gICAgZnJhZ21lbnRTaGFkZXIgYXMgZnNTb3VyY2VcclxufSBmcm9tICcuL3NoYWRlcnMnXHJcblxyXG4vLyAwLiBDcmVhdGluZyAmIHNldHRpbmcgdXAgY2FudmFzIGVsZW1lbnRcclxuY29uc3Qgc3VyZmFjZSA9IGRvY3VtZW50LmNyZWF0ZUVsZW1lbnQoJ2NhbnZhcycpO1xyXG5zdXJmYWNlLndpZHRoID0gOTAwO1xyXG5zdXJmYWNlLmhlaWdodCA9IDYwMDtcclxuZG9jdW1lbnQuYm9keS5hcHBlbmRDaGlsZChzdXJmYWNlKTtcclxuXHJcbi8vIDEuIEdldHRpbmdzIGNvbnRleHRcclxuY29uc3QgZ2wgPSA8V2ViR0xSZW5kZXJpbmdDb250ZXh0PnN1cmZhY2UuZ2V0Q29udGV4dCgnd2ViZ2wnKTtcclxuXHJcbi8vIDFhLiBFcnJvciBjb3JyZWN0aW9uXHJcbmlmICghZ2wpIGNvbnNvbGUuZXJyb3IoYGNvdWxkbid0IGdldCB3ZWJnbCBjb250ZXh0YClcclxuXHJcbi8vIGxldCB2ZXJ0ZXhTaGFkZXJUZXh0OiBzdHJpbmcgPSBbXHJcbi8vICAgICAncHJlY2lzaW9uIG1lZGl1bXAgZmxvYXQ7JyxcclxuLy8gICAgICcnLFxyXG4vLyAgICAgJ2F0dHJpYnV0ZSB2ZWMyIHZlcnRleFBvc2l0aW9uOycsXHJcbi8vICAgICAnYXR0cmlidXRlIHZlYzMgdmVydGV4Q29sb3I7JyxcclxuLy8gICAgICd2YXJ5aW5nIHZlYzMgZnJhZ0NvbG9yOycsXHJcbi8vICAgICAnJyxcclxuLy8gICAgICd2b2lkIG1haW4oKScsXHJcbi8vICAgICAneycsXHJcbi8vICAgICAnICBmcmFnQ29sb3IgPSB2ZXJ0ZXhDb2xvcjsnLFxyXG4vLyAgICAgJyAgZ2xfUG9zaXRpb24gPSB2ZWM0KHZlcnRleFBvc2l0aW9uLCAwLjAsIDEuMCk7JyxcclxuLy8gICAgICd9J1xyXG4vLyBdLmpvaW4oJ1xcbicpO1xyXG5cclxuLy8gbGV0IGZyYWdtZW50U2hhZGVyVGV4dDogc3RyaW5nID0gW1xyXG4vLyAgICAgJ3ByZWNpc2lvbiBtZWRpdW1wIGZsb2F0OycsXHJcbi8vICAgICAnJyxcclxuLy8gICAgICd2YXJ5aW5nIHZlYzMgZnJhZ0NvbG9yOycsXHJcbi8vICAgICAndm9pZCBtYWluKCknLFxyXG4vLyAgICAgJ3snLFxyXG4vLyAgICAgJyAgZ2xfRnJhZ0NvbG9yID0gdmVjNChmcmFnQ29sb3IsIDEuMCk7JyxcclxuLy8gICAgICd9J1xyXG4vLyBdLmpvaW4oJ1xcbicpO1xyXG5cclxuLy8gMi4gQ3JlYXRlIGFuZCBzZXR1cCBzaGFkZXJzXHJcbmZ1bmN0aW9uIGNyZWF0ZVNoYWRlcihcclxuICAgIGdsOiBXZWJHTFJlbmRlcmluZ0NvbnRleHQsXHJcbiAgICB0eXBlOiBXZWJHTFJlbmRlcmluZ0NvbnRleHRCYXNlWydWRVJURVhfU0hBREVSJ11cclxuICAgICAgICB8IFdlYkdMUmVuZGVyaW5nQ29udGV4dEJhc2VbJ0ZSQUdNRU5UX1NIQURFUiddLFxyXG4gICAgc291cmNlOiBzdHJpbmdcclxuKTogV2ViR0xTaGFkZXIge1xyXG4gICAgbGV0IHNoYWRlciA9IDxXZWJHTFNoYWRlcj5nbC5jcmVhdGVTaGFkZXIodHlwZSk7IC8vIDJhLiBjcmVhdGUgc2hhZGVyXHJcblxyXG4gICAgZ2wuc2hhZGVyU291cmNlKHNoYWRlciwgc291cmNlKTsgLy8gMmIuIHNwZWNpZnkgc291cmNlXHJcbiAgICBnbC5jb21waWxlU2hhZGVyKHNoYWRlcik7IC8vIDJjLiBjb21waWxlIHNoYWRlclxyXG4gICAgXHJcbiAgICAvLyAyZC4gZXJyb3IgY2hlY2tpbmdcclxuICAgIGlmICghZ2wuZ2V0U2hhZGVyUGFyYW1ldGVyKHNoYWRlciwgZ2wuQ09NUElMRV9TVEFUVVMpKSB7XHJcbiAgICAgICAgY29uc29sZS5lcnJvcihgRXJyb3IgY29tcGlsaW5nIHNoYWRlciBgLCBnbC5nZXRTaGFkZXJJbmZvTG9nKHNoYWRlcikpO1xyXG4gICAgICAgIGdsLmRlbGV0ZVNoYWRlcihzaGFkZXIpO1xyXG4gICAgfVxyXG4gICAgcmV0dXJuIHNoYWRlclxyXG59XHJcblxyXG5sZXQgdmVydGV4U2hhZGVyID0gY3JlYXRlU2hhZGVyKGdsLCBnbC5WRVJURVhfU0hBREVSLCB2c1NvdXJjZSk7XHJcbmxldCBmcmFnbWVudFNoYWRlciA9IGNyZWF0ZVNoYWRlcihnbCwgZ2wuRlJBR01FTlRfU0hBREVSLCBmc1NvdXJjZSk7XHJcblxyXG4vLyAzLiBjcmVhdGluZyBwcm9ncmFtXHJcbmZ1bmN0aW9uIGNyZWF0ZVByb2dyYW0oXHJcbiAgICBnbDogV2ViR0xSZW5kZXJpbmdDb250ZXh0LFxyXG4gICAgdmVydGV4dFNoYWRlcjogV2ViR0xTaGFkZXIsXHJcbiAgICBmcmFnbWVudFNoYWRlcjogV2ViR0xTaGFkZXJcclxuKTogV2ViR0xQcm9ncmFtIHtcclxuICAgIGxldCBwcm9ncmFtID0gPFdlYkdMUHJvZ3JhbT5nbC5jcmVhdGVQcm9ncmFtKCk7IC8vIDNhLiBjcmVhdGUgcHJvZ3JhbVxyXG5cclxuICAgIC8vIDNiLiBhdHRhY2ggc2hhZGVyc1xyXG4gICAgZ2wuYXR0YWNoU2hhZGVyKHByb2dyYW0sIHZlcnRleFNoYWRlcik7XHJcbiAgICBnbC5hdHRhY2hTaGFkZXIocHJvZ3JhbSwgZnJhZ21lbnRTaGFkZXIpO1xyXG5cclxuICAgIGdsLmxpbmtQcm9ncmFtKHByb2dyYW0pOyAvLyAzYy4gbGlua2luZyBwcm9ncmFtXHJcblxyXG4gICAgLy8gM2QuIGVycm9yIGNoZWNraW5nXHJcbiAgICBpZiAoIWdsLmdldFByb2dyYW1QYXJhbWV0ZXIocHJvZ3JhbSwgZ2wuTElOS19TVEFUVVMpKSB7XHJcbiAgICAgICAgY29uc29sZS5lcnJvcihgRXJyb3IgY29tcGlsaW5nIHByb2dyYW0gYCwgZ2wuZ2V0UHJvZ3JhbUluZm9Mb2cocHJvZ3JhbSkpXHJcbiAgICAgICAgZ2wuZGVsZXRlUHJvZ3JhbShwcm9ncmFtKVxyXG4gICAgfVxyXG5cclxuICAgIHJldHVybiBwcm9ncmFtXHJcbiAgICBcclxufVxyXG5cclxubGV0IHByb2dyYW0gPSBjcmVhdGVQcm9ncmFtKGdsLCB2ZXJ0ZXhTaGFkZXIsIGZyYWdtZW50U2hhZGVyKTtcclxuXHJcbmdsLnVzZVByb2dyYW0ocHJvZ3JhbSk7IC8vIDNlLiB1c2UgcHJvZ3JhbVxyXG5cclxuLy8gVE9ETzogcmVzZWFyY2ggdGhpc1xyXG5nbC52YWxpZGF0ZVByb2dyYW0ocHJvZ3JhbSk7XHJcbmlmICghZ2wuZ2V0UHJvZ3JhbVBhcmFtZXRlcihwcm9ncmFtLCBnbC5WQUxJREFURV9TVEFUVVMpKVxyXG4gICAgY29uc29sZS5lcnJvcihgVmFsaWRhdGUgRXJyb3I6IGAsIGdsLmdldFByb2dyYW1JbmZvTG9nKHByb2dyYW0pKTtcclxuXHJcbi8vIDQuIFNldHVwIGF0dHJpYnV0ZXMgJiB1bmlmb3Jtc1xyXG4vLyA0YS4gZ2V0IGF0dHJpYnV0ZSBsb2NhdGlvbnNcclxubGV0IHBvc2l0aW9uQXR0cmliTG9jYXRpb24gPSBnbC5nZXRBdHRyaWJMb2NhdGlvbihwcm9ncmFtLCBgYV92ZXJ0ZXhQb3NpdGlvbmApO1xyXG5sZXQgY29sb3JBdHRyaWJMb2NhdGlvbiA9IGdsLmdldEF0dHJpYkxvY2F0aW9uKHByb2dyYW0sIGBhX3ZlcnRleENvbG9yYCk7XHJcblxyXG4vLyA0Yi4gZW5hYmxlIGF0dHJpYnV0ZXNcclxuZ2wuZW5hYmxlVmVydGV4QXR0cmliQXJyYXkocG9zaXRpb25BdHRyaWJMb2NhdGlvbik7XHJcbmdsLmVuYWJsZVZlcnRleEF0dHJpYkFycmF5KGNvbG9yQXR0cmliTG9jYXRpb24pO1xyXG5cclxuLy8gNGMuIGdldCB1bmlmb3JtIGxvY2F0aW9uc1xyXG5sZXQgcmVzb2x1dGlvblVuaWZvcm1Mb2NhdGlvbiA9IGdsLmdldFVuaWZvcm1Mb2NhdGlvbihwcm9ncmFtLCBgdV9yZXNvbHV0aW9uYCk7XHJcblxyXG4vLyA1LiBDcmVhdGUgJiBzZXR1cCBidWZmZXIgKHZlcnRleCBidWZmZXIgb2JqZWN0KVxyXG5sZXQgdmJvID0gPFdlYkdMQnVmZmVyPmdsLmNyZWF0ZUJ1ZmZlcigpOyAvLyA1YS4gY3JlYXRlIGJ1ZmZlclxyXG5nbC5iaW5kQnVmZmVyKGdsLkFSUkFZX0JVRkZFUiwgdmJvKTsgLy8gNWIuIGJpbmQgYnVmZmVyXHJcblxyXG4vLyA1Yy4gc2V0dXAgYnVmZmVyIGRhdGFcclxubGV0IHZlcnRpY2VzID0gbmV3IEZsb2F0MzJBcnJheShbIC8vIDVjaS4gY3JlYXRlIGRhdGEgICBcclxuICAgIC8vICB4LCAgICAgIHksICAgICAgciwgICAgICBnLCAgICAgIGJcclxuICAgICAgICAwLCAgICAwLCAgICAxLCAgICAgIDAsICAgICAgMCxcclxuICAgICAgICA5MDAsICAgIDAsICAgIDAsICAgICAgMSwgICAgICAwLFxyXG4gICAgICAgIDAsICAgICA2MDAsICAgICAgMCwgICAgICAwLCAgICAgIDEsXHJcbl0pO1xyXG5cclxuZ2wuYnVmZmVyRGF0YSggLy8gNWNpaS4gcGFzcyBpbiBkYXRhIHRvIGJ1ZmZlclxyXG4gICAgZ2wuQVJSQVlfQlVGRkVSLFxyXG4gICAgdmVydGljZXMsXHJcbiAgICBnbC5TVEFUSUNfRFJBV1xyXG4pO1xyXG5cclxuLy8gNWQuIHNldHVwIGJ1ZmZlci9kYXRhIGxheW91dFxyXG5sZXQgYnl0ZVNpemUgPSBGbG9hdDMyQXJyYXkuQllURVNfUEVSX0VMRU1FTlQ7XHJcbmxldCBzdHJpZGUgPSA1ICogRmxvYXQzMkFycmF5LkJZVEVTX1BFUl9FTEVNRU5UO1xyXG5nbC52ZXJ0ZXhBdHRyaWJQb2ludGVyKCAvLyA1ZGkuIHZlcnRleCBwb3NpdGlvbiBkYXRhIGxheW91dFxyXG4gICAgcG9zaXRpb25BdHRyaWJMb2NhdGlvbiwgIC8vIEF0dHJpYnV0ZSBpbmRleCAocG9zaXRpb24gd2l0aGluIHNoYWRlciBhdHRyaWJ1dGVzKVxyXG4gICAgMiwgICAgICAgICAgICAgICAgICAgICAgLy8gQW1vdW50IG9mIGVsZW1lbnRzIHBlciBkYXRhICh4LCB5ID0+IDIgZWxlbWVudHMpXHJcbiAgICBnbC5GTE9BVCwgICAgICAgICAgICAgICAvLyBUeXBlIG9mIGRhdGFcclxuICAgIGZhbHNlLCAgICAgICAgICAgICAgICAgIC8vIE5vcm1hbGl6ZSBkYXRhPyAoYmV0d2VlbiAtMSAmIDEpXHJcbiAgICBzdHJpZGUsICAgICAgICAgICAgICAgICAvLyBTdHJpZGU6IEhvdyBtYW55IGJ5dGVzIHBlciBkYXRhIHVuaXQgKDUgdmVydGV4ICogc2l6ZW9mKGZsb2F0KSlcclxuICAgIGJ5dGVTaXplICogMCAgICAgICAgICAgIC8vIElubmVyIGVsZW1lbnQgb2Zmc2V0IGluIEJZVEVTXHJcbik7XHJcblxyXG5nbC52ZXJ0ZXhBdHRyaWJQb2ludGVyKCAvLyA1ZGlpLiB2ZXJ0ZXggY29sb3IgZGF0YSBsYXlvdXRcclxuICAgIGNvbG9yQXR0cmliTG9jYXRpb24sICAgIC8vIEF0dHJpYnV0ZSBpbmRleCAocG9zaXRpb24gd2l0aGluIHNoYWRlciBhdHRyaWJ1dGVzKVxyXG4gICAgMywgICAgICAgICAgICAgICAgICAgICAgLy8gQW1vdW50IG9mIGVsZW1lbnRzIHBlciBkYXRhIChyLCBnLCBiID0+IDMgZWxlbWVudHMpXHJcbiAgICBnbC5GTE9BVCwgICAgICAgICAgICAgICAvLyBUeXBlIG9mIGRhdGFcclxuICAgIGZhbHNlLCAgICAgICAgICAgICAgICAgIC8vIE5vcm1hbGl6ZSBkYXRhPyAoYmV0d2VlbiAtMSAmIDEpXHJcbiAgICBzdHJpZGUsICAgICAgICAgICAgICAgICAvLyBTdHJpZGU6IEhvdyBtYW55IGJ5dGVzIHBlciB2ZXJ0ZXggKDUgdmVydGV4ICogc2l6ZW9mKGZsb2F0KSlcclxuICAgIGJ5dGVTaXplICogMiAgICAgICAgICAgIC8vIElubmVyIGVsZW1lbnQgb2Zmc2V0IGluIEJZVEVTXHJcbik7XHJcblxyXG4vLyA2LiBzZXR1cCB2aWV3cG9ydFxyXG5nbC52aWV3cG9ydCgwLCAwLCBnbC5jYW52YXMud2lkdGgsIGdsLmNhbnZhcy5oZWlnaHQpO1xyXG5cclxuZ2wudW5pZm9ybTJmKHJlc29sdXRpb25Vbmlmb3JtTG9jYXRpb24sIGdsLmNhbnZhcy53aWR0aCwgZ2wuY2FudmFzLmhlaWdodCk7XHJcblxyXG5cclxuLy8gNy4gZHJhd1xyXG4vLyA3YS4gY2xlYXIgY2FudmFzXHJcbmdsLmNsZWFyQ29sb3IoMC44NCwgMC44MSwgMC45MiwgMSk7XHJcbmdsLmNsZWFyKGdsLkNPTE9SX0JVRkZFUl9CSVQpO1xyXG5cclxuLy8gN2IuIGRyYXdcclxuZ2wuZHJhd0FycmF5cyhnbC5UUklBTkdMRVMsIDAsIDMpO1xyXG4iXSwic291cmNlUm9vdCI6IiJ9\n//# sourceURL=webpack-internal:///./src/main.ts\n");
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (this && this.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (_) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
+var __read = (this && this.__read) || function (o, n) {
+    var m = typeof Symbol === "function" && o[Symbol.iterator];
+    if (!m) return o;
+    var i = m.call(o), r, ar = [], e;
+    try {
+        while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
+    }
+    catch (error) { e = { error: error }; }
+    finally {
+        try {
+            if (r && !r.done && (m = i["return"])) m.call(i);
+        }
+        finally { if (e) throw e.error; }
+    }
+    return ar;
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+var Surface_1 = __importDefault(__webpack_require__(/*! ./Surface */ "./src/Surface.ts"));
+var Sprite_1 = __importDefault(__webpack_require__(/*! ./Entities/Sprite */ "./src/Entities/Sprite.ts"));
+var webgl_utils_1 = __webpack_require__(/*! ./webgl-utils */ "./src/webgl-utils.ts");
+var Rectangle_1 = __webpack_require__(/*! ./Shaders/Rectangle */ "./src/Shaders/Rectangle.ts");
+var Sprite_2 = __webpack_require__(/*! ./Shaders/Sprite */ "./src/Shaders/Sprite.ts");
+var util_1 = __webpack_require__(/*! ./util */ "./src/util.ts");
+var Texture_1 = __importDefault(__webpack_require__(/*! ./Renderer/Texture */ "./src/Renderer/Texture.ts"));
+var start = function () { return __awaiter(void 0, void 0, void 0, function () {
+    var s, gl, size, scale, amount, texture, mySprites, sprites, i, sprite, fpsText, amountText, a_key, w_key, s_key, d_key, cSpeed;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                s = new Surface_1.default(1200, 850, [0.15, 0.15, 0.15]);
+                gl = s.renderer.gl;
+                size = 64;
+                scale = 2;
+                amount = Math.pow(2, 12);
+                return [4 /*yield*/, Texture_1.default.fromPath('./assets/test_sheet.png', { height: size, width: size, cols: 2, rows: 2 })];
+            case 1:
+                texture = _a.sent();
+                mySprites = /** @class */ (function (_super) {
+                    __extends(mySprites, _super);
+                    function mySprites() {
+                        var _this = _super.call(this, s, util_1.rand(-s.width, s.width), util_1.rand(-s.height, s.height), texture) || this;
+                        _this.speed = { x: util_1.rand(-50, 50), y: util_1.rand(-50, 50) };
+                        return _this;
+                    }
+                    return mySprites;
+                }(Sprite_1.default));
+                sprites = [];
+                for (i = 0; i < amount; i++) {
+                    sprite = new mySprites();
+                    setInterval(sprite.randomFrame, util_1.rand(0, 1000, true));
+                    sprites.push(sprite);
+                }
+                fpsText = document.getElementById('fps');
+                amountText = document.getElementById('amount');
+                amountText.innerHTML = "Amount: " + amount;
+                a_key = s.addKeyInput('a');
+                w_key = s.addKeyInput('w');
+                s_key = s.addKeyInput('s');
+                d_key = s.addKeyInput('d');
+                cSpeed = 600;
+                s.update = function (dt) {
+                    sprites.forEach(function (p) {
+                        // if (p.x <= 0 || p.x + p.width >= s.width) p.speed.x *= -1;
+                        // if (p.y <= 0 || p.y + p.height >= s.height) p.speed.y *= -1;
+                        p.x += p.speed.x * dt;
+                        p.y += p.speed.y * dt;
+                    });
+                    if (a_key.pressed)
+                        s.camera.move(cSpeed * dt, 0);
+                    if (d_key.pressed)
+                        s.camera.move(-cSpeed * dt, 0);
+                    if (w_key.pressed)
+                        s.camera.move(0, cSpeed * dt);
+                    if (s_key.pressed)
+                        s.camera.move(0, -cSpeed * dt);
+                    console.log(s.renderer.getCameraTransalation()[6]);
+                    fpsText.innerHTML = "FPS: " + s.fps.toPrecision(3);
+                };
+                return [2 /*return*/];
+        }
+    });
+}); };
+var learningDrawElements = function () {
+    var canvas = webgl_utils_1.createCanvas(1200, 900);
+    var gl = webgl_utils_1.createContext(canvas);
+    var projection = webgl_utils_1.createOrthoMatrix(canvas.width, canvas.height);
+    var program = webgl_utils_1.createProgram(gl, Rectangle_1.vertexShader, Rectangle_1.fragmentShader);
+    var MAX_QUAD_AMOUNT = 1000;
+    var VERTEX_PER_QUAD = 4;
+    var UNIT_PER_VERTEX = 5;
+    var VERTEX_SIZE = 4 * UNIT_PER_VERTEX;
+    var MAX_VERTEX_AMOUNT = MAX_QUAD_AMOUNT * VERTEX_PER_QUAD * UNIT_PER_VERTEX;
+    gl.useProgram(program);
+    var Rectangle = /** @class */ (function () {
+        function Rectangle(x, y, width, height, color) {
+            this.x = x;
+            this.y = y;
+            this.width = width;
+            this.height = height;
+            this.color = color;
+            this.speed = [util_1.rand(-30, 30), util_1.rand(-30, 30)];
+        }
+        return Rectangle;
+    }());
+    var entities = [];
+    var createQuad = function (x, y, width, height, rgb) {
+        var _a = __read(rgb, 3), r = _a[0], g = _a[1], b = _a[2];
+        var v1 = [x, y, r, g, b];
+        var v2 = [x + width, y, r, g, b];
+        var v3 = [x, y + height, r, g, b];
+        var v4 = [x + width, y + height, r, g, b];
+        var quad = [v1, v2, v3, v4];
+        return quad;
+    };
+    for (var i = 0; i < MAX_QUAD_AMOUNT; i++) {
+        var _a = __read([util_1.rand(5, 250), util_1.rand(5, 250)], 2), width = _a[0], height = _a[1];
+        var _b = __read([util_1.rand(0, canvas.width - width), util_1.rand(0, canvas.height - height)], 2), x = _b[0], y = _b[1];
+        var color = [util_1.rand(0, 1), util_1.rand(0, 1), util_1.rand(0, 1)];
+        entities.push(new Rectangle(x, y, width, height, color));
+    }
+    var vao = new Float32Array(new Array(MAX_VERTEX_AMOUNT)); // VERTEX ARRAY OBJECT
+    var indices = [];
+    for (var i = 0; i < entities.length; i++) {
+        var offset = 4 * i; // SIZE OF QUAD * CURRENT QUAD INDEX
+        indices.push(0 + offset, 1 + offset, 2 + offset, 2 + offset, 1 + offset, 3 + offset);
+    }
+    var positionLocation = gl.getAttribLocation(program, 'a_position');
+    var colorLocation = gl.getAttribLocation(program, 'a_color');
+    var projectionLocation = gl.getUniformLocation(program, 'u_projection');
+    gl.uniformMatrix4fv(projectionLocation, false, projection);
+    var vbo = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, vbo);
+    gl.enableVertexAttribArray(positionLocation);
+    gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, VERTEX_SIZE, 0);
+    gl.enableVertexAttribArray(colorLocation);
+    gl.vertexAttribPointer(colorLocation, 3, gl.FLOAT, false, VERTEX_SIZE, Float32Array.BYTES_PER_ELEMENT * 2);
+    gl.bufferData(gl.ARRAY_BUFFER, MAX_QUAD_AMOUNT * VERTEX_PER_QUAD * VERTEX_SIZE, gl.DYNAMIC_DRAW);
+    var ibo = gl.createBuffer();
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ibo);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
+    gl.clearColor(0, 0, 0, 1);
+    gl.viewport(0, 0, canvas.width, canvas.height);
+    gl.clear(gl.COLOR_BUFFER_BIT);
+    var previousTime = performance.now();
+    var draw = function (currentTime) {
+        var dt = (currentTime - previousTime) * 0.001;
+        gl.clear(gl.COLOR_BUFFER_BIT);
+        entities.forEach(function (r, i) {
+            r.x += r.speed[0] * dt;
+            r.y += r.speed[1] * dt;
+            var offset = i * UNIT_PER_VERTEX * VERTEX_PER_QUAD;
+            createQuad(r.x, r.y, r.width, r.height, r.color).forEach(function (v, j) { return vao.set(v, offset + j * UNIT_PER_VERTEX); });
+        });
+        gl.bindBuffer(gl.ARRAY_BUFFER, vbo);
+        gl.bufferSubData(gl.ARRAY_BUFFER, 0, vao);
+        gl.drawElements(gl.TRIANGLES, 6 * entities.length, gl.UNSIGNED_SHORT, 0);
+        previousTime = currentTime;
+        requestAnimationFrame(draw);
+    };
+    requestAnimationFrame(draw);
+};
+var learningTextures = function () { return __awaiter(void 0, void 0, void 0, function () {
+    var canvas, gl, projection, program, MAX_QUAD, UNIT_SIZE, UNITS_PER_VERTEX, VERTEX_PER_QUAD, INDICES_PER_QUAD, VERTEX_SIZE, UNITS_PER_QUAD, MAX_INDICES, MAX_UNIT, MAX_SIZE, vao, vbo, iao, ibo, Sprite, spritesList, _a, _b, _c, _d, _e, createQuadData, i, offset, positionLocation, texcoordLocation, texIndexLocation, projectionLocation, texturesLocation, previousTime, update, draw;
+    return __generator(this, function (_f) {
+        switch (_f.label) {
+            case 0:
+                canvas = webgl_utils_1.createCanvas(1200, 900);
+                gl = webgl_utils_1.createContext(canvas);
+                projection = webgl_utils_1.createOrthoMatrix(canvas.width, canvas.height);
+                program = webgl_utils_1.createProgram(gl, Sprite_2.vertexShader, Sprite_2.fragmentShader);
+                MAX_QUAD = Math.pow(2, 10);
+                UNIT_SIZE = 4;
+                UNITS_PER_VERTEX = 5;
+                VERTEX_PER_QUAD = 4;
+                INDICES_PER_QUAD = 6;
+                VERTEX_SIZE = UNIT_SIZE * UNITS_PER_VERTEX;
+                UNITS_PER_QUAD = VERTEX_PER_QUAD * UNITS_PER_VERTEX;
+                MAX_INDICES = MAX_QUAD * INDICES_PER_QUAD;
+                MAX_UNIT = UNITS_PER_QUAD * MAX_QUAD;
+                MAX_SIZE = MAX_UNIT * UNIT_SIZE;
+                vao = new Float32Array(MAX_UNIT);
+                vbo = gl.createBuffer();
+                iao = new Uint16Array(MAX_INDICES);
+                ibo = gl.createBuffer();
+                gl.useProgram(program);
+                Sprite = /** @class */ (function () {
+                    function Sprite(x, y, unit, source) {
+                        var _this = this;
+                        this.scale = function (n) {
+                            _this.width *= n;
+                            _this.height *= n;
+                            return _this;
+                        };
+                        this.x = x;
+                        this.y = y;
+                        this.width = source.width;
+                        this.height = source.height;
+                        this.unit = unit;
+                        this.texture = webgl_utils_1.createTexture(gl, source, unit);
+                    }
+                    return Sprite;
+                }());
+                _a = Sprite.bind;
+                _b = [void 0, 100, 100, 0];
+                return [4 /*yield*/, util_1.loadImage('./assets/debug.png')];
+            case 1:
+                _c = [
+                    new (_a.apply(Sprite, _b.concat([_f.sent()])))().scale(5)
+                ];
+                _d = Sprite.bind;
+                _e = [void 0, 500, 300, 1];
+                return [4 /*yield*/, util_1.loadImage('./assets/guy.png')];
+            case 2:
+                spritesList = _c.concat([
+                    new (_d.apply(Sprite, _e.concat([_f.sent()])))().scale(5)
+                ]);
+                createQuadData = function (sprite) {
+                    var _a = __read([
+                        sprite.x,
+                        sprite.y,
+                        sprite.width,
+                        sprite.height,
+                        sprite.unit
+                    ], 5), x = _a[0], y = _a[1], width = _a[2], height = _a[3], unit = _a[4];
+                    var quad = [
+                        x, y, unit, 0, 0,
+                        x + width, y, unit, 1, 0,
+                        x, y + height, unit, 0, 1,
+                        x + width, y + height, unit, 1, 1 // v4
+                    ];
+                    return quad;
+                };
+                for (i = 0; i < MAX_QUAD; i++) {
+                    offset = 4 * i;
+                    iao.set([
+                        0 + offset, 1 + offset, 2 + offset,
+                        2 + offset, 1 + offset, 3 + offset
+                    ], INDICES_PER_QUAD * i);
+                }
+                positionLocation = gl.getAttribLocation(program, 'a_position');
+                texcoordLocation = gl.getAttribLocation(program, 'a_texCoord');
+                texIndexLocation = gl.getAttribLocation(program, 'a_texIndex');
+                projectionLocation = gl.getUniformLocation(program, 'u_projection');
+                texturesLocation = gl.getUniformLocation(program, 'u_textures');
+                gl.uniformMatrix4fv(projectionLocation, false, projection);
+                // gl.uniform1i(textureLocation, 0);
+                gl.uniform1iv(texturesLocation, new Int32Array([0, 1, 2, 3]));
+                gl.bindBuffer(gl.ARRAY_BUFFER, vbo);
+                gl.enableVertexAttribArray(positionLocation);
+                gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, VERTEX_SIZE, 0);
+                gl.enableVertexAttribArray(texIndexLocation);
+                gl.vertexAttribPointer(texIndexLocation, 1, gl.FLOAT, false, VERTEX_SIZE, UNIT_SIZE * 2);
+                gl.enableVertexAttribArray(texcoordLocation);
+                gl.vertexAttribPointer(texcoordLocation, 2, gl.FLOAT, false, VERTEX_SIZE, UNIT_SIZE * 3);
+                gl.bufferData(gl.ARRAY_BUFFER, MAX_SIZE, gl.DYNAMIC_DRAW);
+                gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ibo);
+                gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(iao), gl.STATIC_DRAW);
+                gl.clearColor(0, 0, 0, 1);
+                gl.viewport(0, 0, canvas.width, canvas.height);
+                gl.clear(gl.COLOR_BUFFER_BIT);
+                gl.enable(gl.BLEND);
+                gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+                previousTime = performance.now();
+                update = function (dt) {
+                };
+                draw = function (currentTime) {
+                    var dt = (currentTime - previousTime) * 0.001;
+                    gl.clear(gl.COLOR_BUFFER_BIT);
+                    spritesList.forEach(function (s, i) {
+                        vao.set(createQuadData(s), i * UNITS_PER_QUAD);
+                    });
+                    gl.bindBuffer(gl.ARRAY_BUFFER, vbo);
+                    gl.bufferSubData(gl.ARRAY_BUFFER, 0, vao);
+                    gl.drawElements(gl.TRIANGLES, INDICES_PER_QUAD * spritesList.length, gl.UNSIGNED_SHORT, 0);
+                    previousTime = currentTime;
+                    requestAnimationFrame(draw);
+                };
+                requestAnimationFrame(draw);
+                return [2 /*return*/];
+        }
+    });
+}); };
+// learningTextures();
+start();
+
 
 /***/ }),
 
-/***/ "./src/shaders.ts":
-/*!************************!*\
-  !*** ./src/shaders.ts ***!
-  \************************/
+/***/ "./src/util.ts":
+/*!*********************!*\
+  !*** ./src/util.ts ***!
+  \*********************/
+/***/ (function(__unused_webpack_module, exports) {
+
+
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (this && this.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (_) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.loadImage = exports.mapValue = exports.rand = exports.isPowerOf2 = exports.emptyFunc = void 0;
+var emptyFunc = function () { };
+exports.emptyFunc = emptyFunc;
+var isPowerOf2 = function (num) {
+    return (num & (num - 1)) == 0;
+};
+exports.isPowerOf2 = isPowerOf2;
+var rand = function (min, max, round) {
+    var range = max - min;
+    var value = Math.random() * range + min;
+    value = (round) ? Math.round(value) : value;
+    return value;
+};
+exports.rand = rand;
+/**
+ * @description linearly maps value from range to another range
+ * @copyright https://rosettacode.org/wiki/Map_range
+ * @param value value to be mapped from 'fRange' to 'tRange'
+ * @param fRange from range
+ * @param tRange to range
+ * @returns mapped value
+ */
+var mapValue = function (value, fRange, tRange) { return (tRange.min) + ((value - fRange.min) * (tRange.max - tRange.min) / (fRange.max - fRange.min)); };
+exports.mapValue = mapValue;
+var loadImage = function (path) { return __awaiter(void 0, void 0, void 0, function () {
+    var img;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                img = new Image();
+                img.src = path;
+                return [4 /*yield*/, img.decode()];
+            case 1:
+                _a.sent();
+                return [2 /*return*/, img];
+        }
+    });
+}); };
+exports.loadImage = loadImage;
+
+
+/***/ }),
+
+/***/ "./src/webgl-utils.ts":
+/*!****************************!*\
+  !*** ./src/webgl-utils.ts ***!
+  \****************************/
 /***/ ((__unused_webpack_module, exports) => {
 
-eval("\r\n/**\r\n * @attribute are inputs\r\n * @varying are outputs\r\n */\r\nObject.defineProperty(exports, \"__esModule\", ({ value: true }));\r\nexports.fragmentShader = exports.vertexShader = void 0;\r\nexports.vertexShader = \"\\n    precision mediump float;\\n\\n    attribute vec2 a_vertexPosition;\\n    attribute vec3 a_vertexColor;\\n    \\n    uniform vec2 u_resolution;\\n\\n    varying vec3 v_fragColor;\\n\\n    void main()\\n    {\\n        v_fragColor = a_vertexColor;\\n\\n        // convert the position from pixels to 0.0 -> 1.0\\n        vec2 zeroToOne = a_vertexPosition / u_resolution;\\n \\n        // convert from 0 -> 1 to 0 -> 2\\n        vec2 zeroToTwo = zeroToOne * 2.0;\\n    \\n        // convert from 0 -> 2 to -1 -> +1 (clip space)\\n        vec2 clipSpace = zeroToTwo - 1.0;\\n\\n        gl_Position = vec4(clipSpace, 0.0, 1.0);\\n        // gl_Position = vec4(clipSpace * vec2(1, -1), 0, 1); <- TO INVERT Y AXIS\\n    }\\n    \";\r\nexports.fragmentShader = \"\\n    precision mediump float;\\n\\n    varying vec3 v_fragColor;\\n\\n    void main()\\n    {\\n        gl_FragColor = vec4(v_fragColor, 1.0);\\n    }\\n    \";\r\n//# sourceURL=[module]\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIndlYnBhY2s6Ly93ZWJnbC8uL3NyYy9zaGFkZXJzLnRzPzBmMDEiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IjtBQUFBOzs7R0FHRzs7O0FBRVUsb0JBQVksR0FBRyxnc0JBMEJ2QixDQUFDO0FBRU8sc0JBQWMsR0FBRyx3SkFTekIsQ0FBQyIsImZpbGUiOiIuL3NyYy9zaGFkZXJzLnRzLmpzIiwic291cmNlc0NvbnRlbnQiOlsiLyoqXHJcbiAqIEBhdHRyaWJ1dGUgYXJlIGlucHV0c1xyXG4gKiBAdmFyeWluZyBhcmUgb3V0cHV0c1xyXG4gKi9cclxuXHJcbmV4cG9ydCBjb25zdCB2ZXJ0ZXhTaGFkZXIgPSBgXHJcbiAgICBwcmVjaXNpb24gbWVkaXVtcCBmbG9hdDtcclxuXHJcbiAgICBhdHRyaWJ1dGUgdmVjMiBhX3ZlcnRleFBvc2l0aW9uO1xyXG4gICAgYXR0cmlidXRlIHZlYzMgYV92ZXJ0ZXhDb2xvcjtcclxuICAgIFxyXG4gICAgdW5pZm9ybSB2ZWMyIHVfcmVzb2x1dGlvbjtcclxuXHJcbiAgICB2YXJ5aW5nIHZlYzMgdl9mcmFnQ29sb3I7XHJcblxyXG4gICAgdm9pZCBtYWluKClcclxuICAgIHtcclxuICAgICAgICB2X2ZyYWdDb2xvciA9IGFfdmVydGV4Q29sb3I7XHJcblxyXG4gICAgICAgIC8vIGNvbnZlcnQgdGhlIHBvc2l0aW9uIGZyb20gcGl4ZWxzIHRvIDAuMCAtPiAxLjBcclxuICAgICAgICB2ZWMyIHplcm9Ub09uZSA9IGFfdmVydGV4UG9zaXRpb24gLyB1X3Jlc29sdXRpb247XHJcbiBcclxuICAgICAgICAvLyBjb252ZXJ0IGZyb20gMCAtPiAxIHRvIDAgLT4gMlxyXG4gICAgICAgIHZlYzIgemVyb1RvVHdvID0gemVyb1RvT25lICogMi4wO1xyXG4gICAgXHJcbiAgICAgICAgLy8gY29udmVydCBmcm9tIDAgLT4gMiB0byAtMSAtPiArMSAoY2xpcCBzcGFjZSlcclxuICAgICAgICB2ZWMyIGNsaXBTcGFjZSA9IHplcm9Ub1R3byAtIDEuMDtcclxuXHJcbiAgICAgICAgZ2xfUG9zaXRpb24gPSB2ZWM0KGNsaXBTcGFjZSwgMC4wLCAxLjApO1xyXG4gICAgICAgIC8vIGdsX1Bvc2l0aW9uID0gdmVjNChjbGlwU3BhY2UgKiB2ZWMyKDEsIC0xKSwgMCwgMSk7IDwtIFRPIElOVkVSVCBZIEFYSVNcclxuICAgIH1cclxuICAgIGA7XHJcblxyXG5leHBvcnQgY29uc3QgZnJhZ21lbnRTaGFkZXIgPSBgXHJcbiAgICBwcmVjaXNpb24gbWVkaXVtcCBmbG9hdDtcclxuXHJcbiAgICB2YXJ5aW5nIHZlYzMgdl9mcmFnQ29sb3I7XHJcblxyXG4gICAgdm9pZCBtYWluKClcclxuICAgIHtcclxuICAgICAgICBnbF9GcmFnQ29sb3IgPSB2ZWM0KHZfZnJhZ0NvbG9yLCAxLjApO1xyXG4gICAgfVxyXG4gICAgYDsiXSwic291cmNlUm9vdCI6IiJ9\n//# sourceURL=webpack-internal:///./src/shaders.ts\n");
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.createTranslationMatrix = exports.createOrthoMatrix = exports.createTexture = exports.createCanvas = exports.setUniform = exports.setAttribute = exports.createProgram = exports.createShader = exports.createContext = void 0;
+var createContext = function (canvas) {
+    var gl = canvas.getContext('webgl');
+    if (!gl)
+        console.error("couldn't get webgl context");
+    return gl;
+};
+exports.createContext = createContext;
+/**
+ * @param gl webgl rendering context
+ * @param type vertex or fragment?
+ * @param source GLSL script
+ */
+var createShader = function (gl, type, source) {
+    var shaderType = type == 'vertex' ? gl.VERTEX_SHADER : gl.FRAGMENT_SHADER;
+    var shader = gl.createShader(shaderType);
+    gl.shaderSource(shader, source);
+    gl.compileShader(shader);
+    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+        console.error("Error compiling shader", gl.getShaderInfoLog(shader));
+        gl.deleteShader(shader);
+    }
+    return shader;
+};
+exports.createShader = createShader;
+var createProgram = function (gl, vertextShader, fragmentShader) {
+    var program = gl.createProgram();
+    vertextShader =
+        typeof vertextShader == 'string'
+            ? exports.createShader(gl, 'vertex', vertextShader)
+            : vertextShader;
+    fragmentShader = typeof fragmentShader == 'string'
+        ? exports.createShader(gl, 'fragment', fragmentShader)
+        : fragmentShader;
+    gl.attachShader(program, vertextShader);
+    gl.attachShader(program, fragmentShader);
+    gl.linkProgram(program);
+    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+        console.error("Error compiling program ", gl.getProgramInfoLog(program));
+        gl.deleteProgram(program);
+    }
+    return program;
+};
+exports.createProgram = createProgram;
+var setAttribute = function (gl, data, buffer, location, size, type) {
+    if (size === void 0) { size = 2; }
+    if (type === void 0) { type = gl.FLOAT; }
+    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+    gl.enableVertexAttribArray(location);
+    gl.bufferData(gl.ARRAY_BUFFER, data, gl.STATIC_DRAW);
+    gl.vertexAttribPointer(location, size, type, false, 0, 0);
+};
+exports.setAttribute = setAttribute;
+var setUniform = function (gl, data, location) {
+    // TODO
+};
+exports.setUniform = setUniform;
+var createCanvas = function (width, height) {
+    var canvas = document.createElement('canvas');
+    canvas.width = width;
+    canvas.height = height;
+    document.body.append(canvas);
+    return canvas;
+};
+exports.createCanvas = createCanvas;
+/**
+ * @param gl WebGLRenderingContext
+ * @param source HTMLImageElement
+ * @returns WebGLTexture
+ */
+var createTexture = function (gl, source, unit) {
+    var texture = gl.createTexture();
+    unit = (unit) ? unit : 0;
+    gl.activeTexture(gl.TEXTURE0 + unit);
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, source);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    // gl.generateMipmap(gl.TEXTURE_2D);
+    return texture;
+};
+exports.createTexture = createTexture;
+/**
+ *
+ * @copyright https://wikimedia.org/api/rest_v1/media/math/render/svg/1d2af32ec0b29f7819e989e82c91dcee431a9921
+ */
+var createOrthoMatrix = function (right, bottom, left, top, far, near) {
+    if (left === void 0) { left = 0; }
+    if (top === void 0) { top = 0; }
+    if (far === void 0) { far = 1000; }
+    if (near === void 0) { near = -1000; }
+    var mat = new Array(4 * 4).fill(0);
+    mat[0] = 2 / (right - left);
+    mat[5] = 2 / (top - bottom),
+        mat[10] = -2 / (far - near);
+    mat[12] = -(right + left) / (right - left);
+    mat[13] = -(top + bottom) / (top - bottom);
+    mat[14] = -(far + near) / (far - near);
+    mat[15] = 1;
+    return mat;
+};
+exports.createOrthoMatrix = createOrthoMatrix;
+/**
+ * @copyright https://en.wikipedia.org/wiki/Transformation_matrix#Affine_transformations
+ */
+var createTranslationMatrix = function (x, y) { return [
+    1, 0, 0, 0,
+    0, 1, 0, 0,
+    0, 0, 1, 0,
+    x, y, 0, 1
+]; };
+exports.createTranslationMatrix = createTranslationMatrix;
+
 
 /***/ })
 
@@ -50,7 +1639,7 @@ eval("\r\n/**\r\n * @attribute are inputs\r\n * @varying are outputs\r\n */\r\nO
 /******/ 		};
 /******/ 	
 /******/ 		// Execute the module function
-/******/ 		__webpack_modules__[moduleId](module, module.exports, __webpack_require__);
+/******/ 		__webpack_modules__[moduleId].call(module.exports, module, module.exports, __webpack_require__);
 /******/ 	
 /******/ 		// Return the exports of the module
 /******/ 		return module.exports;
@@ -60,8 +1649,9 @@ eval("\r\n/**\r\n * @attribute are inputs\r\n * @varying are outputs\r\n */\r\nO
 /******/ 	
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
-/******/ 	// This entry module can't be inlined because the eval-source-map devtool is used.
+/******/ 	// This entry module is referenced by other modules so it can't be inlined
 /******/ 	var __webpack_exports__ = __webpack_require__("./src/main.ts");
 /******/ 	
 /******/ })()
 ;
+//# sourceMappingURL=bundle.js.map

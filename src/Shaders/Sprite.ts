@@ -1,5 +1,5 @@
 export const attributes = ['a_position', 'a_texCoord', 'a_texIndex'] as const;
-export const uniforms = ['u_projection', 'u_textures'] as const;
+export const uniforms = ['u_projection', 'u_textures', 'u_camera'] as const;
 
 export const vertexShader = `
    precision mediump float;
@@ -9,13 +9,14 @@ export const vertexShader = `
    attribute float ${attributes[2]};
 
    uniform mat4 ${uniforms[0]};
+   uniform mat4 ${uniforms[2]};
 
    varying vec2 v_texCoord;
    varying float v_texIndex;
 
    void main()
    {
-      gl_Position = ${uniforms[0]} * vec4(${attributes[0]}, 1);
+      gl_Position = (${uniforms[0]} * ${uniforms[2]}) * vec4(${attributes[0]}, 1);
       v_texCoord = ${attributes[1]};
       v_texIndex = ${attributes[2]};
    }

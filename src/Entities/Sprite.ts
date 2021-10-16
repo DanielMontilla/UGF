@@ -1,4 +1,4 @@
-import Texture from "../Renderer/Textures/Texture";
+import Texture from "../Renderer/Texture";
 import Surface from "../Surface";
 import { rand } from "../util";
 import Entity from "./Entity";
@@ -15,8 +15,6 @@ export default class Sprite extends Entity {
    public readonly texture: Texture;
    public frame: number;
 
-   public speed = { x: 0, y: 0};
-
    constructor(surface: Surface, x: number, y: number, texture: Texture, frame: number = 0) { 
       super(surface);
 
@@ -25,8 +23,8 @@ export default class Sprite extends Entity {
 
       this.x         = x;
       this.y         = y;
-      this.width     = texture.source.width;
-      this.height    = texture.source.height;
+      this.width     = texture.img.width;
+      this.height    = texture.img.height;
 
       surface.addEntity(this);
    }
@@ -35,11 +33,6 @@ export default class Sprite extends Entity {
       this.width *= num;
       this.height *= num;
       return this;
-   }
-
-   public setSpeed = (newSpeed: [ x: number, y: number ]) => {
-      this.speed = { x: newSpeed[0], y: newSpeed[1] };
-      return this
    }
 
    public nextFrame = () => {

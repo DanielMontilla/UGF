@@ -3,43 +3,39 @@ import Sprite from './Entities/Sprite';
 import { createCanvas, createContext, createOrthoMatrix, createProgram, createTexture } from './webgl-utils';
 import { vertexShader as rectangle_vs, fragmentShader as rectangle_fs } from './Shaders/Rectangle';
 import { vertexShader as sprite_vs, fragmentShader as sprite_fs } from './Shaders/Sprite';
-import { mapValue, rand } from './util';
-import Texture from './Renderer/Textures/Texture';
-import SpritePipeline from './Renderer/Pipelines/SpritePipeline';
-
-/* LOADING (ASSETS) PHASE */
-const loadImage = async (path: string) => {
-   let img = new Image();
-   img.src = path;
-   await img.decode();
-   return img;
-};
+import { mapValue, rand, loadImage } from './util';
+import Texture from './Renderer/Texture';
 
 let start = async () => {
 
    let s = new Surface(1200, 850, [0.15, 0.15, 0.15]);
-   // let gl = s.renderer.gl;
-   // console.log(gl.getParameter(gl.MAX_COMBINED_TEXTURE_IMAGE_UNITS));
-   // console.log(gl.getParameter(gl.MAX_VERTEX_TEXTURE_IMAGE_UNITS));
-   // console.log(gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS));
 
-   let sprites: Sprite[] = [];
+   let gl = s.renderer.gl;
+   
    let size = 64
    let scale = 2;
-   let amount = 2**6;
-
-   let texture = new Texture(s, await loadImage('./assets/test_sheet.png'), Texture.createFrameData(size, size, 2, 2));
+   let amount = 2**12;
+   
+   let texture = await Texture.fromPath('./assets/test_sheet.png', { height: size, width: size, cols: 2, rows: 2 });
+   
+   class mySprites extends Sprite {
+      
+      speed = { x: rand(-50, 50), y: rand(-50, 50) };
+      
+      constructor() {
+         super(
+            s,
+            rand(-s.width, s.width),
+            rand(-s.height, s.height),
+            texture
+         );
+      }
+   }
+      
+   let sprites: mySprites[] = [];
 
    for (let i = 0; i < amount; i++) {
-      let sprite = new Sprite(
-         s, 
-         rand(0, s.width - size * scale),
-         rand(0, s.height - size * scale),
-         texture
-      ).setSpeed([
-         rand(-100, 100),
-         rand(-100, 100)
-      ]);
+      let sprite = new mySprites();
 
       setInterval(sprite.randomFrame, rand(0, 1000, true));
 
@@ -51,16 +47,29 @@ let start = async () => {
 
    amountText.innerHTML = `Amount: ${amount}`;
 
+   let a_key = s.addKeyInput('a');
+   let w_key = s.addKeyInput('w');
+   let s_key = s.addKeyInput('s');
+   let d_key = s.addKeyInput('d');
+   let cSpeed = 600;
+
    s.update = (dt: number) => {
       sprites.forEach( p => {
          
-         if (p.x <= 0 || p.x + p.width >= s.width) p.speed.x *= -1;
-         if (p.y <= 0 || p.y + p.height >= s.height) p.speed.y *= -1;
+         // if (p.x <= 0 || p.x + p.width >= s.width) p.speed.x *= -1;
+         // if (p.y <= 0 || p.y + p.height >= s.height) p.speed.y *= -1;
          
          p.x += p.speed.x * dt;
          p.y += p.speed.y * dt;
 
       });
+
+      if (a_key.pressed) s.camera.move(cSpeed * dt, 0);
+      if (d_key.pressed) s.camera.move(-cSpeed * dt, 0);
+      if (w_key.pressed) s.camera.move(0, cSpeed * dt);
+      if (s_key.pressed) s.camera.move(0, -cSpeed * dt);
+
+      console.log(s.renderer.getCameraTransalation()[6]);
 
       (<string>fpsText.innerHTML) = `FPS: ${s.fps.toPrecision(3)}`;
    };

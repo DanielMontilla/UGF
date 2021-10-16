@@ -142,3 +142,13 @@ export const createOrthoMatrix = (
 
    return mat;
 }
+
+/**
+ * @copyright https://en.wikipedia.org/wiki/Transformation_matrix#Affine_transformations
+ */
+export const createTranslationMatrix = (x: number, y: number) => [
+   1,    0,    0,    0,
+   0,    1,    0,    0,
+   0,    0,    1,    0,
+   x,    y,    0,    1
+];

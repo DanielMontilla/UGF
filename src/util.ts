@@ -24,3 +24,11 @@ export const mapValue = (
    fRange: { min: number; max: number },
    tRange: { min: number; max: number }
 ): number =>  (tRange.min) + ( (value - fRange.min)*(tRange.max - tRange.min)/(fRange.max - fRange.min) );
+
+
+export const loadImage = async (path: string) => {
+   let img = new Image();
+   img.src = path;
+   await img.decode();
+   return img;
+};

@@ -1,0 +1,2 @@
+- Tidy up contructor syntax
+- flushing system
