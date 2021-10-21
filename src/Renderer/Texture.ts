@@ -1,4 +1,4 @@
-import { createTexture } from "../webgl-utils";
+import { createTexture } from "./webgl-utils";
 import { loadImage, mapValue } from "../util";
 
 /**

@@ -51,6 +51,7 @@ export const createProgram = (
    gl.attachShader(program, fragmentShader);
 
    gl.linkProgram(program);
+   gl.validateProgram(program);  // not really sure what this does...
 
    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
       console.error(

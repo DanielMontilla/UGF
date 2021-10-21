@@ -5,9 +5,8 @@ import InputHandler from "./Input/InputHandler";
 import Key from "./Input/Key";
 import Camera from "./Renderer/Camera";
 import Renderer from "./Renderer/Renderer";
-import Texture from "./Renderer/Texture";
 import { emptyFunc } from "./util";
-import { createCanvas } from "./webgl-utils";
+import { createCanvas } from "./Renderer/webgl-utils";
 
 export default class Surface {
 
@@ -78,17 +77,5 @@ export default class Surface {
       onUpCallback?: () => void
       ): Key => {
       return this.inputHandler.addKey(keyCode, onDownCallback, onUpCallback);
-   }
-
-   // TODO: add config/layout parameter
-   public createTexture = async (path: string) => {
-      let img: HTMLImageElement;
-      let texture: Texture;
-
-      img = new Image();
-      img.src = path;
-      await img.decode();
-
-      return new Texture(img);
    }
 }

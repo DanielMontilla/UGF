@@ -1,5 +1,5 @@
 export const attributes = ['a_position', 'a_color'] as const;
-export const uniforms = ['u_projection'] as const;
+export const uniforms = ['u_projection', 'u_camera'] as const;
 
 export const vertexShader = `
    precision mediump float;
@@ -8,12 +8,13 @@ export const vertexShader = `
    attribute vec3 ${attributes[1]};
 
    uniform mat4 ${uniforms[0]};
+   uniform mat4 ${uniforms[1]};
 
    varying vec3 v_color;
    
    void main()
    {
-      gl_Position = ${uniforms[0]} * vec4(${attributes[0]}, 1);
+      gl_Position = (${uniforms[1]} * ${uniforms[0]}) * vec4(${attributes[0]}, 1);
       v_color = ${attributes[1]};
    }
 ` as const;

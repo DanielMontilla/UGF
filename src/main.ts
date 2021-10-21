@@ -1,20 +1,19 @@
 import Surface from './Surface';
 import Sprite from './Entities/Sprite';
-import { createCanvas, createContext, createOrthoMatrix, createProgram, createTexture } from './webgl-utils';
+import { createCanvas, createContext, createOrthoMatrix, createProgram, createTexture } from './Renderer/webgl-utils';
 import { vertexShader as rectangle_vs, fragmentShader as rectangle_fs } from './Shaders/Rectangle';
 import { vertexShader as sprite_vs, fragmentShader as sprite_fs } from './Shaders/Sprite';
 import { mapValue, rand, loadImage } from './util';
 import Texture from './Renderer/Texture';
+import Rectangle from './Entities/Rectangle';
 
 let start = async () => {
 
-   let s = new Surface(1200, 850, [0.15, 0.15, 0.15]);
-
-   let gl = s.renderer.gl;
+   let s = new Surface(1200, 800, [0.15, 0.15, 0.15]);
    
    let size = 64
    let scale = 2;
-   let amount = 2**12;
+   let amount = 2**8;
    
    let texture = await Texture.fromPath('./assets/test_sheet.png', { height: size, width: size, cols: 2, rows: 2 });
    
@@ -25,8 +24,8 @@ let start = async () => {
       constructor() {
          super(
             s,
-            rand(-s.width, s.width),
-            rand(-s.height, s.height),
+            rand(-1000, 1000),
+            rand(-1000, 1000),
             texture
          );
       }
@@ -69,10 +68,20 @@ let start = async () => {
       if (w_key.pressed) s.camera.move(0, cSpeed * dt);
       if (s_key.pressed) s.camera.move(0, -cSpeed * dt);
 
-      console.log(s.renderer.getCameraTransalation()[6]);
-
       (<string>fpsText.innerHTML) = `FPS: ${s.fps.toPrecision(3)}`;
    };
+}
+
+let start2 = async () => {
+   let surface = new Surface(1200, 800, [0.15, 0.15, 0.15]);
+   let texture = await Texture.fromPath('./assets/test_sheet.png', { height: 64, width: 64, cols: 2, rows: 2 });
+   let s = new Sprite(surface, 500, 500, texture);
+   let s1 = new Sprite(surface, 500, 800, texture, 1);
+   let r = new Rectangle(surface, 400, 400, 100, 100, [1, 0, 1]);
+
+   surface.update = (dt: number) => {
+      // s.x += dt * 15;
+   }
 }
 
 const learningDrawElements = () => {
@@ -347,6 +356,8 @@ const learningTextures = async () => {
    requestAnimationFrame(draw);
 }
 
+// learningDrawElements();
 // learningTextures();
 
-start();
+// start();
+start2();

@@ -19,12 +19,12 @@ export default class SpritePipeline extends Pipeline <
    private static readonly UNIT_PER_VERTEX   = 6;  // [ x, y, z, unit, texcoordX, texcoordY ].length = 6
    private static readonly VERTEX_PER_ELEM   = 4;  // A quad has 4 corners aka 4 vertices
    private static readonly INDICES_PER_ELEM  = 6;  // To create a quad we need 2 triangles wich require 3 verticies each, 3 * 2 = 6
-   private static readonly MAX_TEXTURE_UNITS = 4;
+   private static readonly MAX_TEXTURE_UNITS = 16;
 
    private static readonly VERTEX_SIZE       = SpritePipeline.UNIT_PER_VERTEX   * SpritePipeline.UNIT_SIZE;
-   private static readonly UNIT_PER_ELEM     = SpritePipeline.VERTEX_PER_ELEM   * SpritePipeline.UNIT_PER_VERTEX;
+   private static readonly UNITS_PER_ELEM     = SpritePipeline.VERTEX_PER_ELEM   * SpritePipeline.UNIT_PER_VERTEX;
    private static readonly MAX_INDICES       = SpritePipeline.INDICES_PER_ELEM  * SpritePipeline.MAX_ELEMS;
-   private static readonly MAX_UNIT          = SpritePipeline.UNIT_PER_ELEM     * SpritePipeline.MAX_ELEMS;
+   private static readonly MAX_UNIT          = SpritePipeline.UNITS_PER_ELEM     * SpritePipeline.MAX_ELEMS;
    private static readonly MAX_SIZE          = SpritePipeline.MAX_UNIT          * SpritePipeline.UNIT_SIZE;
 
    private vao: Float32Array; // Vertex Array Buffer  -> CPU side vertex buffer
@@ -37,7 +37,7 @@ export default class SpritePipeline extends Pipeline <
 
       let PIPE    = SpritePipeline;
       let gl      = this.renderer.gl;
-      gl.useProgram(this.program)
+      gl.useProgram(this.program);
 
       this.vao    = new Float32Array(PIPE.MAX_UNIT);
       this.vbo    = <WebGLBuffer> gl.createBuffer();
@@ -61,7 +61,6 @@ export default class SpritePipeline extends Pipeline <
       let a_texCord     = this.attributes.a_texCoord;
 
       gl.bindBuffer(gl.ARRAY_BUFFER, this.vbo);
-
       gl.enableVertexAttribArray(a_position.location);
       gl.vertexAttribPointer(a_position.location, 3, gl.FLOAT, false, PIPE.VERTEX_SIZE, 0);
       gl.enableVertexAttribArray(a_texIndex.location);
@@ -84,24 +83,36 @@ export default class SpritePipeline extends Pipeline <
       gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.ibo);
       gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, this.iao, gl.STATIC_DRAW);
    }
+
    // TODO: add mechanisim to detect object change and only alter necesary values in vao
-   public flush(sprites: Sprite[]) {
+   public begin(sprites: Sprite[]) {
       if (!sprites.length) return;
 
       let gl      = this.renderer.gl;
       const PIPE  = SpritePipeline;
       gl.useProgram(this.program);
-      
+
       gl.uniformMatrix4fv(this.uniforms.u_camera.location, false, this.renderer.getCameraTransalation());
 
+      // Uploading sprites data onto GPU buffer (vao)
       for (let i = 0; i < sprites.length; i++) {
          const sprite = sprites[i];
-         this.vao.set(this.createQuadData(sprite), i * PIPE.UNIT_PER_ELEM)
+         this.vao.set(this.createQuadData(sprite), i * PIPE.UNITS_PER_ELEM);
       }
 
       gl.bindBuffer(gl.ARRAY_BUFFER, this.vbo);
       gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.vao);
-      
+
+      if (!this.once) {
+         console.log(`SRPITE: ${this.vao.subarray(0, PIPE.UNITS_PER_ELEM * sprites.length)}`);
+         console.log(`${sprites.length}`)
+         console.log(`${PIPE.INDICES_PER_ELEM * sprites.length}`)
+         let b = <WebGLBuffer>gl.createBuffer();
+         console.log(`${gl.getParameter(gl.ARRAY_BUFFER_BINDING) === b}`)
+         console.log(`${gl.getBufferParameter(gl.ARRAY_BUFFER, gl.BUFFER_SIZE)}`)
+         this.once = true;
+      }
+
       gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.ibo);
 
       gl.drawElements(
@@ -111,6 +122,8 @@ export default class SpritePipeline extends Pipeline <
          0
       )
    }
+
+   private once: boolean = false;
 
    private createQuadData(sprite: Sprite) {
       let [ x, y, layer, width, height, texture, frame ] = [

@@ -1,6 +1,6 @@
 import Renderer from "../Renderer";
 import Entity from "../../Entities/Entity";
-import { createProgram, createShader } from "../../webgl-utils";
+import { createProgram, createShader } from "../webgl-utils";
 
 export default abstract class Pipeline <
    A extends string = string, 
@@ -60,5 +60,5 @@ export default abstract class Pipeline <
       }
    }
 
-   public abstract flush(e: Entity[]): void;
+   public abstract begin(e: Entity[]): void;
 }

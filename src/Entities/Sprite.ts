@@ -5,8 +5,6 @@ import Entity from "./Entity";
 
 export default class Sprite extends Entity {
 
-   public textureID: string = '';
-
    public x: number;
    public y: number;
    public width: number;

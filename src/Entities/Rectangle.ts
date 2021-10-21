@@ -1,5 +1,4 @@
 import Surface from "../Surface";
-import { createTexture } from "../webgl-utils";
 import Entity from "./Entity";
 
 export default class Rectangle extends Entity {

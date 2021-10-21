@@ -1,5 +1,6 @@
 import Pipeline from "./Pipeline";
 import Renderer from "../Renderer";
+import Rectangle from "../../Entities/Rectangle";
 
 import {
    vertexShader   as vsSource,
@@ -8,24 +9,21 @@ import {
    uniforms       as uniforArr
 } from '../../Shaders/Rectangle';
 
-import Rectangle from "../../Entities/Rectangle";
-
 export default class RectanglePipeline extends Pipeline <
    typeof attribArr[number],
    typeof uniforArr[number]
 > {
 
-   /* CONSTANTS */
-   private static readonly MAX_QUAD          = 2**10; // TODO: Set up flusing system to have an unlimited amount of quads
+   private static readonly MAX_ELEMS         = 2**10;
    private static readonly UNIT_SIZE         = 4;  // sizeof(float) = 4 bytes = sizeof(unit)
    private static readonly UNITS_PER_VERTEX  = 6;  // [ x, y, z, r, g, b ].length = 6
-   private static readonly VERTEX_PER_QUAD   = 4;  // A quad has 4 corners aka 4 vertices
-   private static readonly INDICES_PER_QUAD  = 6;  // To create a quad we need 2 triangles wich require 3 verticies each, 3 * 2 = 6
+   private static readonly VERTEX_PER_ELEM   = 4;  // A quad has 4 corners aka 4 vertices
+   private static readonly INDICES_PER_ELEM  = 6;  // To create a quad we need 2 triangles wich require 3 verticies each, 3 * 2 = 6
 
    private static readonly VERTEX_SIZE       = RectanglePipeline.UNITS_PER_VERTEX  * RectanglePipeline.UNIT_SIZE;
-   private static readonly UNITS_PER_QUAD    = RectanglePipeline.VERTEX_PER_QUAD   * RectanglePipeline.UNITS_PER_VERTEX;
-   private static readonly MAX_INDICES       = RectanglePipeline.INDICES_PER_QUAD  * RectanglePipeline.MAX_QUAD;
-   private static readonly MAX_UNIT          = RectanglePipeline.UNITS_PER_QUAD    * RectanglePipeline.MAX_QUAD;
+   private static readonly UNITS_PER_ELEM    = RectanglePipeline.VERTEX_PER_ELEM   * RectanglePipeline.UNITS_PER_VERTEX;
+   private static readonly MAX_INDICES       = RectanglePipeline.INDICES_PER_ELEM  * RectanglePipeline.MAX_ELEMS;
+   private static readonly MAX_UNIT          = RectanglePipeline.UNITS_PER_ELEM    * RectanglePipeline.MAX_ELEMS;
    private static readonly MAX_SIZE          = RectanglePipeline.MAX_UNIT          * RectanglePipeline.UNIT_SIZE;
 
    private vao: Float32Array; // Vertex Array Buffer  -> CPU side vertex buffer
@@ -46,62 +44,76 @@ export default class RectanglePipeline extends Pipeline <
       this.ibo    = <WebGLBuffer> gl.createBuffer();
       
       /* SETTING UP UNIFORMS */
-      let u_projection = this.uniforms.u_projection;
+      let u_projection  = this.uniforms.u_projection;
+      let u_camera      = this.uniforms.u_camera;
       gl.uniformMatrix4fv(u_projection.location, false, renderer.projection);
+      gl.uniformMatrix4fv(u_camera.location, false, renderer.getCameraTransalation());
 
       /* SETTING UP ATTRIBUTES */
       let a_position = this.attributes.a_position;
       let a_color    = this.attributes.a_color;
 
       gl.bindBuffer(gl.ARRAY_BUFFER, this.vbo);
+
       gl.enableVertexAttribArray(a_position.location);
       gl.vertexAttribPointer(a_position.location, 3, gl.FLOAT, false, PIPE.VERTEX_SIZE, 0);
       gl.enableVertexAttribArray(a_color.location);
       gl.vertexAttribPointer(a_color.location, 3, gl.FLOAT, false, PIPE.VERTEX_SIZE, PIPE.UNIT_SIZE * 3);
 
       gl.bufferData(gl.ARRAY_BUFFER, PIPE.MAX_SIZE, gl.DYNAMIC_DRAW);
-
+      
       /* SETTING UP INDEX BUFFER/ARRAY OBJECT */
-      for (let i = 0; i < PIPE.MAX_QUAD; i++) {
+      for (let i = 0; i < PIPE.MAX_ELEMS; i++) {
          let offset = 4 * i;
-
+         
          this.iao.set([
             0 + offset, 1 + offset, 2 + offset,
             2 + offset, 1 + offset, 3 + offset
-         ], PIPE.INDICES_PER_QUAD * i);
+         ], PIPE.INDICES_PER_ELEM * i);
       }
-
+      
       gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.ibo);
       gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, this.iao, gl.STATIC_DRAW);
-
    }
 
    // TODO: add mechanisim to detect object change and only alter necesary values in vao
-   public flush(rectangles: Rectangle[]) {
-      
+   public begin(rectangles: Rectangle[]) {
       if (!rectangles.length) return;
 
       let gl      = this.renderer.gl;
       const PIPE  = RectanglePipeline;
       gl.useProgram(this.program)
-
+      
+      gl.uniformMatrix4fv(this.uniforms.u_camera.location, false, this.renderer.getCameraTransalation());
+      
       for (let i = 0; i < rectangles.length; i++) {
          const rectangle = rectangles[i];
-         this.vao.set(this.createQuadData(rectangle), i * PIPE.UNITS_PER_QUAD);
+         this.vao.set(this.createQuadData(rectangle), i * PIPE.UNITS_PER_ELEM);
       };
-
+      
       gl.bindBuffer(gl.ARRAY_BUFFER, this.vbo);
       gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.vao);
+
+      if (!this.once) {
+         console.log(`RECTANGLE: ${this.vao.subarray(0, PIPE.UNITS_PER_ELEM * rectangles.length)}`);
+         console.log(`${rectangles.length}`)
+         console.log(`${PIPE.INDICES_PER_ELEM * rectangles.length}`)
+         console.log(`${gl.getParameter(gl.ARRAY_BUFFER_BINDING) === this.vbo}`)
+         console.log(`${gl.getBufferParameter(gl.ARRAY_BUFFER, gl.BUFFER_SIZE)}`)
+         this.once = true;
+      }
 
       gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.ibo);
 
       gl.drawElements(
          gl.TRIANGLES,
-         PIPE.INDICES_PER_QUAD * rectangles.length, 
+         PIPE.INDICES_PER_ELEM * rectangles.length, 
          gl.UNSIGNED_SHORT,
          0
       );
    };
+
+   private once: boolean = false;
 
    private createQuadData(rect: Rectangle) {
       let [ x, y, z, width, height ] = [ rect.x, rect.y, rect.layer, rect.width, rect.height ]
