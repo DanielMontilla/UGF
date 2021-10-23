@@ -14,7 +14,7 @@ export default class RectanglePipeline extends Pipeline <
    typeof uniforArr[number]
 > {
 
-   private static readonly MAX_ELEMS         = 2**10;
+   private static readonly MAX_ELEMS         = 2**16;
    private static readonly UNIT_SIZE         = 4;  // sizeof(float) = 4 bytes = sizeof(unit)
    private static readonly UNITS_PER_VERTEX  = 6;  // [ x, y, z, r, g, b ].length = 6
    private static readonly VERTEX_PER_ELEM   = 4;  // A quad has 4 corners aka 4 vertices
@@ -83,7 +83,8 @@ export default class RectanglePipeline extends Pipeline <
       let gl      = this.renderer.gl;
       const PIPE  = RectanglePipeline;
       gl.useProgram(this.program)
-      
+
+      // SETTING UP UNIFORMS
       gl.uniformMatrix4fv(this.uniforms.u_camera.location, false, this.renderer.getCameraTransalation());
       
       for (let i = 0; i < rectangles.length; i++) {
@@ -92,16 +93,10 @@ export default class RectanglePipeline extends Pipeline <
       };
       
       gl.bindBuffer(gl.ARRAY_BUFFER, this.vbo);
-      gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.vao);
 
-      if (!this.once) {
-         console.log(`RECTANGLE: ${this.vao.subarray(0, PIPE.UNITS_PER_ELEM * rectangles.length)}`);
-         console.log(`${rectangles.length}`)
-         console.log(`${PIPE.INDICES_PER_ELEM * rectangles.length}`)
-         console.log(`${gl.getParameter(gl.ARRAY_BUFFER_BINDING) === this.vbo}`)
-         console.log(`${gl.getBufferParameter(gl.ARRAY_BUFFER, gl.BUFFER_SIZE)}`)
-         this.once = true;
-      }
+      this.setAttribs();
+
+      gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.vao);
 
       gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.ibo);
 
@@ -113,7 +108,20 @@ export default class RectanglePipeline extends Pipeline <
       );
    };
 
-   private once: boolean = false;
+   protected setAttribs() {
+      let gl         = this.renderer.gl;
+      let PIPE       = RectanglePipeline;
+
+      gl.useProgram(this.program);  // TODO: remove
+
+      let a_position = this.attributes.a_position;
+      let a_color    = this.attributes.a_color;
+
+      gl.enableVertexAttribArray(a_position.location);
+      gl.vertexAttribPointer(a_position.location, 3, gl.FLOAT, false, PIPE.VERTEX_SIZE, 0);
+      gl.enableVertexAttribArray(a_color.location);
+      gl.vertexAttribPointer(a_color.location, 3, gl.FLOAT, false, PIPE.VERTEX_SIZE, PIPE.UNIT_SIZE * 3);
+   }
 
    private createQuadData(rect: Rectangle) {
       let [ x, y, z, width, height ] = [ rect.x, rect.y, rect.layer, rect.width, rect.height ]

@@ -14,7 +14,7 @@ export const vertexShader = `
    
    void main()
    {
-      gl_Position = (${uniforms[1]} * ${uniforms[0]}) * vec4(${attributes[0]}, 1);
+      gl_Position = (${uniforms[0]} * ${uniforms[1]}) * vec4(${attributes[0]}, 1);
       v_color = ${attributes[1]};
    }
 ` as const;

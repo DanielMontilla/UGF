@@ -12,4 +12,10 @@ export default abstract class Entity {
       this.surface   = surface;
       this.layer     = 0;
    }
+
+   setLayer = (n: number) => {
+      this.layer = n;
+      return this;
+   }
+
 }

@@ -61,4 +61,5 @@ export default abstract class Pipeline <
    }
 
    public abstract begin(e: Entity[]): void;
+   protected abstract setAttribs(): void;
 }

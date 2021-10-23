@@ -14,7 +14,7 @@ export default class SpritePipeline extends Pipeline <
    typeof uniforArr[number]
 > {
    // TODO: change UNIT_SIZE to FLOAT_SIZE and add INT_SIZE for texIndex attribute
-   public static readonly MAX_ELEMS          = 2**15;
+   public static readonly MAX_ELEMS          = 2**16;
    private static readonly UNIT_SIZE         = 4;  // sizeof(float) = 4 bytes = sizeof(unit)
    private static readonly UNIT_PER_VERTEX   = 6;  // [ x, y, z, unit, texcoordX, texcoordY ].length = 6
    private static readonly VERTEX_PER_ELEM   = 4;  // A quad has 4 corners aka 4 vertices
@@ -61,6 +61,7 @@ export default class SpritePipeline extends Pipeline <
       let a_texCord     = this.attributes.a_texCoord;
 
       gl.bindBuffer(gl.ARRAY_BUFFER, this.vbo);
+
       gl.enableVertexAttribArray(a_position.location);
       gl.vertexAttribPointer(a_position.location, 3, gl.FLOAT, false, PIPE.VERTEX_SIZE, 0);
       gl.enableVertexAttribArray(a_texIndex.location);
@@ -101,17 +102,10 @@ export default class SpritePipeline extends Pipeline <
       }
 
       gl.bindBuffer(gl.ARRAY_BUFFER, this.vbo);
-      gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.vao);
 
-      if (!this.once) {
-         console.log(`SRPITE: ${this.vao.subarray(0, PIPE.UNITS_PER_ELEM * sprites.length)}`);
-         console.log(`${sprites.length}`)
-         console.log(`${PIPE.INDICES_PER_ELEM * sprites.length}`)
-         let b = <WebGLBuffer>gl.createBuffer();
-         console.log(`${gl.getParameter(gl.ARRAY_BUFFER_BINDING) === b}`)
-         console.log(`${gl.getBufferParameter(gl.ARRAY_BUFFER, gl.BUFFER_SIZE)}`)
-         this.once = true;
-      }
+      this.setAttribs();
+
+      gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.vao);
 
       gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.ibo);
 
@@ -123,7 +117,23 @@ export default class SpritePipeline extends Pipeline <
       )
    }
 
-   private once: boolean = false;
+   protected setAttribs() {
+      let gl         = this.renderer.gl;
+      let PIPE       = SpritePipeline;
+
+      gl.useProgram(this.program);  // TODO: remove
+
+      let a_position    = this.attributes.a_position;
+      let a_texIndex    = this.attributes.a_texIndex;
+      let a_texCord     = this.attributes.a_texCoord;
+
+      gl.enableVertexAttribArray(a_position.location);
+      gl.vertexAttribPointer(a_position.location, 3, gl.FLOAT, false, PIPE.VERTEX_SIZE, 0);
+      gl.enableVertexAttribArray(a_texIndex.location);
+      gl.vertexAttribPointer(a_texIndex.location, 1, gl.FLOAT, false, PIPE.VERTEX_SIZE, PIPE.UNIT_SIZE * 3);
+      gl.enableVertexAttribArray(a_texCord.location);
+      gl.vertexAttribPointer(a_texCord.location, 2, gl.FLOAT, false, PIPE.VERTEX_SIZE, PIPE.UNIT_SIZE * 4);
+   }
 
    private createQuadData(sprite: Sprite) {
       let [ x, y, layer, width, height, texture, frame ] = [
