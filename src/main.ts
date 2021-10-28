@@ -1,6 +1,6 @@
 import Surface from './Surface';
 import Sprite from './Entities/Sprite';
-import { createCanvas, createContext, createOrthoMatrix, createProgram, createTexture } from './Renderer/webgl-utils';
+import { createCanvas, createContext, createOrthoMatrix, createProgram, createQuadIAO, createTexture } from './Renderer/webgl-utils';
 import { vertexShader as rectangle_vs, fragmentShader as rectangle_fs } from './Shaders/Rectangle';
 import { vertexShader as sprite_vs, fragmentShader as sprite_fs } from './Shaders/Sprite';
 import { mapValue, rand, loadImage } from './util';
@@ -53,20 +53,20 @@ let main = async () => {
       
    let sprites: mySprites[] = [];
    let rectangles: myRectangles[] = [];
-
+   
    for (let i = 0; i < amountS; i++) {
-      let sprite = new mySprites().setLayer(rand(0, 3));
-
+      let sprite = new mySprites().setLayer(-1);
+      
       setInterval(sprite.randomFrame, rand(0, 1000, true));
-
+      
       sprites.push(sprite)
    }
-
    for (let i = 0; i < amountR; i++) {
-      let rect = new myRectangles().setLayer(rand(0, 3));
+      let rect = new myRectangles().setLayer(1);
 
       rectangles.push(rect)
    }
+
 
    let fpsText = <HTMLElement>document.getElementById('fps');
    let amountText = <HTMLElement>document.getElementById('amount');
@@ -81,9 +81,6 @@ let main = async () => {
 
    s.update = (dt: number) => {
       sprites.forEach( p => {
-         
-         // if (p.x <= 0 || p.x + p.width >= s.width) p.speed.x *= -1;
-         // if (p.y <= 0 || p.y + p.height >= s.height) p.speed.y *= -1;
          
          p.x += p.speed.x * dt;
          p.y += p.speed.y * dt;

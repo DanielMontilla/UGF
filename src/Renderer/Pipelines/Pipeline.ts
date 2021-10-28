@@ -1,58 +1,85 @@
 import Renderer from "../Renderer";
 import Entity from "../../Entities/Entity";
-import { createProgram, createShader } from "../webgl-utils";
+import { createProgram, createShader, getDataFromType } from "../webgl-utils";
+import { emptyRecord } from "../../util";
 
 export default abstract class Pipeline <
-   A extends string = string, 
-   U extends string = string
+   E extends Entity = Entity,
+   attributes extends string = string,
+   uniforms extends string = string,
 > {
+   
+   public readonly renderer: Renderer;
+   
    public readonly program: WebGLProgram;
    public readonly vertexShader: WebGLShader;
    public readonly fragmentShader: WebGLShader;
 
-   public readonly renderer: Renderer;
+   // Pointer to drawable objects
+   protected entityList: E[];
 
-   protected attributes = < Record<A, attributeInfo> > {};
-   protected uniforms   = < Record<U, uniformInfo> > {};
+   protected attributes = emptyRecord<attributes, attributeInfo>();
+   protected uniforms   = emptyRecord<uniforms, uniformInfo>();
 
    public constructor(
       renderer: Renderer,
+      entityList: E[],
       vsSource: string,
       fsSource: string,
-      attribArr: readonly string[],
-      uniformArr: readonly string[]
+      attributeList: readonly attributes[],
+      uniformList: readonly uniforms[]
    ) {
-      let gl = renderer.gl;
 
+      let gl               = renderer.gl;
       this.renderer        = renderer;
+      this.entityList      = entityList;
       this.vertexShader    = createShader(gl, 'vertex', vsSource);
       this.fragmentShader  = createShader(gl, 'fragment', fsSource);
       this.program         = createProgram(gl, this.vertexShader, this.fragmentShader);
 
-      /* |--------------------------< GENERATING ATTRIBUTE DATA >--------------------------| */
-      for (const attribID of attribArr) {
+      this.generateAttributes(attributeList);
+      this.generateUniforms(uniformList);
 
-         let location   = gl.getAttribLocation(this.program, attribID);
-         let info       = <WebGLActiveInfo> gl.getActiveAttrib(this.program, location)
-         let size       = info.size + 1;
+   };
+   
+   
+   private generateAttributes(list: readonly string[]) {
+      let gl = this.renderer.gl;
+      let position = 0;
+
+      for (const attrib of list) {
+   
+         let location   = gl.getAttribLocation(this.program, attrib);
+         let info       = <WebGLActiveInfo> gl.getActiveAttrib(this.program, location);
          let type       = info.type;
 
-         this.attributes[attribID as A] = {
+         
+         let [ unitType, units, size] = getDataFromType(type);
+         let offset     = position;
+         position      += size;
+         
+         this.attributes[attrib as attributes] = {
+            id       : attrib,
             location : location,
+            type     : type,
+            unitType : unitType,
+            units    : units,
             size     : size,
-            type     : type
+            offset   : offset
          }
       }
-
-      /* |--------------------------< GENERATING UNIFORM DATA >--------------------------| */
-      for (const [index, uniformID] of uniformArr.entries()) {
+   }
+   
+   private generateUniforms(list: readonly string[]) {
+      let gl = this.renderer.gl;
+      for (const [index, uniformID] of list.entries()) {
 
          let location   = <WebGLUniformLocation> gl.getUniformLocation(this.program, uniformID);
          let info       = <WebGLActiveInfo> gl.getActiveUniform(this.program, index);
          let size       = info.size;
          let type       = info.type;
 
-         this.uniforms[uniformID as U] = {
+         this.uniforms[uniformID as uniforms] = {
             location : location,
             size     : size,
             type     : type
@@ -60,6 +87,5 @@ export default abstract class Pipeline <
       }
    }
 
-   public abstract begin(e: Entity[]): void;
-   protected abstract setAttribs(): void;
+   public abstract begin(): void;
 }

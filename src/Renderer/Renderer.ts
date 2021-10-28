@@ -1,7 +1,7 @@
 import Surface from "../Surface";
 import Pipeline from "./Pipelines/Pipeline";
-import SpritePipeline from "./Pipelines/Sprite";
-import RectanglePipeline from "./Pipelines/Rectangle";
+import SpritePipeline from "./Pipelines/Batch/Sprite";
+import RectanglePipeline from "./Pipelines/Batch/Rectangle";
 import Entity from "../Entities/Entity";
 import { createContext, createOrthoMatrix, createTranslationMatrix } from "./webgl-utils";
 import Texture from "./Texture";
@@ -29,7 +29,7 @@ export default class Renderer {
       Texture.init(this.gl);
       this.pipelines       = {
          sprite:     new SpritePipeline(this),
-         rectangle:  new RectanglePipeline(this),
+         rectangle:  new RectanglePipeline(this)
       };
       
       // Setting up surface for drawing
@@ -48,8 +48,12 @@ export default class Renderer {
       let gl   = this.gl;
       gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
       
-      this.pipelines.rectangle.begin(this.entityLists.rectangle);
-      this.pipelines.sprite.begin(this.entityLists.sprite);
+      for (const key in this.pipelines) {
+         this.pipelines[key as EntityType].begin();
+      }
+
+      this.pipelines.rectangle.begin();
+      this.pipelines.sprite.begin();
    }
 
    public getCameraTransalation = () => createTranslationMatrix(this.camera.x, this.camera.y);

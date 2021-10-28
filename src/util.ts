@@ -32,3 +32,8 @@ export const loadImage = async (path: string) => {
    await img.decode();
    return img;
 };
+
+export const emptyRecord = <
+   P extends string | number | symbol = string,
+   Q = string
+>(): Record<P, Q> => <Record<P, Q>>{};

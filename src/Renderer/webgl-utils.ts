@@ -1,3 +1,5 @@
+import { FLOAT_SIZE, INDICES_PER_QUAD, VERTEX_PER_QUAD } from "./CONST";
+
 export const createContext = (canvas: HTMLCanvasElement): WebGLRenderingContext => {
    let gl = canvas.getContext('webgl');
    if (!gl) console.error(`couldn't get webgl context`);
@@ -31,8 +33,8 @@ export const createContext = (canvas: HTMLCanvasElement): WebGLRenderingContext 
 
 export const createProgram = (
    gl: WebGLRenderingContext,
-   vertextShader: WebGLShader | string,
-   fragmentShader: WebGLShader | string
+   vertextShader: WebGLShader | 'vertex',
+   fragmentShader: WebGLShader | 'fragment'
    ): WebGLProgram => {
 
    let program = <WebGLProgram>gl.createProgram();
@@ -42,7 +44,8 @@ export const createProgram = (
          ? createShader(gl, 'vertex', vertextShader)
          : vertextShader;
    
-   fragmentShader = typeof fragmentShader == 'string'
+   fragmentShader = 
+      typeof fragmentShader == 'string'
          ? createShader(gl, 'fragment', fragmentShader)
          : fragmentShader;
 
@@ -62,30 +65,6 @@ export const createProgram = (
    }
 
    return program;
-}
-
-export const setAttribute = (
-   gl: WebGLRenderingContext,
-   data: Float32Array,
-   buffer: WebGLBuffer,
-   location: number,
-   size: number = 2,
-   type: number = gl.FLOAT
-) => {
-   gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-   gl.enableVertexAttribArray(location);
-   gl.bufferData(gl.ARRAY_BUFFER, data, gl.STATIC_DRAW);
-   gl.vertexAttribPointer(location, size, type, false, 0, 0);
-};
-
-export const setUniform = (
-   gl: WebGLRenderingContext,
-   data: number[],
-   location: WebGLUniformLocation,
-   // type: number,
-   // size: numebr
-) => {
-   // TODO
 }
 
 export const createCanvas = (width: number, height: number) => {
@@ -153,3 +132,75 @@ export const createTranslationMatrix = (x: number, y: number) => [
    0,    0,    1,    0,
    x,    y,    0,    1
 ];
+
+
+/**
+ * @note a more pragmatic way of setting these values must exist.
+ * @param type 
+ * @returns 
+ */
+export const getDataFromType = (
+   type: number
+): [unitType: number, units: number, totalSize: number] => {
+   let unitType: number;
+   let units: number;
+   let unitSize: number;
+   let totalSize: number;
+   let gl = WebGLRenderingContext;
+
+   switch (type) {
+      case gl.FLOAT:
+         unitType    = gl.FLOAT;
+         units       = 1;
+         unitSize    = FLOAT_SIZE;
+         break;
+      
+      case gl.FLOAT_VEC2:
+         unitType    = gl.FLOAT;
+         units       = 2;
+         unitSize    = FLOAT_SIZE;
+         break;
+
+      case gl.FLOAT_VEC3:
+         unitType    = gl.FLOAT;
+         units       = 3;
+         unitSize    = FLOAT_SIZE;
+         break;
+   
+      default:
+         unitType    = -1;
+         units       = -1;
+         unitSize    = -.5;
+
+         console.warn(`${type} is not a valid WebGL type`)
+         break;
+   }
+
+   totalSize = units * unitSize;
+
+   return [unitType, units, totalSize];
+};
+
+/**
+ * @param elems amount of elements that fit in iao
+ * @returns iao
+ */
+export const createQuadIAO = (elems: number): number[] => {
+   let arr: number[] = [];
+   let step: number;
+   let offset: number;
+
+   for (let i = 0; i < elems; i++) {
+      offset   = VERTEX_PER_QUAD * i;
+      step     = INDICES_PER_QUAD * i;
+
+      arr[step + 0] = offset + 0;   // v1
+      arr[step + 1] = offset + 1;   // v2
+      arr[step + 2] = offset + 2;   // v3
+      arr[step + 3] = offset + 2;   // v3
+      arr[step + 4] = offset + 1;   // v1
+      arr[step + 5] = offset + 3;   // v4
+   };
+
+   return arr;
+}

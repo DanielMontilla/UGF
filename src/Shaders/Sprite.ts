@@ -1,31 +1,34 @@
-export const attributes = ['a_position', 'a_texCoord', 'a_texIndex'] as const;
-export const uniforms = ['u_projection', 'u_textures', 'u_camera'] as const;
+export const attributeList = ['a_position', 'a_texIndex', 'a_texCoord'] as const;
+export const uniformList = ['u_projection', 'u_textures', 'u_camera'] as const;
+
+export type attributes = typeof attributeList[number];
+export type uniforms = typeof uniformList[number];
 
 export const vertexShader = `
    precision mediump float;
 
-   attribute vec3 ${attributes[0]};
-   attribute vec2 ${attributes[1]};
-   attribute float ${attributes[2]};
+   attribute vec3 ${attributeList[0]};
+   attribute vec2 ${attributeList[2]};
+   attribute float ${attributeList[1]};      // TODO: change to int maybe...?
 
-   uniform mat4 ${uniforms[0]};
-   uniform mat4 ${uniforms[2]};
+   uniform mat4 ${uniformList[0]};
+   uniform mat4 ${uniformList[2]};
 
    varying vec2 v_texCoord;
    varying float v_texIndex;
 
    void main()
    {
-      gl_Position = (${uniforms[0]} * ${uniforms[2]}) * vec4(${attributes[0]}, 1);
-      v_texCoord = ${attributes[1]};
-      v_texIndex = ${attributes[2]};
+      gl_Position = (${uniformList[0]} * ${uniformList[2]}) * vec4(${attributeList[0]}, 1);
+      v_texCoord = ${attributeList[2]};
+      v_texIndex = ${attributeList[1]};
    }
 ` as const;
 
 export const fragmentShader = `
    precision mediump float;
    
-   uniform sampler2D ${uniforms[1]}[4];
+   uniform sampler2D ${uniformList[1]}[4];
 
    varying vec2 v_texCoord;
    varying float v_texIndex;
@@ -49,6 +52,6 @@ export const fragmentShader = `
    void main()
    {
       int index = int(v_texIndex);
-      gl_FragColor = getTexture(${uniforms[1]}, index, v_texCoord);
+      gl_FragColor = getTexture(${uniformList[1]}, index, v_texCoord);
    }
 ` as const;
