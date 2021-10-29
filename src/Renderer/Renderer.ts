@@ -24,7 +24,7 @@ export default class Renderer {
       this.camera          = surface.camera;
       this.gl              = createContext(surface.canvas);
       this.projectionMat   = createOrthoMatrix(surface.width, surface.height);
-      this.cameraMat       = createTranslationMatrix(this.camera.x, this.camera.y);
+      this.cameraMat       = this.camera.mat;
       this.entityLists     = surface.entityLists;
 
       // Initilizing other systems
@@ -46,7 +46,7 @@ export default class Renderer {
       gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
    }
 
-   public draw = () => {
+   public draw(): void {
       let gl   = this.gl;
       gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
       
@@ -54,6 +54,4 @@ export default class Renderer {
          this.pipelines[key as EntityType].begin();
       }
    }
-
-   public getCameraTransalation = () => createTranslationMatrix(this.camera.x, this.camera.y);  // TODO: optimize by modifying existing translation matrix
 }

@@ -20,17 +20,17 @@ export default class InputHandler {
       );
    }
 
-   public addKey = (
+   public addKey(
       keyCode: keyCode,
       onDownCallback?: () => void,
       onUpCallback?: () => void
-   ): Key => {
+   ): Key {
       let key = new Key(keyCode, onDownCallback, onUpCallback);
       this.keyResgistry[key.code] = key;
       return key;
    }
 
-   private keyBoardEventCallback = (keyCode: keyCode, event: keyEvent) => {
+   private keyBoardEventCallback(keyCode: keyCode, event: keyEvent) {
       let key = this.keyResgistry[keyCode];
 
       if (!key) return;

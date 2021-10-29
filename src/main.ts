@@ -74,7 +74,15 @@ let main = async () => {
    let w_key = s.addKeyInput('w');
    let s_key = s.addKeyInput('s');
    let d_key = s.addKeyInput('d');
+
+   let q_key = s.addKeyInput('q');
+   let e_key = s.addKeyInput('e');
+
+   let space = s.addKeyInput(' ');
+   space.onDownCallback = () => s.camera.reset();
+
    let cSpeed = 600;
+   let zFactor = .01;
 
    s.update = (dt: number) => {
       sprites.forEach( p => {
@@ -87,14 +95,17 @@ let main = async () => {
       rectangles.forEach( r => {
          r.x += r.speed.x * dt;
          r.y += r.speed.y * dt;
-      })
+      });
+
+      if (e_key.pressed) s.camera.scale(1 + zFactor);
+      if (q_key.pressed) s.camera.scale(1 - zFactor)
 
       if (a_key.pressed) s.camera.move(cSpeed * dt, 0);
       if (d_key.pressed) s.camera.move(-cSpeed * dt, 0);
       if (w_key.pressed) s.camera.move(0, cSpeed * dt);
       if (s_key.pressed) s.camera.move(0, -cSpeed * dt);
 
-      (<string>fpsText.innerHTML) = `FPS: ${s.fps.toPrecision(3)}`;
+      (<string>fpsText.innerHTML) = `FPS: ${s.fps.toPrecision(3)} | ZOOM: x${s.camera.zoom}`;
    };
 }
 

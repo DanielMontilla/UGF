@@ -47,7 +47,7 @@ export default class SpritePipeline extends BatchPipeline <Sprite, A, U> {
       let u_textures    = this.uniforms.u_textures;
       let u_camera      = this.uniforms.u_camera;
       gl.uniformMatrix4fv(u_projection.location, false, renderer.projectionMat);
-      gl.uniformMatrix4fv(u_camera.location, false, this.renderer.getCameraTransalation());
+      gl.uniformMatrix4fv(u_camera.location, false, this.renderer.cameraMat);
       
       let texUnitArr: number[] = [];
       for (let i = 0; i < this.MAX_TEXTURE_UNITS; i++) texUnitArr.push(i);
@@ -130,6 +130,6 @@ export default class SpritePipeline extends BatchPipeline <Sprite, A, U> {
 
    protected setPerDrawCallUniforms(): void {
       let gl = this.renderer.gl;
-      gl.uniformMatrix4fv(this.uniforms.u_camera.location, false, this.renderer.getCameraTransalation());
+      gl.uniformMatrix4fv(this.uniforms.u_camera.location, false, this.renderer.cameraMat);
    }
 }

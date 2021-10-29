@@ -38,7 +38,7 @@ export default class Surface {
          sprite:     []
       }
 
-      this.camera       = new Camera(this);
+      this.camera       = new Camera();
       this.renderer     = new Renderer(this);
       this.inputHandler = new InputHandler(this.canvas);
       this.previousTime = performance.now();

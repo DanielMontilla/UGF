@@ -40,7 +40,7 @@ export default class RectanglePipeline extends BatchPipeline <Rectangle, A, U> {
       let u_projection  = this.uniforms.u_projection;
       let u_camera      = this.uniforms.u_camera;
       gl.uniformMatrix4fv(u_projection.location, false, renderer.projectionMat);
-      gl.uniformMatrix4fv(u_camera.location, false, renderer.getCameraTransalation());
+      gl.uniformMatrix4fv(u_camera.location, false, renderer.cameraMat);
 
       gl.bindBuffer(gl.ARRAY_BUFFER, this.vbo);
       this.setAllAttributes();
@@ -100,6 +100,6 @@ export default class RectanglePipeline extends BatchPipeline <Rectangle, A, U> {
 
    protected setPerDrawCallUniforms(): void {
       let gl = this.renderer.gl;
-      gl.uniformMatrix4fv(this.uniforms.u_camera.location, false, this.renderer.getCameraTransalation());
+      gl.uniformMatrix4fv(this.uniforms.u_camera.location, false, this.renderer.cameraMat);
    }
 }

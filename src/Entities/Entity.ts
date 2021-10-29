@@ -13,7 +13,7 @@ export default abstract class Entity {
       this.layer     = 0;
    }
 
-   setLayer = (n: number) => {
+   setLayer(n: number) {
       this.layer = n;
       return this;
    }
