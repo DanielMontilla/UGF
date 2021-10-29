@@ -32,12 +32,12 @@ export default abstract class BatchPipeline <
    public readonly MAX_UNITS: number;
    public readonly MAX_SIZE: number;
 
-   protected vab: Float32Array; // Vertex Array Buffer  -> CPU side vertex buffer
    protected vao: Float32Array;  // Vertex Array Object  -> CPU side vertex (draw) buffer
    protected vbo: WebGLBuffer;   // Vertex Buffer Object -> GPU side vertex buffer
    protected iao: Uint16Array;   // Index Array Buffer   -> CPU side index buffer
    protected ibo: WebGLBuffer;   // Index Buffer Object  -> GPU side index buffer
 
+   protected nextElemOffset: number = 0;
    protected elemsToDraw: number = 0;
 
    // DEBUGING & PERFORMANCE/STATS
@@ -75,7 +75,6 @@ export default abstract class BatchPipeline <
       let gl = this.renderer.gl;
       gl.useProgram(this.program);
 
-      this.vab = new Float32Array();
       this.vao = new Float32Array(this.MAX_UNITS);
       this.vbo = <WebGLBuffer> gl.createBuffer();
       this.iao = new Uint16Array(this.MAX_INDICES);
@@ -109,36 +108,60 @@ export default abstract class BatchPipeline <
       }
    }
 
-   public begin(): void {
-      let vao = this.vao;
-      let vab = this.vab;
-      
-      this.lastDrawCalls = 0;                            // 1. Reset stats
-      this.populateVAB();                                // 2. Populate Vertex Array Buffer with all vertex values from entityList
-      while (vab.length != 0) {                          // 3. check if the lenght of Vertex Array Buffer is != 0
-         if (vab.length > vao.length) {                  // 4. if vab is more than vao then:
-            vao.set(vab.subarray(0, vao.length));        // 4a. Fill vao with vab segment
-            this.elemsToDraw = this.MAX_ELEMS;           // 4b. set elems to draw to max
-            vab = vab.subarray(vao.length, vab.length);  // 4c. delete/shift values in vab
-         } else {                                        // 5. if vao is less than or equal to vab lenght then:
-            vao.set(vab);                                // 5a. Copy vab contents into vao
-            this.elemsToDraw =                           // 5b. set elems to draw to elems in vab
-               vab.length / this.UNITS_PER_ELEM
-            vab = new Float32Array();                    // 5c. empty vab
-         }
 
-         this.flush();                             // 6. flush
-      }
+   public begin(): void {
+      this.elemsToDraw = this.entityList.length;
+
+      if (!this.elemsToDraw) return;
+
+      let gl = this.renderer.gl;
+      gl.useProgram(this.program);
+
+      this.setPerDrawCallUniforms();
+      
+      this.lastDrawCalls = 0;
+      this.nextElemOffset = 0;
+
+      this.flush();
    };
 
-   private populateVAB(): void {
-      for (let i = 0; i < this.entityList.length; i++) {
-         let data = this.createQuadData(this.entityList[i]);
-         this.vab.set(data, i * this.UNITS_PER_ELEM)
-      };
-   }
+   protected flush(): void {
+      let gl = this.renderer.gl;
+      let toDrawElementCount: number;
+      let entities = this.entityList;
+      let offset = this.nextElemOffset;
 
+      if (this.elemsToDraw > this.MAX_ELEMS) {
+         toDrawElementCount = this.MAX_ELEMS;
+      } else {
+         toDrawElementCount = this.elemsToDraw;
+      }
+      
+      for (let i = 0; i < toDrawElementCount; i++) {
+         const rectangle = entities[i + offset];
+         this.vao.set(this.createQuadData(rectangle), i * this.UNITS_PER_ELEM);
+      };
+
+      gl.bindBuffer(gl.ARRAY_BUFFER, this.vbo);
+      this.setAllAttributes();
+      gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.vao);
+
+      gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.ibo);
+      gl.drawElements(
+         gl.TRIANGLES,
+         this.INDICES_PER_ELEM * toDrawElementCount, 
+         gl.UNSIGNED_SHORT,
+         0
+      );
+
+      this.elemsToDraw -= toDrawElementCount;
+      this.lastDrawCalls++;
+      if (this.elemsToDraw) this.flush();
+   };
    protected abstract createQuadData(r: Entity): number[];
 
-   protected abstract flush(): void;
+   /**
+    * can only be called within begin method or itself recursively
+    */
+   protected abstract setPerDrawCallUniforms(): void;
 }

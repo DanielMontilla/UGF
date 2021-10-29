@@ -1,9 +1,6 @@
 import Surface from './Surface';
 import Sprite from './Entities/Sprite';
-import { createCanvas, createContext, createOrthoMatrix, createProgram, createQuadIAO, createTexture } from './Renderer/webgl-utils';
-import { vertexShader as rectangle_vs, fragmentShader as rectangle_fs } from './Shaders/Rectangle';
-import { vertexShader as sprite_vs, fragmentShader as sprite_fs } from './Shaders/Sprite';
-import { mapValue, rand, loadImage } from './util';
+import { rand } from './util';
 import Texture from './Renderer/Texture';
 import Rectangle from './Entities/Rectangle';
 
@@ -14,7 +11,7 @@ let main = async () => {
    let size = 64
    let scale = 2;
    let amountS = 2**13;
-   let amountR = 2**13;
+   let amountR = 2**14 + 1;
 
    let rangeS = amountS * .3;
    let rangeR = amountR * .3;

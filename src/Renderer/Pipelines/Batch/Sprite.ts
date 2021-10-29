@@ -46,7 +46,7 @@ export default class SpritePipeline extends BatchPipeline <Sprite, A, U> {
       let u_projection  = this.uniforms.u_projection;
       let u_textures    = this.uniforms.u_textures;
       let u_camera      = this.uniforms.u_camera;
-      gl.uniformMatrix4fv(u_projection.location, false, renderer.projection);
+      gl.uniformMatrix4fv(u_projection.location, false, renderer.projectionMat);
       gl.uniformMatrix4fv(u_camera.location, false, this.renderer.getCameraTransalation());
       
       let texUnitArr: number[] = [];
@@ -54,7 +54,6 @@ export default class SpritePipeline extends BatchPipeline <Sprite, A, U> {
       gl.uniform1iv(u_textures.location, new Int32Array(texUnitArr));
 
       /* SETTING UP ATTRIBUTES */
-
       gl.bindBuffer(gl.ARRAY_BUFFER, this.vbo);
       this.setAllAttributes();
       gl.bufferData(gl.ARRAY_BUFFER, this.MAX_SIZE, gl.DYNAMIC_DRAW);
@@ -65,36 +64,40 @@ export default class SpritePipeline extends BatchPipeline <Sprite, A, U> {
       gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, this.iao, gl.STATIC_DRAW);
    }
 
-   // TODO: add mechanisim to detect object change and only alter necesary values in vao
-   public flush() {
-      // let sprites = this.entityList;
-      // if (!sprites.length) return;
+   // public flush() {
+   //    let gl = this.renderer.gl;
+   //    let toDrawElementCount: number;
+   //    let sprites = this.entityList;
+   //    let offset = this.nextElemOffset;
 
-      let gl = this.renderer.gl;
-      gl.useProgram(this.program);
+   //    if (this.elemsToDraw > this.MAX_ELEMS) {
+   //       toDrawElementCount = this.MAX_ELEMS;
+   //    } else {
+   //       toDrawElementCount = this.elemsToDraw;
+   //    }
 
-      gl.uniformMatrix4fv(this.uniforms.u_camera.location, false, this.renderer.getCameraTransalation());
+   //    // Uploading sprites data onto GPU buffer (vao)
+   //    for (let i = 0; i < toDrawElementCount; i++) {
+   //       const sprite = sprites[i + offset];
+   //       this.vao.set(this.createQuadData(sprite), i * this.UNITS_PER_ELEM);
+   //    }
 
-      // Uploading sprites data onto GPU buffer (vao)
-      // for (let i = 0; i < sprites.length; i++) {
-      //    const sprite = sprites[i];
-      //    this.vao.set(this.createQuadData(sprite), i * this.UNITS_PER_ELEM);
-      // }
+   //    gl.bindBuffer(gl.ARRAY_BUFFER, this.vbo);
+   //    this.setAllAttributes();
+   //    gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.vao);
 
-      gl.bindBuffer(gl.ARRAY_BUFFER, this.vbo);
-      this.setAllAttributes();
-      gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.vao);
+   //    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.ibo);
+   //    gl.drawElements(
+   //       gl.TRIANGLES,
+   //       this.INDICES_PER_ELEM * this.elemsToDraw,
+   //       gl.UNSIGNED_SHORT,
+   //       0
+   //    );
 
-      gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.ibo);
-      gl.drawElements(
-         gl.TRIANGLES,
-         this.INDICES_PER_ELEM * this.elemsToDraw,
-         gl.UNSIGNED_SHORT,
-         0
-      );
-
-      this.lastDrawCalls++;
-   }
+   //    this.elemsToDraw -= toDrawElementCount;
+   //    this.lastDrawCalls++;
+   //    if (this.elemsToDraw) this.flush();
+   // }
 
    protected createQuadData(sprite: Sprite) {
       let [ x, y, layer, width, height, texture, frame ] = [
@@ -123,5 +126,10 @@ export default class SpritePipeline extends BatchPipeline <Sprite, A, U> {
       ]
       
       return quad;
+   }
+
+   protected setPerDrawCallUniforms(): void {
+      let gl = this.renderer.gl;
+      gl.uniformMatrix4fv(this.uniforms.u_camera.location, false, this.renderer.getCameraTransalation());
    }
 }

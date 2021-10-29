@@ -39,7 +39,7 @@ export default class RectanglePipeline extends BatchPipeline <Rectangle, A, U> {
       /* SETTING UP UNIFORMS */
       let u_projection  = this.uniforms.u_projection;
       let u_camera      = this.uniforms.u_camera;
-      gl.uniformMatrix4fv(u_projection.location, false, renderer.projection);
+      gl.uniformMatrix4fv(u_projection.location, false, renderer.projectionMat);
       gl.uniformMatrix4fv(u_camera.location, false, renderer.getCameraTransalation());
 
       gl.bindBuffer(gl.ARRAY_BUFFER, this.vbo);
@@ -52,35 +52,39 @@ export default class RectanglePipeline extends BatchPipeline <Rectangle, A, U> {
       gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, this.iao, gl.STATIC_DRAW);
    }
 
-   public flush() {
-      // let rectangles = this.entityList;
-      // if (!rectangles.length) return;
-      let gl = this.renderer.gl;
-      gl.useProgram(this.program)
+   // public flush() {
+   //    let gl = this.renderer.gl;
+   //    let toDrawElementCount: number;
+   //    let rectanles = this.entityList;
+   //    let offset = this.nextElemOffset;
 
-      // SETTING UP UNIFORMS
-      gl.uniformMatrix4fv(this.uniforms.u_camera.location, false, this.renderer.getCameraTransalation());
-
-      // for (let i = 0; i < rectangles.length; i++) {
-      //    const rectangle = rectangles[i];
-      //    this.vao.set(this.createQuadData(rectangle), i * this.UNITS_PER_ELEM);
-         
-      // };
+   //    if (this.elemsToDraw > this.MAX_ELEMS) {
+   //       toDrawElementCount = this.MAX_ELEMS;
+   //    } else {
+   //       toDrawElementCount = this.elemsToDraw;
+   //    }
       
-      gl.bindBuffer(gl.ARRAY_BUFFER, this.vbo);
-      this.setAllAttributes();
-      gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.vao);
+   //    for (let i = 0; i < toDrawElementCount; i++) {
+   //       const rectangle = rectanles[i + offset];
+   //       this.vao.set(this.createQuadData(rectangle), i * this.UNITS_PER_ELEM);
+   //    };
 
-      gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.ibo);
-      gl.drawElements(
-         gl.TRIANGLES,
-         this.INDICES_PER_ELEM * this.elemsToDraw, 
-         gl.UNSIGNED_SHORT,
-         0
-      );
+   //    gl.bindBuffer(gl.ARRAY_BUFFER, this.vbo);
+   //    this.setAllAttributes();
+   //    gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.vao);
 
-      this.lastDrawCalls++;
-   }
+   //    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.ibo);
+   //    gl.drawElements(
+   //       gl.TRIANGLES,
+   //       this.INDICES_PER_ELEM * toDrawElementCount, 
+   //       gl.UNSIGNED_SHORT,
+   //       0
+   //    );
+
+   //    this.elemsToDraw -= toDrawElementCount;
+   //    this.lastDrawCalls++;
+   //    if (this.elemsToDraw) this.flush();
+   // }
 
    protected createQuadData(rect: Rectangle) {
       let [ x, y, z, width, height ] = [ rect.x, rect.y, rect.layer, rect.width, rect.height ]
@@ -92,5 +96,10 @@ export default class RectanglePipeline extends BatchPipeline <Rectangle, A, U> {
          x        , y + height, z, r, g, b,  // ↙ VERTEX
          x + width, y + height, z, r, g, b   // ↘ Vertex
       ]
+   }
+
+   protected setPerDrawCallUniforms(): void {
+      let gl = this.renderer.gl;
+      gl.uniformMatrix4fv(this.uniforms.u_camera.location, false, this.renderer.getCameraTransalation());
    }
 }

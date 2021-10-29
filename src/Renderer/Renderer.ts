@@ -13,16 +13,18 @@ export default class Renderer {
    private readonly camera: Camera;
    public readonly gl: WebGLRenderingContext;
 
-   private pipelines: Record<EntityType, Pipeline>;
+   public pipelines: Record<EntityType, Pipeline>;
    public entityLists: Record<EntityType, Entity[]>;
    
-   public projection: number[];
+   public projectionMat: number[];
+   public cameraMat: number[];
 
    constructor(surface: Surface) {
       this.surface         = surface;
       this.camera          = surface.camera;
       this.gl              = createContext(surface.canvas);
-      this.projection      = createOrthoMatrix(surface.width, surface.height);
+      this.projectionMat   = createOrthoMatrix(surface.width, surface.height);
+      this.cameraMat       = createTranslationMatrix(this.camera.x, this.camera.y);
       this.entityLists     = surface.entityLists;
 
       // Initilizing other systems
@@ -51,10 +53,7 @@ export default class Renderer {
       for (const key in this.pipelines) {
          this.pipelines[key as EntityType].begin();
       }
-
-      this.pipelines.rectangle.begin();
-      this.pipelines.sprite.begin();
    }
 
-   public getCameraTransalation = () => createTranslationMatrix(this.camera.x, this.camera.y);
+   public getCameraTransalation = () => createTranslationMatrix(this.camera.x, this.camera.y);  // TODO: optimize by modifying existing translation matrix
 }
