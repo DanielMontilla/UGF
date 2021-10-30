@@ -108,6 +108,7 @@ export default abstract class BatchPipeline <
       }
    }
 
+   once = false;
 
    public begin(): void {
       this.elemsToDraw = this.entityList.length;
@@ -138,8 +139,8 @@ export default abstract class BatchPipeline <
       }
       
       for (let i = 0; i < toDrawElementCount; i++) {
-         const rectangle = entities[i + offset];
-         this.vao.set(this.createQuadData(rectangle), i * this.UNITS_PER_ELEM);
+         const e = entities[i + offset];
+         this.vao.set(this.createQuadData(e), i * this.UNITS_PER_ELEM);
       };
 
       gl.bindBuffer(gl.ARRAY_BUFFER, this.vbo);

@@ -9,66 +9,20 @@ let main = async () => {
    let s = new Surface(1200, 800, [0.15, 0.15, 0.15]);
    
    let size = 64
-   let scale = 2;
-   let amountS = 2**13;
-   let amountR = 2**14 + 1;
-
-   let rangeS = amountS * .3;
-   let rangeR = amountR * .3;
    
    let texture = await Texture.fromPath('./assets/test_sheet.png', { height: size, width: size, cols: 2, rows: 2 });
-   
-   class mySprites extends Sprite {
-      
-      speed = { x: rand(-50, 50), y: rand(-50, 50) };
-      
-      constructor() {
-         super(
-            s,
-            rand(-rangeS, rangeS),
-            rand(-rangeS, rangeS),
-            texture
-         );
-      }
-   }
 
-   class myRectangles extends Rectangle {
-      
-      speed = { x: rand(-50, 50), y: rand(-50, 50) };
-      
-      constructor() {
-         super(
-            s,
-            rand(-rangeR, rangeR),
-            rand(-rangeR, rangeR),
-            rand(50, 100),
-            rand(50, 100),
-            [rand(0, 1), rand(0, 1), rand(0, 1)]
-         );
-      }
-   }
-      
-   let sprites: mySprites[] = [];
-   let rectangles: myRectangles[] = [];
-   
-   for (let i = 0; i < amountS; i++) {
-      let sprite = new mySprites().setLayer(-1);
-      
-      setInterval(sprite.randomFrame, rand(0, 1000, true));
-      
-      sprites.push(sprite)
-   }
-   for (let i = 0; i < amountR; i++) {
-      let rect = new myRectangles().setLayer(1);
+   let mySprite = new Sprite(s, 0, 0, texture).scale(5);
+   let mySprite2 = new Sprite(s, s.width / 2, s.height / 2, texture).scale(5);
 
-      rectangles.push(rect)
-   }
+   mySprite.x -= mySprite.width / 2;
+   mySprite.y -= mySprite.height / 2;
+   mySprite2.x -= mySprite.width / 2;
+   mySprite2.y -= mySprite.height / 2;
 
+   // let myRect = new Rectangle(s, 100, 500, 100, 100);
 
    let fpsText = <HTMLElement>document.getElementById('fps');
-   let amountText = <HTMLElement>document.getElementById('amount');
-
-   amountText.innerHTML = `sprites: ${amountS} | rectangles: ${amountR} | total: ${amountR + amountS}`;
 
    let a_key = s.addKeyInput('a');
    let w_key = s.addKeyInput('w');
@@ -79,23 +33,18 @@ let main = async () => {
    let e_key = s.addKeyInput('e');
 
    let space = s.addKeyInput(' ');
-   space.onDownCallback = () => s.camera.reset();
+   space.onDownOnceCallback = () => s.camera.reset();
+
+   let [left, up, right, down] = s.createKeys(['ArrowLeft', 'ArrowUp', 'ArrowRight', 'ArrowDown']);
+
+   left.onDownOnceCallback = () => {
+      mySprite.flip('x');
+   }
 
    let cSpeed = 600;
    let zFactor = .01;
 
    s.update = (dt: number) => {
-      sprites.forEach( p => {
-         
-         p.x += p.speed.x * dt;
-         p.y += p.speed.y * dt;
-
-      });
-
-      rectangles.forEach( r => {
-         r.x += r.speed.x * dt;
-         r.y += r.speed.y * dt;
-      });
 
       if (e_key.pressed) s.camera.scale(1 + zFactor);
       if (q_key.pressed) s.camera.scale(1 - zFactor)
@@ -105,7 +54,7 @@ let main = async () => {
       if (w_key.pressed) s.camera.move(0, cSpeed * dt);
       if (s_key.pressed) s.camera.move(0, -cSpeed * dt);
 
-      (<string>fpsText.innerHTML) = `FPS: ${s.fps.toPrecision(3)} | ZOOM: x${s.camera.zoom}`;
+      (<string>fpsText.innerHTML) = `FPS: ${s.fps.toPrecision(3)} | ZOOM: x${s.camera.zoomFactor}`;
    };
 }
 

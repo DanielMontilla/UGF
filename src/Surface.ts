@@ -38,7 +38,7 @@ export default class Surface {
          sprite:     []
       }
 
-      this.camera       = new Camera();
+      this.camera       = new Camera(0, 0, width/2, height/2);
       this.renderer     = new Renderer(this);
       this.inputHandler = new InputHandler(this.canvas);
       this.previousTime = performance.now();
@@ -77,5 +77,15 @@ export default class Surface {
       onUpCallback?: () => void
       ): Key => {
       return this.inputHandler.addKey(keyCode, onDownCallback, onUpCallback);
+   }
+
+   public createKeys = (
+      keyCodes: keyCode[]
+   ) => {
+      let arr: Key[] = [];
+
+      keyCodes.forEach( code => { arr.push(this.addKeyInput(code) )} )
+
+      return arr;
    }
 }
