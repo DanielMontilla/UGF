@@ -54,7 +54,7 @@ let main = async () => {
       if (w_key.pressed) s.camera.move(0, cSpeed * dt);
       if (s_key.pressed) s.camera.move(0, -cSpeed * dt);
 
-      (<string>fpsText.innerHTML) = `FPS: ${s.fps.toPrecision(3)} | ZOOM: x${s.camera.zoomFactor}`;
+      (<string>fpsText.innerHTML) = `FPS: ${s.fps.toPrecision(3)} | x: ${s.camera.x.toPrecision(5)} y: ${s.camera.y.toPrecision(5)} | ZOOM: x${s.camera.zoom}`;
    };
 }
 
