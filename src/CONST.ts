@@ -1,1 +1,0 @@
-export const EntityTypeArr = ['sprite', 'rectangle'] as const;

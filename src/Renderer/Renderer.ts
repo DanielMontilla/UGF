@@ -1,4 +1,4 @@
-import Surface from "../Surface";
+import Surface from "../Surface/Surface";
 import Pipeline from "./Pipelines/Pipeline";
 import SpritePipeline from "./Pipelines/Batch/Sprite";
 import RectanglePipeline from "./Pipelines/Batch/Rectangle";

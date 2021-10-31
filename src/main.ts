@@ -1,4 +1,4 @@
-import Surface from './Surface';
+import Surface from './Surface/Surface';
 import Sprite from './Entities/Sprite';
 import { rand } from './util';
 import Texture from './Renderer/Texture';
@@ -26,8 +26,6 @@ let main = async () => {
    mySprite3.x -= mySprite.width / 2;
    mySprite3.y -= mySprite.height / 2;
 
-   // let myRect = new Rectangle(s, 100, 500, 100, 100);
-
    let fpsText = <HTMLElement>document.getElementById('fps');
 
    let a_key = s.addKeyInput('a');
@@ -37,7 +35,6 @@ let main = async () => {
 
    let q_key = s.addKeyInput('q');
    let e_key = s.addKeyInput('e');
-   // let r_key = s.addKeyInput('r', () => { s.camera.scaleTo(2)});
 
    q_key.onDownCallback = () => {s.camera.scale(.1)};
    e_key.onDownCallback = () => {s.camera.scale(-.1)};
@@ -50,16 +47,10 @@ let main = async () => {
 
    s.update = (dt: number) => {
 
-      // if (e_key.pressed) s.camera.scale(1 + zFactor);
-      // if (q_key.pressed) s.camera.scale(1 - zFactor);
-
       if (a_key.pressed) s.camera.moveBy(cSpeed * dt, 0);
       if (d_key.pressed) s.camera.moveBy(-cSpeed * dt, 0);
       if (w_key.pressed) s.camera.moveBy(0, cSpeed * dt);
       if (s_key.pressed) s.camera.moveBy(0, -cSpeed * dt);
-
-      // s.camera.scale(.001);
-
       (<string>fpsText.innerHTML) = `FPS: ${s.fps.toPrecision(3)} | x: ${s.camera.x.toPrecision(5)} y: ${s.camera.y.toPrecision(5)} | ZOOM: x${s.camera.zoom.x} |
       fx: ${s.camera.focus.x.toPrecision(5)} fy: ${s.camera.focus.y.toPrecision(5)}`;
    };

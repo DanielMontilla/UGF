@@ -1,4 +1,4 @@
-import Surface from "../Surface";
+import Surface from "../Surface/Surface";
 import Entity from "./Entity";
 
 export default class Rectangle extends Entity {

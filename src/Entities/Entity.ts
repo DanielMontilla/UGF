@@ -1,5 +1,5 @@
 import Vec2 from "../Math/Vector/Vec2";
-import Surface from "../Surface";
+import Surface from "../Surface/Surface";
 import Size from "./Util/Size";
 
 export default abstract class Entity {

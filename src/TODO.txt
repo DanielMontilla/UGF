@@ -1,2 +1,0 @@
-1. refactor inputHandler class
-   a. document 'Key' Class

@@ -1,5 +1,5 @@
 import Texture from "../Renderer/Texture";
-import Surface from "../Surface";
+import Surface from "../Surface/Surface";
 import { rand } from "../util";
 import Entity from "./Entity";
 

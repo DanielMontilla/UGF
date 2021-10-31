@@ -1,12 +1,12 @@
-import Entity from "./Entities/Entity";
-import Rectangle from "./Entities/Rectangle";
-import Sprite from "./Entities/Sprite";
-import InputHandler from "./Input/InputHandler";
-import Key from "./Input/Key";
-import Camera from "./Renderer/Camera";
-import Renderer from "./Renderer/Renderer";
-import { emptyFunc } from "./util";
-import { createCanvas } from "./Renderer/webgl-utils";
+import Entity from "../Entities/Entity";
+import Rectangle from "../Entities/Rectangle";
+import Sprite from "../Entities/Sprite";
+import InputHandler from "../Input/InputHandler";
+import Key from "../Input/Key";
+import Camera from "../Renderer/Camera";
+import Renderer from "../Renderer/Renderer";
+import { emptyFunc } from "../util";
+import { createCanvas } from "../Renderer/webgl-utils";
 
 export default class Surface {
 
