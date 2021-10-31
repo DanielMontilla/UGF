@@ -14,11 +14,17 @@ let main = async () => {
 
    let mySprite = new Sprite(s, 0, 0, texture).scale(5);
    let mySprite2 = new Sprite(s, s.width / 2, s.height / 2, texture).scale(5);
+   let mySprite3 = new Sprite(s, -s.width / 2, -s.height / 2, texture).scale(5);
+
+   mySprite2.frame = 1;
+   mySprite3.frame = 2;
 
    mySprite.x -= mySprite.width / 2;
    mySprite.y -= mySprite.height / 2;
    mySprite2.x -= mySprite.width / 2;
    mySprite2.y -= mySprite.height / 2;
+   mySprite3.x -= mySprite.width / 2;
+   mySprite3.y -= mySprite.height / 2;
 
    // let myRect = new Rectangle(s, 100, 500, 100, 100);
 
@@ -31,30 +37,31 @@ let main = async () => {
 
    let q_key = s.addKeyInput('q');
    let e_key = s.addKeyInput('e');
+   // let r_key = s.addKeyInput('r', () => { s.camera.scaleTo(2)});
+
+   q_key.onDownCallback = () => {s.camera.scale(.1)};
+   e_key.onDownCallback = () => {s.camera.scale(-.1)};
 
    let space = s.addKeyInput(' ');
    space.onDownOnceCallback = () => s.camera.reset();
-
-   let [left, up, right, down] = s.createKeys(['ArrowLeft', 'ArrowUp', 'ArrowRight', 'ArrowDown']);
-
-   left.onDownOnceCallback = () => {
-      mySprite.flip('x');
-   }
 
    let cSpeed = 600;
    let zFactor = .01;
 
    s.update = (dt: number) => {
 
-      if (e_key.pressed) s.camera.scale(1 + zFactor);
-      if (q_key.pressed) s.camera.scale(1 - zFactor)
+      // if (e_key.pressed) s.camera.scale(1 + zFactor);
+      // if (q_key.pressed) s.camera.scale(1 - zFactor);
 
-      if (a_key.pressed) s.camera.move(cSpeed * dt, 0);
-      if (d_key.pressed) s.camera.move(-cSpeed * dt, 0);
-      if (w_key.pressed) s.camera.move(0, cSpeed * dt);
-      if (s_key.pressed) s.camera.move(0, -cSpeed * dt);
+      if (a_key.pressed) s.camera.moveBy(cSpeed * dt, 0);
+      if (d_key.pressed) s.camera.moveBy(-cSpeed * dt, 0);
+      if (w_key.pressed) s.camera.moveBy(0, cSpeed * dt);
+      if (s_key.pressed) s.camera.moveBy(0, -cSpeed * dt);
 
-      (<string>fpsText.innerHTML) = `FPS: ${s.fps.toPrecision(3)} | x: ${s.camera.x.toPrecision(5)} y: ${s.camera.y.toPrecision(5)} | ZOOM: x${s.camera.zoom}`;
+      // s.camera.scale(.001);
+
+      (<string>fpsText.innerHTML) = `FPS: ${s.fps.toPrecision(3)} | x: ${s.camera.x.toPrecision(5)} y: ${s.camera.y.toPrecision(5)} | ZOOM: x${s.camera.zoom.x} |
+      fx: ${s.camera.focus.x.toPrecision(5)} fy: ${s.camera.focus.y.toPrecision(5)}`;
    };
 }
 

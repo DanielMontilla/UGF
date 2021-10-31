@@ -15,36 +15,64 @@ enum indexes {
 export default class Camera {
    
    private _mat: Mat4;
-   private _pivot: Vec2;
+   private offset: Vec2;
+   public focus: Vec2;
+   public resolution: Vec2;
+   public zoomRange: [x: number, y: number] = [0.5, 2];
 
    constructor(
+      fx: number,
+      fy: number,
+      rx: number,
+      ry: number,
       x: number = 0,
       y: number = 0,
-      ox: number = 0,
-      oy: number = 0,
       zoom: number = 1
    ) {
       this._mat = Mat4.Identity();
-      this._pivot = new Vec2(ox, oy);
+      this.focus = new Vec2(fx, fy);
+      this.offset = new Vec2(fx, fy);
+      this.resolution = new Vec2(rx, ry);
       
-      this._mat[indexes.x] = x;
-      this._mat[indexes.y] = y;
-      this._mat[indexes.sx] = zoom;
-      this._mat[indexes.sy] = zoom;
+      this.reset();
    }
 
-   public move(x: number, y: number) {
-      this._mat[indexes.x] += x // * this._mat[indexes.sx];
-      this._mat[indexes.y] += y // * this._mat[indexes.sy];
-      // this._pivot.add(x, y);
-      // this.update();
+   public moveTo(x: number, y: number) {
+      this._mat[indexes.x] = x;
+      this._mat[indexes.y] = y;
+      // this.focus.x = -x + this.offset.x;
+      // this.focus.y = -y + this.offset.y;
+   }
+
+   public moveBy(x: number, y: number) {
+      this.moveTo(
+         this._mat[indexes.x] + x,
+         this._mat[indexes.y] + y
+      );
+   }
+   
+   public scaleTo(n: number) {
+      this._mat[indexes.sx] = n;
+      this._mat[indexes.sy] = n;
    }
 
    public scale(n: number) {
-      this._mat[indexes.sx] *= n;
-      this._mat[indexes.sy] *= n;
-      // this._mat[indexes.x] += this._pivot.x * ( 1 - n );
-      // this._mat[indexes.y] += this._pivot.y * ( 1 - n );
+      let newZoom = new Vec2(
+         this._mat[indexes.sx] + n,
+         this._mat[indexes.sy] + n
+      );
+
+      newZoom.x = (newZoom.x < this.zoomRange[0]) ? this.zoomRange[0] : newZoom.x;
+      newZoom.x = (newZoom.x > this.zoomRange[1]) ? this.zoomRange[1] : newZoom.x;
+      newZoom.y = (newZoom.y < this.zoomRange[0]) ? this.zoomRange[0] : newZoom.y;
+      newZoom.y = (newZoom.y > this.zoomRange[1]) ? this.zoomRange[1] : newZoom.y;
+
+      this._mat[indexes.sx] = newZoom.x;
+      this._mat[indexes.sy] = newZoom.y;
+
+      // this._mat[indexes.x] = -newZoom.x * (this.focus.x) + ( this.resolution.x / 2 );
+      // this._mat[indexes.y] = -newZoom.y * (this.focus.y) + ( this.resolution.y / 2 );
+
    }
 
    public reset(
@@ -52,14 +80,12 @@ export default class Camera {
       y: number = 0,
       zoom: number = 1
    ) {
-      this._mat[indexes.x] = x;
-      this._mat[indexes.y] = y;
-      this._mat[indexes.sx] = zoom;
-      this._mat[indexes.sy] = zoom;
+      this.moveTo(x, y);
+      this.scaleTo(zoom);
    }
 
    public get zoom() {
-      return this._mat[indexes.sx]; 
+      return new Vec2(this._mat[indexes.sx], this._mat[indexes.sy]); 
    }
 
    public get x() {
@@ -71,6 +97,10 @@ export default class Camera {
    }
    
    public get mat(): Mat4 {
+      return this._mat;
+   }
+
+   public getMat(): Mat4 {
       return this._mat;
    }
 }
