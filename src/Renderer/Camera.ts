@@ -1,5 +1,5 @@
-import Mat4 from "../Math/Matrix/Mat4";
-import Vec2 from "../Math/Vector/Vec2";
+import Mat4 from "../Util/Classes/Math/Matrix/Mat4";
+import Vec2 from "../Util/Classes/Math/Vector/Vec2";
 
 enum indexes {
    x  = 12,

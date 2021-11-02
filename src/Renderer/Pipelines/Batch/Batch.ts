@@ -157,6 +157,7 @@ export default abstract class BatchPipeline <
 
       this.elemsToDraw -= toDrawElementCount;
       this.lastDrawCalls++;
+      // console.log(this.constructor.name, this.vao);
       if (this.elemsToDraw) this.flush();
    };
    protected abstract createQuadData(r: Entity): number[];

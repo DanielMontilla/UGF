@@ -11,8 +11,8 @@ import {
    uniforms       as U,
    attributeList,
    uniformList
-} from "../../../Shaders/Rectangle";
-import { createQuadIAO } from "../../webgl-utils";
+} from "../../Shaders/Rectangle";
+import { createQuadIAO } from "../../../Util/webgl";
 
 
 // TODO: dynamically change max size
@@ -51,40 +51,6 @@ export default class RectanglePipeline extends BatchPipeline <Rectangle, A, U> {
       gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.ibo);
       gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, this.iao, gl.STATIC_DRAW);
    }
-
-   // public flush() {
-   //    let gl = this.renderer.gl;
-   //    let toDrawElementCount: number;
-   //    let rectanles = this.entityList;
-   //    let offset = this.nextElemOffset;
-
-   //    if (this.elemsToDraw > this.MAX_ELEMS) {
-   //       toDrawElementCount = this.MAX_ELEMS;
-   //    } else {
-   //       toDrawElementCount = this.elemsToDraw;
-   //    }
-      
-   //    for (let i = 0; i < toDrawElementCount; i++) {
-   //       const rectangle = rectanles[i + offset];
-   //       this.vao.set(this.createQuadData(rectangle), i * this.UNITS_PER_ELEM);
-   //    };
-
-   //    gl.bindBuffer(gl.ARRAY_BUFFER, this.vbo);
-   //    this.setAllAttributes();
-   //    gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.vao);
-
-   //    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.ibo);
-   //    gl.drawElements(
-   //       gl.TRIANGLES,
-   //       this.INDICES_PER_ELEM * toDrawElementCount, 
-   //       gl.UNSIGNED_SHORT,
-   //       0
-   //    );
-
-   //    this.elemsToDraw -= toDrawElementCount;
-   //    this.lastDrawCalls++;
-   //    if (this.elemsToDraw) this.flush();
-   // }
 
    protected createQuadData(rect: Rectangle) {
       let [ x, y, z, width, height ] = [ rect.x, rect.y, rect.layer, rect.width, rect.height ]

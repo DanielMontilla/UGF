@@ -3,10 +3,7 @@ import Vector from "./Vector";
 export default class Vec2 extends Vector {
 
    constructor(x: number = 0, y: number = 0) {
-      super(2);
-      this[0] = x;
-      this[1] = y;
-      Object.setPrototypeOf(this, Object.create(Vec2.prototype)); // what the fuck
+      super([x, y]);
    }
 
    set (x: number, y: number) {

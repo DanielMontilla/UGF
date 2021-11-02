@@ -5,8 +5,8 @@ import InputHandler from "../Input/InputHandler";
 import Key from "../Input/Key";
 import Camera from "../Renderer/Camera";
 import Renderer from "../Renderer/Renderer";
-import { emptyFunc } from "../util";
-import { createCanvas } from "../Renderer/webgl-utils";
+import { emptyFunc } from "../Util/general";
+import { createCanvas } from "../Util/webgl";
 
 export default class Surface {
 

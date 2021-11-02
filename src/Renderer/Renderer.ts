@@ -1,9 +1,9 @@
-import Surface from "../Surface/Surface";
+import Surface from "../Core/Surface";
 import Pipeline from "./Pipelines/Pipeline";
 import SpritePipeline from "./Pipelines/Batch/Sprite";
 import RectanglePipeline from "./Pipelines/Batch/Rectangle";
 import Entity from "../Entities/Entity";
-import { createContext, createOrthoMatrix, createTranslationMatrix } from "./webgl-utils";
+import { createContext, createOrthoMatrix, createTranslationMatrix } from "../Util/webgl";
 import Texture from "./Texture";
 import Camera from "./Camera";
 

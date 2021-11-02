@@ -1,5 +1,5 @@
-import { createTexture } from "./webgl-utils";
-import { loadImage, mapValue } from "../util";
+import { createTexture, loadImage } from "../Util/webgl";
+import { mapValue } from "../Util/math";
 
 /**
  * TODO:

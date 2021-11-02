@@ -1,6 +1,6 @@
 import Texture from "../Renderer/Texture";
-import Surface from "../Surface/Surface";
-import { rand } from "../util";
+import Surface from "../Core/Surface";
+import { rand, randRound } from "../Util/math";
 import Entity from "./Entity";
 
 export default class Sprite extends Entity {
@@ -28,7 +28,7 @@ export default class Sprite extends Entity {
    public randomFrame () {
       let original = this.frame;
       while (original == this.frame) {
-         this.frame = rand(0, this.texture.frameData.length - 1, true);
+         this.frame = randRound(0, this.texture.frameData.length - 1);
       }
    }
 

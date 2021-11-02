@@ -1,4 +1,4 @@
-import Vec2 from "../../Math/Vector/Vec2";
+import Vec2 from "./Math/Vector/Vec2";
 
 /**
  * Basiaclly just a wrapper for Vec2
@@ -6,7 +6,6 @@ import Vec2 from "../../Math/Vector/Vec2";
 export default class Size extends Vec2 {
    constructor(width: number, height: number) {
       super(width, height);
-      Object.setPrototypeOf(this, Object.create(Size.prototype)); // what the fuck
    }
 
    set width(n: number) {

@@ -1,6 +1,6 @@
-import Vec2 from "../Math/Vector/Vec2";
-import Surface from "../Surface/Surface";
-import Size from "./Util/Size";
+import Vec2 from "../Util/Classes/Math/Vector/Vec2";
+import Surface from "../Core/Surface";
+import Size from "../Util/Classes/Size";
 
 export default abstract class Entity {
    
@@ -39,13 +39,13 @@ export default abstract class Entity {
       this.size.flipComponent(-1, component);
    }
 
-   get x() { return this.position.x; }
+   get x(): number { return this.position.x; }
    
-   get y() { return this.position.y; }
+   get y(): number { return this.position.y; }
 
-   get width() { return this.size.width; }
+   get width(): number { return this.size.width; }
 
-   get height() { return this.size.height; }
+   get height(): number { return this.size.height; }
 
    set x(n: number) { this.position.x = n; }
    

@@ -1,5 +1,3 @@
-import { FLOAT_SIZE, INDICES_PER_QUAD, VERTEX_PER_QUAD } from "./CONST";
-
 export const createContext = (canvas: HTMLCanvasElement): WebGLRenderingContext => {
    let gl = canvas.getContext('webgl');
    if (!gl) console.error(`couldn't get webgl context`);
@@ -140,13 +138,16 @@ export const createTranslationMatrix = (x: number, y: number) => [
  * @returns 
  */
 export const getDataFromType = (
-   type: number
+   type: number,
 ): [unitType: number, units: number, totalSize: number] => {
    let unitType: number;
    let units: number;
    let unitSize: number;
    let totalSize: number;
    let gl = WebGLRenderingContext;
+
+   // TODO: move this elsewhere to use global consts
+   let FLOAT_SIZE = 4;
 
    switch (type) {
       case gl.FLOAT:
@@ -190,6 +191,10 @@ export const createQuadIAO = (elems: number): number[] => {
    let step: number;
    let offset: number;
 
+   // TODO: move this elsewhere to use global consts
+   let VERTEX_PER_QUAD = 4;
+   let INDICES_PER_QUAD = 6;
+
    for (let i = 0; i < elems; i++) {
       offset   = VERTEX_PER_QUAD * i;
       step     = INDICES_PER_QUAD * i;
@@ -204,3 +209,10 @@ export const createQuadIAO = (elems: number): number[] => {
 
    return arr;
 }
+
+export const loadImage = async (path: string) => {
+   let img = new Image();
+   img.src = path;
+   await img.decode();
+   return img;
+};

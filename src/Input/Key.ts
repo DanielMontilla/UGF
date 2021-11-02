@@ -1,7 +1,6 @@
-import { emptyFunc } from "../util";
+import { emptyFunc } from "../Util/general";
 
 export default class Key {
-
    public readonly code: keyCode;
    public pressed: boolean;
 
@@ -13,12 +12,12 @@ export default class Key {
       code: keyCode,
       onDownCallback: () => void = emptyFunc,
       onUpCallback: () => void = emptyFunc
-      ) {
-      this.code               = code;
-      this.onDownCallback     = onDownCallback;
-      this.onUpCallback       = onUpCallback;
+   ) {
+      this.code = code;
+      this.onDownCallback = onDownCallback;
+      this.onUpCallback = onUpCallback;
       this.onDownOnceCallback = emptyFunc;
-      this.pressed            = false;
+      this.pressed = false;
    }
 
    public onDown() {

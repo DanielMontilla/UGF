@@ -17,8 +17,8 @@ import {
    uniforms       as U,
    attributeList,
    uniformList
-} from '../../../Shaders/Sprite';
-import { createQuadIAO } from "../../webgl-utils";
+} from '../../Shaders/Sprite';
+import { createQuadIAO } from "../../../Util/webgl";
 
 export default class SpritePipeline extends BatchPipeline <Sprite, A, U> {
 
@@ -63,41 +63,6 @@ export default class SpritePipeline extends BatchPipeline <Sprite, A, U> {
       gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.ibo);
       gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, this.iao, gl.STATIC_DRAW);
    }
-
-   // public flush() {
-   //    let gl = this.renderer.gl;
-   //    let toDrawElementCount: number;
-   //    let sprites = this.entityList;
-   //    let offset = this.nextElemOffset;
-
-   //    if (this.elemsToDraw > this.MAX_ELEMS) {
-   //       toDrawElementCount = this.MAX_ELEMS;
-   //    } else {
-   //       toDrawElementCount = this.elemsToDraw;
-   //    }
-
-   //    // Uploading sprites data onto GPU buffer (vao)
-   //    for (let i = 0; i < toDrawElementCount; i++) {
-   //       const sprite = sprites[i + offset];
-   //       this.vao.set(this.createQuadData(sprite), i * this.UNITS_PER_ELEM);
-   //    }
-
-   //    gl.bindBuffer(gl.ARRAY_BUFFER, this.vbo);
-   //    this.setAllAttributes();
-   //    gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.vao);
-
-   //    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.ibo);
-   //    gl.drawElements(
-   //       gl.TRIANGLES,
-   //       this.INDICES_PER_ELEM * this.elemsToDraw,
-   //       gl.UNSIGNED_SHORT,
-   //       0
-   //    );
-
-   //    this.elemsToDraw -= toDrawElementCount;
-   //    this.lastDrawCalls++;
-   //    if (this.elemsToDraw) this.flush();
-   // }
 
    protected createQuadData(sprite: Sprite) {
       let [ x, y, layer, width, height, texture, frame ] = [
