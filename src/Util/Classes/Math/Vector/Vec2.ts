@@ -1,65 +1,34 @@
-import Vector from "./Vector";
+export default class Vec2 {
+   constructor(
+      public x: number = 0,
+      public y: number = 0
+   ) {}
 
-export default class Vec2 extends Vector {
-
-   constructor(x: number = 0, y: number = 0) {
-      super([x, y]);
-   }
-
-   set (x: number, y: number) {
-      this[0] = x;
-      this[1] = y;
-   }
-
+   
    add(x: number, y: number) {
-      this[0] += x;
-      this[1] += y;
+      this.x += x;
+      this.y += y;
+      return this;
    }
    
+   set(x: number, y: number) {
+      this.x = x;
+      this.y = y;
+      return this;
+   }
+
    scale(n: number) {
-      this[0] *= n;
-      this[1] *= n;
+      this.x *= n;
+      this.y *= n;
+      return this;
    }
 
-   scaleComponent(n: number, component: 'x' | 'y') { 
-      this[component] *= n;
+   // ! maybe doesnt work :(
+   scaleComponent(n: number, component: keyof Vec2) {
+      if (component == 'x') this.x *= n;
+      if (component == 'y') this.x *= n;
+      return this;
    }
 
-   flip() {
-      this.scale(-1);
-   }
-
-   flipComponent(n: number, component: 'x' | 'y') {
-      this.scaleComponent(-1, component);
-   }
-
-   get x () {
-      return this[0];
-   }
-
-   get y () {
-      return this[1];
-   }
-
-   set x (n: number) {
-      this[0] = n;
-   }
-
-   set y (n: number) {
-      this[1] = n;
-   }
-
-   // 🔧 FACTORY METHODS 🏭
-   public static FromArr(arr: [x: number, y: number]) {
-      return new Vec2(arr[0], arr[1]);
-   }
-
-   public static All(n: number) {
-      return new Vec2(n, n);
-   }
-
-   public static Zero() {
-      return new Vec2()
-   }
-
+   get arr() { return [ this.x, this.y ] };
 }

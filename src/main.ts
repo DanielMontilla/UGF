@@ -1,7 +1,6 @@
 import Surface from './Core/Surface';
 import Sprite from './Entities/Sprite';
 import Texture from './Renderer/Texture';
-import Vec2 from './Util/Classes/Math/Vector/Vec2';
 
 let main = async () => {
 

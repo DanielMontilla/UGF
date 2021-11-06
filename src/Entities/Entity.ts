@@ -1,16 +1,15 @@
-import Vec2 from "../Util/Classes/Math/Vector/Vec2";
 import Surface from "../Core/Surface";
-import Size from "../Util/Classes/Size";
+import Transform from "../Util/Classes/Transform/Transform";
+import Size from "../Util/Classes/Transform/Size";
+import Point from "../Util/Classes/Math/Vector/Point";
+import Position from "../Util/Classes/Transform/Position";
 
 export default abstract class Entity {
    
    public readonly surface: Surface;
    
-   public position: Vec2;
-   public size: Size;
+   public transform: Transform;
    public layer: number;
-   
-   public anchor: Vec2 = Vec2.Zero();
 
    constructor(
       surface: Surface,
@@ -19,10 +18,13 @@ export default abstract class Entity {
       width: number,
       height: number
    ) {
-      this.surface   = surface;
-      this.position  = new Vec2(x, y);
-      this.size      = new Size(width, height);
-      this.layer     = 0;
+      this.surface = surface;
+      this.transform = new Transform(
+         new Position(x, y),
+         new Size(width, height),
+         new Point(0, 0)
+      );
+      this.layer = 0;
    }
 
    setLayer(n: number) {
@@ -35,24 +37,20 @@ export default abstract class Entity {
       return this;
    }
 
-   flip(component: 'x' | 'y') {
-      this.size.flipComponent(-1, component);
+   flip(axis: 'x' | 'y') {
+      this.size.flip(axis);
    }
 
-   get x(): number { return this.position.x; }
-   
-   get y(): number { return this.position.y; }
+   get position(): Position { return this.transform.position }
+   get size(): Size { return this.transform.size }
 
-   get width(): number { return this.size.width; }
-
-   get height(): number { return this.size.height; }
-
-   set x(n: number) { this.position.x = n; }
-   
-   set y(n: number) { this.position.y = n; }
-
-   set width(n: number) { this.size.width = n; }
-
-   set height(n: number) { this.size.height = n; }
+   get x(): number { return this.transform.position.x }
+   get y(): number { return this.transform.position.y }
+   get width(): number { return this.transform.size.width }
+   get height(): number { return this.transform.size.height }
+   set x(n: number) { this.transform.position.x = n }
+   set y(n: number) { this.transform.position.y = n }
+   set width(n: number) { this.transform.size.width = n }
+   set height(n: number) { this.transform.size.height = n }
 
 }
