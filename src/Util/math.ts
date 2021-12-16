@@ -18,3 +18,16 @@ export const mapValue = (
    fRange: { min: number; max: number },
    tRange: { min: number; max: number }
 ): number =>  (tRange.min) + ( (value - fRange.min) * (tRange.max - tRange.min) / (fRange.max - fRange.min) );
+
+export const inRange = (
+   value: number,
+   min: number,
+   max: number,
+   exclusive?: boolean
+) => {
+   if (exclusive) {
+      return value < max && value > min;
+   } else {
+      return value <= max && value >= min;
+   }
+}

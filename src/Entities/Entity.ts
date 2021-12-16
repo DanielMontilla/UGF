@@ -1,8 +1,8 @@
 import Surface from "../Core/Surface";
 import Transform from "../Util/Classes/Transform/Transform";
 import Size from "../Util/Classes/Transform/Size";
-import Point from "../Util/Classes/Math/Vector/Point";
-import Position from "../Util/Classes/Transform/Position";
+import Point from "../Util/Classes/Transform/Point";
+import { inRange } from "../Util/math";
 
 export default abstract class Entity {
    
@@ -20,7 +20,7 @@ export default abstract class Entity {
    ) {
       this.surface = surface;
       this.transform = new Transform(
-         new Position(x, y),
+         new Point(x, y),
          new Size(width, height),
          new Point(0, 0)
       );
@@ -39,18 +39,37 @@ export default abstract class Entity {
 
    flip(axis: 'x' | 'y') {
       this.size.flip(axis);
+      return this;
    }
 
-   get position(): Position { return this.transform.position }
+   setAnchor(x: number, y: number) {
+      if (!inRange(x, 0, 1)) {
+         console.warn(`Invalid anchorX value, must be withint 0 and 1`);
+         return this;
+      }
+
+      if (!inRange(y, 0, 1)) {
+         console.warn(`Invalid anchorY value, must be withint 0 and 1`);
+         return this;
+      }
+
+      this.transform.anchor.x = x;
+      this.transform.anchor.y = y;
+
+      return this;
+   }
+
+   get position(): Point { return this.transform.position }
    get size(): Size { return this.transform.size }
+   get anchor(): Point { return this.transform.anchor }
 
    get x(): number { return this.transform.position.x }
    get y(): number { return this.transform.position.y }
    get width(): number { return this.transform.size.width }
    get height(): number { return this.transform.size.height }
-   set x(n: number) { this.transform.position.x = n }
-   set y(n: number) { this.transform.position.y = n }
-   set width(n: number) { this.transform.size.width = n }
-   set height(n: number) { this.transform.size.height = n }
 
+   set x(n: number) { this.position.x = n }
+   set y(n: number) { this.position.y = n }
+   set width(n: number) { this.size.width = n }
+   set height(n: number) { this.size.height = n }
 }

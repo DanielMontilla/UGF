@@ -53,8 +53,9 @@ export default class RectanglePipeline extends BatchPipeline <Rectangle, A, U> {
    }
 
    protected createQuadData(rect: Rectangle) {
-      let [ x, y, z, width, height ] = [ rect.x, rect.y, rect.layer, rect.width, rect.height ]
-      let [ r, g, b ] = rect.color;
+      let [ x, y ] = rect.transform.position.values;
+      let [ z, width, height ] = [ rect.layer, rect.width, rect.height ]
+      let [ r, g, b ] = rect.color.getNormalized();
 
       return [
          x        , y         , z, r, g, b,  // ↖ VERTEX

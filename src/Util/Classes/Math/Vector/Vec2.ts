@@ -26,9 +26,12 @@ export default class Vec2 {
    // ! maybe doesnt work :(
    scaleComponent(n: number, component: keyof Vec2) {
       if (component == 'x') this.x *= n;
-      if (component == 'y') this.x *= n;
+      if (component == 'y') this.y *= n;
       return this;
    }
 
    get arr() { return [ this.x, this.y ] };
+   get mid(): [x: number, y: number] {
+      return [this.x / 2, this.y / 2];
+   }
 }

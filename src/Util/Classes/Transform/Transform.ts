@@ -1,5 +1,4 @@
-import Point from "../Math/Vector/Point";
-import Position from "./Position";
+import Point from "./Point";
 import Size from "./Size";
 
 /**
@@ -9,9 +8,12 @@ import Size from "./Size";
  */
 export default class Transform {
    constructor(
-      public position: Position = new Point(),
-      public size: Size = new Size(),
-      public anchor: Point = new Point()
+      private _position: Point = new Point(),
+      private _size: Size = new Size(),
+      private _anchor: Point = new Point()
    ) {}
 
+   get position(): Point { return this._position }
+   get size(): Size { return this._size }
+   get anchor(): Point { return this._anchor }
 }

@@ -5,15 +5,16 @@ import InputHandler from "../Input/InputHandler";
 import Key from "../Input/Key";
 import Camera from "../Renderer/Camera";
 import Renderer from "../Renderer/Renderer";
+import RGB from "../Util/Classes/RGB";
+import Size from "../Util/Classes/Transform/Size";
 import { emptyFunc } from "../Util/general";
 import { createCanvas } from "../Util/webgl";
 
 export default class Surface {
 
-   public readonly width: number;
-   public readonly height: number;
+   public readonly size: Size;
    public readonly canvas: HTMLCanvasElement;
-   public readonly background: rgb;
+   public readonly background: RGB;
    public entityLists: Record<EntityType, Entity[]>;
 
    public readonly renderer: Renderer;
@@ -25,13 +26,13 @@ export default class Surface {
 
    public fps: number = 0;
 
-   constructor(width: number = 1200, height: number = 900, background: rgb = [1, 1, 1]) {
+   // TODO: create overloads for constructor
+   constructor(width: number = 1200, height: number = 900, background: rgb = [50, 50, 50]) {
 
-      this.width        = width;
-      this.height       = height;
+      this.size         = new Size(width, height);
       this.canvas       = createCanvas(width, height);
       this.update       = emptyFunc;
-      this.background   = background;
+      this.background   = RGB.fromArr(background);
 
       this.entityLists  = {   // TODO: create a const array to tidy up this code
          rectangle:  [],
@@ -88,4 +89,8 @@ export default class Surface {
 
       return arr;
    }
+
+   get width() { return this.size.width }
+   get height() { return this.size.height }
+   get center() { return this.size.mid }
 }

@@ -2,9 +2,11 @@ import Surface from './Core/Surface';
 import Sprite from './Entities/Sprite';
 import Texture from './Renderer/Texture';
 
+import { default as flappy } from './Examples/FlappyBird'
+
 let main = async () => {
 
-   let s = new Surface(1200, 800, [0.15, 0.15, 0.15]);
+   let s = new Surface(1200, 800);
    
    let size = 64
    
@@ -54,4 +56,6 @@ let main = async () => {
    };
 }
 
-main();
+flappy();
+
+// main();

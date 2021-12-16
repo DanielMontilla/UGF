@@ -3,7 +3,7 @@ import Pipeline from "./Pipelines/Pipeline";
 import SpritePipeline from "./Pipelines/Batch/Sprite";
 import RectanglePipeline from "./Pipelines/Batch/Rectangle";
 import Entity from "../Entities/Entity";
-import { createContext, createOrthoMatrix, createTranslationMatrix } from "../Util/webgl";
+import { createContext, createOrthoMatrix } from "../Util/webgl";
 import Texture from "./Texture";
 import Camera from "./Camera";
 
@@ -36,7 +36,7 @@ export default class Renderer {
       
       // Setting up surface for drawing
       let gl         = this.gl;
-      let [r, g, b]  = surface.background;
+      let [r, g, b]  = surface.background.getNormalized();
 
       gl.enable(gl.BLEND);
       gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);

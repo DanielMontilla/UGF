@@ -1,8 +1,9 @@
 import Surface from "../Core/Surface";
+import RGB from "../Util/Classes/RGB";
 import Entity from "./Entity";
 
 export default class Rectangle extends Entity {
-   public color: rgb;
+   public color: RGB;
 
    constructor(
       surface: Surface,
@@ -13,7 +14,7 @@ export default class Rectangle extends Entity {
       color: rgb = [1, 1, 1]
    ) {
       super(surface, x, y, width, height);
-      this.color = color;
+      this.color = RGB.fromArr(color);
 
       surface.addEntity(this);
    }

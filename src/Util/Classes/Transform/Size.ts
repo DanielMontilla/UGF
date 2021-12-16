@@ -1,7 +1,8 @@
 import Vec2 from "../Math/Vector/Vec2";
 
 /**
- * Basiaclly just a wrapper for Vec2
+ * TODO:
+ *    * Maybe should not extend from vec2...? idk
  */
 export default class Size extends Vec2 {
    constructor(
