@@ -1,3 +1,4 @@
+import Circle from "../Entities/Circle";
 import Entity from "../Entities/Entity";
 import Rectangle from "../Entities/Rectangle";
 import Sprite from "../Entities/Sprite";
@@ -36,7 +37,8 @@ export default class Surface {
 
       this.entityLists  = {   // TODO: create a const array to tidy up this code
          rectangle:  [],
-         sprite:     []
+         sprite:     [],
+         circle:     []
       }
 
       this.camera       = new Camera(0, 0, width, height);
@@ -68,6 +70,7 @@ export default class Surface {
       let entityType: EntityType = 'rectangle';
       if (e instanceof Rectangle)   entityType = 'rectangle';
       if (e instanceof Sprite)      entityType = 'sprite';
+      if (e instanceof Circle)      entityType = 'circle';
 
       this.entityLists[entityType].push(e);
    }
@@ -92,5 +95,5 @@ export default class Surface {
 
    get width() { return this.size.width }
    get height() { return this.size.height }
-   get center() { return this.size.mid }
+   get center() { return this.size.getCenter() }
 }

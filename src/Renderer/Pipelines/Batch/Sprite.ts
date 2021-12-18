@@ -65,12 +65,14 @@ export default class SpritePipeline extends BatchPipeline <Sprite, A, U> {
    }
 
    protected createQuadData(sprite: Sprite) {
+      let transform = sprite.transform;
+
       let [ x, y, layer, width, height, texture, frame ] = [
          sprite.x,
          sprite.y,
          sprite.layer,
-         sprite.width,
-         sprite.height,
+         transform.width,
+         transform.height,
          sprite.texture,
          sprite.frame
       ]
@@ -93,7 +95,7 @@ export default class SpritePipeline extends BatchPipeline <Sprite, A, U> {
       return quad;
    }
 
-   protected setPerDrawCallUniforms(): void {
+   protected setPerDrawUniforms(): void {
       let gl = this.renderer.gl;
       gl.uniformMatrix4fv(this.uniforms.u_camera.location, false, this.renderer.cameraMat);
    }

@@ -1,22 +1,22 @@
 import Vec2 from "../Math/Vector/Vec2";
 
-/**
- * TODO:
- *    * Maybe should not extend from vec2...? idk
- */
-export default class Size extends Vec2 {
+export default class Size implements Vec2 {
    constructor(
-      width: number = 0,
-      height: number = 0
-   ) { super(width, height) }
+      public width: number = 0,
+      public height: number = 0
+   ) {}
 
-   get width() { return this.x }
-   get height() { return this.y }
-   set width(n: number) { this.x = n }
-   set height(n: number) { this.y = n }
-
-   flip(axis: 'x' | 'y') {
-      this.scaleComponent(-1, axis);
+   public scale(n: number): Size {
+      this.width *= n;
+      this.height *= n;
       return this;
+   }
+
+   public getCenter(): [x: number, y: number] {
+      return [this.width / 2, this.height / 2]
+   }
+
+   public getValues(): [width: number, height: number] {
+      return [this.width, this.height];
    }
 }

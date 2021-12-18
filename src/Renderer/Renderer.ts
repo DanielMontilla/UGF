@@ -6,6 +6,7 @@ import Entity from "../Entities/Entity";
 import { createContext, createOrthoMatrix } from "../Util/webgl";
 import Texture from "./Texture";
 import Camera from "./Camera";
+import CirclePipeline from "./Pipelines/Batch/Circle";
 
 export default class Renderer {
 
@@ -31,7 +32,8 @@ export default class Renderer {
       Texture.init(this.gl);
       this.pipelines       = {
          sprite:     new SpritePipeline(this),
-         rectangle:  new RectanglePipeline(this)
+         rectangle:  new RectanglePipeline(this),
+         circle:     new CirclePipeline(this)
       };
       
       // Setting up surface for drawing

@@ -32,7 +32,7 @@ export const vertexShader = `
       float c = cos(${angle});
       float s = sin(${angle});
 
-      // I tried useing matrix transformations but it didnt work
+      // I tried using matrix transformations but it didn't work
       vec3 p = ${position};
 
       // Translate to origin
@@ -61,6 +61,8 @@ export const fragmentShader = `
 
    void main()
    {
-      gl_FragColor = vec4(v_color, 1);
+      vec2 uv = gl_FragCoord.xy;
+      float distance = length(uv);
+      gl_FragColor.rg = vec2(distance);
    }
 ` as const;

@@ -1,5 +1,6 @@
 import Mat4 from "../Util/Classes/Math/Matrix/Mat4";
-import Vec2 from "../Util/Classes/Math/Vector/Vec2";
+import Point from "../Util/Classes/Transform/Point";
+import Size from "../Util/Classes/Transform/Size";
 
 enum indexes {
    x  = 12,
@@ -15,9 +16,9 @@ enum indexes {
 export default class Camera {
    
    private _mat: Mat4;
-   private offset: Vec2;
-   public focus: Vec2;
-   public resolution: Vec2;
+   private offset: Point;
+   public focus: Point;
+   public resolution: Size;
    public zoomRange: [x: number, y: number] = [0.5, 2];
 
    constructor(
@@ -30,9 +31,9 @@ export default class Camera {
       zoom: number = 1
    ) {
       this._mat = Mat4.Identity();
-      this.focus = new Vec2(fx, fy);
-      this.offset = new Vec2(fx, fy);
-      this.resolution = new Vec2(rx, ry);
+      this.focus = new Point(fx, fy);
+      this.offset = new Point(fx, fy);
+      this.resolution = new Size(rx, ry);
       
       this.reset();
    }
@@ -57,7 +58,7 @@ export default class Camera {
    }
 
    public scale(n: number) {
-      let newZoom = new Vec2(
+      let newZoom = new Point(
          this._mat[indexes.sx] + n,
          this._mat[indexes.sy] + n
       );
@@ -85,7 +86,7 @@ export default class Camera {
    }
 
    public get zoom() {
-      return new Vec2(this._mat[indexes.sx], this._mat[indexes.sy]); 
+      return new Point(this._mat[indexes.sx], this._mat[indexes.sy]); 
    }
 
    public get x() {

@@ -118,7 +118,7 @@ export default abstract class BatchPipeline <
       let gl = this.renderer.gl;
       gl.useProgram(this.program);
 
-      this.setPerDrawCallUniforms();
+      this.setPerDrawUniforms();
       
       this.lastDrawCalls = 0;
       this.nextElemOffset = 0;
@@ -164,5 +164,5 @@ export default abstract class BatchPipeline <
    /**
     * can only be called within begin method or itself recursively
     */
-   protected abstract setPerDrawCallUniforms(): void;
+   protected abstract setPerDrawUniforms(): void;
 }

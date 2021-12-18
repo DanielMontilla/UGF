@@ -1,6 +1,6 @@
 import BatchPipeline from "./Batch";
 import Renderer from "../../Renderer";
-import Rectangle from "../../../Entities/Rectangle";
+import Circle from "../../../Entities/Circle";
 import { FLOAT_SIZE, VERTEX_PER_QUAD, INDICES_PER_QUAD, MAX_RECTANGLES } from "../../CONST";
 
 
@@ -11,17 +11,17 @@ import {
    uniforms       as U,
    attributeList,
    uniformList
-} from "../../Shaders/Rectangle";
+} from "../../Shaders/Circle";
 import { createQuadIAO } from "../../../Util/webgl";
 
 
 // TODO: dynamically change max size
-export default class RectanglePipeline extends BatchPipeline <Rectangle, A, U> {
+export default class CirclePipeline extends BatchPipeline <Circle, A, U> {
 
    public constructor(renderer: Renderer) {
       super(
          renderer,
-         <Rectangle[]>renderer.entityLists.rectangle,
+         <Circle[]>renderer.entityLists.circle,
          vsSource, 
          fsSource, 
          attributeList, 
@@ -52,15 +52,15 @@ export default class RectanglePipeline extends BatchPipeline <Rectangle, A, U> {
       gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, this.iao, gl.STATIC_DRAW);
    }
 
-   protected createQuadData(rect: Rectangle) {
-      let transform = rect.transform;
+   protected createQuadData(circle: Circle) {
+      let transform = circle.transform;
       let [ x, y ] = transform.position.getValues();
       let [ ofx, ofy ] = transform.offset.getValues();
       let [ orx, ory ] = transform.origin.getValues();
       let a = transform.rotation;
       let [ width, height ] = [ transform.width, transform.height ];
-      let z = rect.layer;
-      let [ r, g, b ] = rect.color.getNormalized();
+      let z = circle.layer;
+      let [ r, g, b ] = circle.color.getNormalized();
 
       return [
          x        , y         , z, ofx, ofy, orx, ory, a, r, g, b,  // ↖ VERTEX

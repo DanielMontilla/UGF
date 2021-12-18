@@ -3,6 +3,7 @@ import Entity from "../../Entities/Entity";
 import { createProgram, createShader, getDataFromType } from "../../Util/webgl";
 import { emptyRecord } from "../../Util/general";
 
+/** this sis afucking mess */
 export default abstract class Pipeline<
    E extends Entity = Entity,
    attributes extends string = string,
@@ -14,7 +15,7 @@ export default abstract class Pipeline<
    public readonly vertexShader: WebGLShader;
    public readonly fragmentShader: WebGLShader;
 
-   // Pointer to drawable objects
+   // Reference to drawable object list
    protected entityList: E[];
 
    protected attributes = emptyRecord<attributes, attributeInfo>();
@@ -42,7 +43,6 @@ export default abstract class Pipeline<
    private generateAttributes(list: readonly string[]) {
       let gl = this.renderer.gl;
       let position = 0;
-
       for (const attrib of list) {
          let location = gl.getAttribLocation(this.program, attrib);
          let info = <WebGLActiveInfo>gl.getActiveAttrib(this.program, location);

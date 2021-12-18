@@ -2,12 +2,13 @@ import { createTexture, loadImage } from "../Util/webgl";
 import { mapValue } from "../Util/math";
 
 /**
+ * @description both the texture object intances and texture manager in one :) im dumb
  * TODO:
  *    - Add mechanisim to avoid texture duplication in case of user error.
  */
 export default class Texture {
 
-   private static MAX_TEXTURE_UNITS: number = 16;
+   private static readonly MAX_TEXTURE_UNITS: number = 16;
    private static gl: WebGLRenderingContext;
    private static nextUnit: number = 0;
    private static paths: string[] = [];
