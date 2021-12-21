@@ -1,6 +1,6 @@
 import Texture from "../Renderer/Texture";
 import Surface from "../Core/Surface";
-import { rand, randRound } from "../Util/math";
+import { randInt } from "../Util/math";
 import Entity from "./Entity";
 
 export default class Sprite extends Entity {
@@ -25,10 +25,18 @@ export default class Sprite extends Entity {
       }
    }
 
+   public setFrame(n: number) {
+      if (this.frameExists(n)) {
+         this.frame = n;
+      } else {
+         console.warn(`this texture does not have frame ${n}`);
+      }
+   }
+
    public randomFrame () {
       let original = this.frame;
       while (original == this.frame) {
-         this.frame = randRound(0, this.texture.frameData.length - 1);
+         this.frame = randInt(0, this.texture.frameData.length - 1);
       }
    }
 

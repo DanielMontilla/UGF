@@ -1,7 +1,7 @@
 {
-    "name": "ultitled-graphics-framework",
-    "version": "1.0.0",
-    "description": "",
+    "name": "untitled-graphics-framework",
+    "version": "0.0.1",
+    "description": "webgl framework for rendering 2D graphics",
     "scripts": {
         "build": "webpack",
         "start": "webpack serve"

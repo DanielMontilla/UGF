@@ -34,12 +34,15 @@ export default class CirclePipeline extends BatchPipeline <Circle, A, U> {
       );
 
       let gl = this.renderer.gl;
+      let surface = this.renderer.surface;
       gl.useProgram(this.program);
       
       /* SETTING UP UNIFORMS */
       let u_projection  = this.uniforms.u_projection;
+      let u_resolution  = this.uniforms.u_resolution;
       let u_camera      = this.uniforms.u_camera;
       gl.uniformMatrix4fv(u_projection.location, false, renderer.projectionMat);
+      gl.uniform2f(u_resolution.location, surface.width, surface.height);
       gl.uniformMatrix4fv(u_camera.location, false, renderer.cameraMat);
 
       gl.bindBuffer(gl.ARRAY_BUFFER, this.vbo);

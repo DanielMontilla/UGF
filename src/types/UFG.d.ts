@@ -1,4 +1,3 @@
-
 type rgb = [r: number, g: number, b: number];
 
 type EntityType = 'sprite' | 'rectangle' | 'circle';

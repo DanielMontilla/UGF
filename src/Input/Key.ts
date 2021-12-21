@@ -25,6 +25,12 @@ export default class Key {
       this.onDownCallback();
    }
 
+   public reset() {
+      this.onDownCallback = emptyFunc;
+      this.onUpCallback = emptyFunc;
+      this.onDownOnceCallback = emptyFunc;
+   }
+
    public onUp() {
       this.pressed = false;
       this.onUpCallback();

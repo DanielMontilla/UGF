@@ -1,5 +1,16 @@
-export const attributeList = ['a_position', 'a_texIndex', 'a_texCoord'] as const;
+export const attributeList = ['a_position', 'a_offset', 'a_origin', 'a_angle', 'a_texIndex', 'a_texCoord'] as const;
 export const uniformList = ['u_projection', 'u_textures', 'u_camera'] as const;
+
+const position = attributeList[0];
+const offset = attributeList[1];
+const origin = attributeList[2];
+const angle = attributeList[3];
+const textureIndex = attributeList[4];
+const textureCoord = attributeList[5];
+
+const projection = uniformList[0];
+const textures = uniformList[1];
+const camera = uniformList[2];
 
 export type attributes = typeof attributeList[number];
 export type uniforms = typeof uniformList[number];
@@ -7,28 +18,51 @@ export type uniforms = typeof uniformList[number];
 export const vertexShader = `
    precision mediump float;
 
-   attribute vec3 ${attributeList[0]};
-   attribute vec2 ${attributeList[2]};
-   attribute float ${attributeList[1]};      // TODO: change to int maybe...?
+   attribute vec3 ${position};
+   attribute vec2 ${offset};
+   attribute vec2 ${origin};
+   attribute float ${angle};
+   attribute vec2 ${textureCoord};
+   attribute float ${textureIndex};      // TODO: change to int maybe...?
 
-   uniform mat4 ${uniformList[0]};
-   uniform mat4 ${uniformList[2]};
+   uniform mat4 ${projection};
+   uniform mat4 ${camera};
 
    varying vec2 v_texCoord;
    varying float v_texIndex;
 
    void main()
    {
-      gl_Position = (${uniformList[0]} * ${uniformList[2]}) * vec4(${attributeList[0]}, 1);
-      v_texCoord = ${attributeList[2]};
-      v_texIndex = ${attributeList[1]};
+      float c = cos(${angle});
+      float s = sin(${angle});
+
+      // I tried useing matrix transformations but it didnt work
+      vec3 p = ${position};
+
+      // Translate to origin
+      p.x -= ${origin}.x;
+      p.y -= ${origin}.y;
+
+      // Rotate
+      float xnew = p.x * c - p.y * s;
+      float ynew = p.x * s + p.y * c;
+
+      // Tranlate back
+      p.x = xnew + ${origin}.x;
+      p.y = ynew + ${origin}.y;
+
+      p -= vec3(${offset} , 0);
+
+      gl_Position = (${projection} * ${camera}) * vec4(p, 1);
+      v_texCoord = ${textureCoord};
+      v_texIndex = ${textureIndex};
    }
 ` as const;
 
 export const fragmentShader = `
    precision mediump float;
    
-   uniform sampler2D ${uniformList[1]}[4];
+   uniform sampler2D ${textures}[4];
 
    varying vec2 v_texCoord;
    varying float v_texIndex;
@@ -52,6 +86,6 @@ export const fragmentShader = `
    void main()
    {
       int index = int(v_texIndex);
-      gl_FragColor = getTexture(${uniformList[1]}, index, v_texCoord);
+      gl_FragColor = getTexture(${textures}, index, v_texCoord);
    }
 ` as const;

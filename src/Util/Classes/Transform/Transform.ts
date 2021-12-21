@@ -33,6 +33,7 @@ export default class Transform {
    get origin() { return this._origin };
 
    get position() { return this._position };
+   get size() {return this._size };
 
    get rotation() { return this._rotation };
    set rotation(n: number) {

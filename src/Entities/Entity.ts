@@ -3,12 +3,21 @@ import Transform from "../Util/Classes/Transform/Transform";
 import Size from "../Util/Classes/Transform/Size";
 import Point from "../Util/Classes/Transform/Point";
 
+/**
+ * @template VertexDataLayout
+ */
 export default abstract class Entity {
    
    public readonly surface: Surface;
-   public transform: Transform;
 
+   // TODO: put layer in transform
+   public transform: Transform;
    public layer: number;
+
+   /**
+    * @description entity's (initial) position within its corresponding vertex array object.
+    */
+   protected VAO_INDEX: number = 0;
 
    constructor(
       surface: Surface,
@@ -26,6 +35,12 @@ export default abstract class Entity {
       this.layer = 0;
    }
 
+   setSize (width: number, height?: number) {
+      this.width = width;
+      this.height = height ? height : width;
+      return this;
+   }
+
    setLayer(n: number) {
       this.layer = n;
       return this;
@@ -36,6 +51,23 @@ export default abstract class Entity {
       return this;
    }
 
+   scale(n: number) {
+      this.height *= n;
+      this.width *= n;
+      return this;
+   }
+
+   flip() {
+      this.width *= -1;
+      this.height *= -1;
+      return this;
+   }
+
+   flipX() {
+      this.width *= -1;
+      return this;
+   }
+   
    rotateBy(rad: number) {
       this.transform.rotation += rad;
       return this;
@@ -58,5 +90,8 @@ export default abstract class Entity {
 
    get height() { return this.transform.height }
    set height(n: number) { this.transform.height = n }
-   
+
+   // ABSTRACT METHODS
+   private uploadVertexData() {};
+   private modifyVertexData() {};
 }

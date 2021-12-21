@@ -3,7 +3,7 @@ export const isPowerOf2 = (num: number) => {
 };
 
 export const rand = (min: number, max: number) => Math.random() * (max - min) + min;
-export const randRound = (min: number, max: number) => Math.round(rand(min, max));
+export const randInt = (min: number, max: number) => Math.round(rand(min, max));
 
 /**
  * @description linearly maps value from range to another range
@@ -31,3 +31,8 @@ export const inRange = (
       return value <= max && value >= min;
    }
 }
+
+export const rangeOverlaps = (
+   r1: { min: number, max: number },
+   r2: { min: number, max: number }
+) => (r1.min <= r2.max && r1.max >= r2.min);

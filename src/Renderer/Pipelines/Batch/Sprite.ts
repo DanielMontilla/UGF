@@ -34,7 +34,7 @@ export default class SpritePipeline extends BatchPipeline <Sprite, A, U> {
          uniformList,
          FLOAT_SIZE,
          MAX_SPRITES,
-         6,
+         11, // [ x, y, z, offsetx, offsety, originx, originy, angle, textureindex, texcoordx, texcordy]
          VERTEX_PER_QUAD,
          INDICES_PER_QUAD
       );
@@ -67,15 +67,14 @@ export default class SpritePipeline extends BatchPipeline <Sprite, A, U> {
    protected createQuadData(sprite: Sprite) {
       let transform = sprite.transform;
 
-      let [ x, y, layer, width, height, texture, frame ] = [
-         sprite.x,
-         sprite.y,
-         sprite.layer,
-         transform.width,
-         transform.height,
-         sprite.texture,
-         sprite.frame
-      ]
+      let [ x, y ] = transform.position.getValues();
+      let z = sprite.layer;
+      let [ ofx, ofy ] = transform.offset.getValues();
+      let [ orx, ory ] = transform.origin.getValues();
+      let a = transform.rotation;
+      let [ width, height ] = transform.size.getValues();
+      let texture = sprite.texture;
+      let frame = sprite.frame;
 
       let [ unit, tx1, ty1, tx2, ty2 ] = [
          texture.unit,
@@ -86,10 +85,10 @@ export default class SpritePipeline extends BatchPipeline <Sprite, A, U> {
       ]
 
       let quad = [
-         x           , y         , layer, unit, tx1, ty1,  // v1
-         x + width   , y         , layer, unit, tx2, ty1,  // v2
-         x           , y + height, layer, unit, tx1, ty2,  // v3
-         x + width   , y + height, layer, unit, tx2, ty2   // v4
+         x           , y         , z, ofx, ofy, orx, ory, a, unit, tx1, ty1,  // v1
+         x + width   , y         , z, ofx, ofy, orx, ory, a, unit, tx2, ty1,  // v2
+         x           , y + height, z, ofx, ofy, orx, ory, a, unit, tx1, ty2,  // v3
+         x + width   , y + height, z, ofx, ofy, orx, ory, a, unit, tx2, ty2   // v4
       ]
       
       return quad;

@@ -81,6 +81,14 @@ export default abstract class BatchPipeline <
       this.ibo = <WebGLBuffer> gl.createBuffer();
    }
 
+   // TODO
+   /**
+    * 
+    * @returns next available position in VAO
+    */
+   public getVAOIndex(): number {
+      return 0;
+   }
 
    protected setAttribute(a: attributes) {
       let gl = this.renderer.gl;
@@ -93,9 +101,7 @@ export default abstract class BatchPipeline <
    }
 
    protected setAllAttributes() {
-      for (const key in this.attributes) {
-         this.setAttribute(key);
-      };
+      for (const attrib in this.attributes) this.setAttribute(attrib);
    }
 
    protected setAttributes(a?: attributes[]) {
@@ -107,8 +113,6 @@ export default abstract class BatchPipeline <
          this.setAllAttributes();
       }
    }
-
-   once = false;
 
    public begin(): void {
       this.elemsToDraw = this.entityList.length;

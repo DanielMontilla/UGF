@@ -1,6 +1,4 @@
-import Vec2 from "../Math/Vector/Vec2";
-
-export default class Size implements Vec2 {
+export default class Size {
    constructor(
       public width: number = 0,
       public height: number = 0

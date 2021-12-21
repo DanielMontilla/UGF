@@ -10,7 +10,7 @@ import CirclePipeline from "./Pipelines/Batch/Circle";
 
 export default class Renderer {
 
-   private readonly surface: Surface;
+   public readonly surface: Surface;
    private readonly camera: Camera;
    public readonly gl: WebGLRenderingContext;
 
@@ -27,7 +27,7 @@ export default class Renderer {
       this.projectionMat   = createOrthoMatrix(surface.width, surface.height);
       this.cameraMat       = this.camera.mat;
       this.entityLists     = surface.entityLists;
-
+      
       // Initilizing other systems
       Texture.init(this.gl);
       this.pipelines       = {
@@ -52,8 +52,8 @@ export default class Renderer {
       let gl   = this.gl;
       gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
       
-      for (const key in this.pipelines) {
-         this.pipelines[key as EntityType].begin();
+      for (const type in this.pipelines) {
+         this.pipelines[type as EntityType].begin();
       }
    }
 }
