@@ -1,6 +1,6 @@
 {
     "name": "ugf",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "main": "lib/UGF.js",
     "types": "lib/UGF.d.ts",
     "description": "webgl framework for rendering 2D graphics",
