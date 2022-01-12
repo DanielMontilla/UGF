@@ -1,4 +1,8 @@
+import EntityManager from './Entities/EntityManager';
+import { VertexDescriptor, AttributeDescriptor, UnitDescriptor } from './Types/webgl';
 import { rand, randInt, Rectangle, Sprite, Surface } from './UGF';
+import { emptyRecord } from './Util/general';
+import { createLayout } from './Util/webgl';
 
 let main = async () => {
 
@@ -20,5 +24,10 @@ let main = async () => {
 
 }
 
+let l = createLayout({ position: ['x', 'y', 'z'], color: ['r','g','b','a'] });
+
+let v = new EntityManager(l);
+
+let obj = { value: 10, amount: 15 };
 
 main();

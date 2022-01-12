@@ -2,8 +2,11 @@ import Texture from "../Renderer/Texture";
 import Surface from "../Core/Surface";
 import { randInt } from "../Util/math";
 import Entity from "./Entity";
+import { MANAGERS } from "../Renderer/CONST";
 
 export default class Sprite extends Entity {
+
+   public readonly manager = MANAGERS.sprite;
 
    public readonly texture: Texture;
    public frame: number;
@@ -43,5 +46,9 @@ export default class Sprite extends Entity {
    private frameExists(frame: number) {
       if (frame < 0 || frame > this.texture.frameData.length - 1) return false;
       return true;
+   }
+
+   public getVertexData(): number[] {
+      return [];
    }
 }

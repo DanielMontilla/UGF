@@ -1,3 +1,6 @@
+import { FLOAT_SIZE } from "../Renderer/CONST";
+import { VertexDescriptor, AttributeDescriptor, UnitDescriptor } from "../Types/webgl";
+
 export const createContext = (canvas: HTMLCanvasElement): WebGLRenderingContext => {
    let gl = canvas.getContext('webgl');
    if (!gl) console.error(`couldn't get webgl context`);
@@ -216,3 +219,46 @@ export const loadImage = async (path: string) => {
    await img.decode();
    return img;
 };
+
+export const createLayout = <A extends string>(config: Record<A, string[]>): VertexDescriptor<A> => {
+   let vUnits = 0;
+   let vSize = 0;
+   let offset = 0;
+
+   let attributeList = {} as Record<A, AttributeDescriptor<string>>;
+
+   for (const key in config) {
+      let aUnits = 0;
+      let aSize = 0;
+
+      let elementKeys: string[] = config[key];
+      let elementList = {} as Record<string, UnitDescriptor>;
+
+      for (const elementKey of elementKeys) {
+         elementList[elementKey] = {
+            relativeOffset: aUnits * FLOAT_SIZE,
+            absoluteOffset: offset * FLOAT_SIZE
+         }
+         offset++;
+         aUnits++;
+         aSize += FLOAT_SIZE;
+      }
+
+      let attributeObj: AttributeDescriptor<string> = {
+         units: aUnits,
+         size: aSize,
+         offset: vSize,
+         elements: elementList,
+      }
+
+      attributeList[key as A] = attributeObj;
+      vUnits += attributeObj.units;
+      vSize += attributeObj.size;
+   }
+
+   return {
+      units: vUnits,
+      size: vSize,
+      attributes: attributeList
+   };
+}

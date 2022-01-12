@@ -6,7 +6,7 @@ import Entity from "../Entities/Entity";
 import { createContext, createOrthoMatrix } from "../Util/webgl";
 import Texture from "./Texture";
 import Camera from "./Camera";
-import { EntityPrimitive } from "../Types/UFG";
+import { EntityPrimitiveKeys } from "../Types/UFG";
 
 export default class Renderer {
 
@@ -14,8 +14,8 @@ export default class Renderer {
    private readonly camera: Camera;
    public readonly gl: WebGLRenderingContext;
 
-   public pipelines: Record<EntityPrimitive, Pipeline>;
-   public entityLists: Record<EntityPrimitive, Entity[]>;
+   public pipelines: Record<EntityPrimitiveKeys, Pipeline>;
+   public entityLists: Record<EntityPrimitiveKeys, Entity[]>;
    
    public projectionMat: number[];
    public cameraMat: number[];
@@ -52,7 +52,7 @@ export default class Renderer {
       gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
       
       for (const type in this.pipelines) {
-         this.pipelines[type as EntityPrimitive].begin();
+         this.pipelines[type as EntityPrimitiveKeys].begin();
       }
    }
 }

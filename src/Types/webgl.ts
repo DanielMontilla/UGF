@@ -24,3 +24,21 @@ export interface uniformInfo {
    type: number,
    size: number
 }
+
+export type UnitDescriptor = {
+   relativeOffset: number,
+   absoluteOffset: number
+}
+
+export type AttributeDescriptor<ElementT extends string> = {
+   units: number,
+   offset: number,
+   size: number,
+   elements: Record<ElementT, UnitDescriptor>
+}
+
+export type VertexDescriptor<AttributeT extends string> = {
+   units: number,
+   size: number,
+   attributes: Record<AttributeT, AttributeDescriptor<string>>
+}

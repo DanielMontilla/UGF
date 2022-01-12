@@ -1,6 +1,10 @@
 import Surface from "../Core/Surface";
+import { EntityPrimitive } from "../Types/UFG";
+import EntityManager from "./EntityManager";
 
 export default abstract class Entity {
+
+   public abstract readonly manager: EntityManager<EntityPrimitive, string>;
 
    public layer: number = 0;
 
@@ -21,6 +25,10 @@ export default abstract class Entity {
       this.updateOffset();
       this.updateOrigin();
    }
+
+   public add() {
+      this.manager.add((this as unknown) as EntityPrimitive); // wtf
+   };
 
    set x(x: number) {
       this._x = x;
@@ -141,4 +149,6 @@ export default abstract class Entity {
    public rotateTo(angle: number) {
       this.angle = angle;
    }
+
+   public abstract getVertexData(): number[];
 }

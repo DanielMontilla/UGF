@@ -6,14 +6,14 @@ import Key from "../Input/Key";
 import Camera from "../Renderer/Camera";
 import Renderer from "../Renderer/Renderer";
 import { keyCode } from "../Types/input";
-import { EntityPrimitive, rgb } from "../Types/UFG";
+import { EntityPrimitiveKeys, rgb } from "../Types/UFG";
 import { emptyFunc } from "../Util/general";
 import { createCanvas } from "../Util/webgl";
 
 export default class Surface {
 
    public readonly canvas: HTMLCanvasElement;
-   public entityLists: Record<EntityPrimitive, Entity[]>;
+   public entityLists: Record<EntityPrimitiveKeys, Entity[]>;
 
    public readonly renderer: Renderer;
    public readonly camera: Camera;
@@ -65,7 +65,7 @@ export default class Surface {
    }
 
    public addEntity(e: Entity) {
-      let entityType: EntityPrimitive = 'rectangle';
+      let entityType: EntityPrimitiveKeys = 'rectangle';
       if (e instanceof Rectangle)   entityType = 'rectangle';
       if (e instanceof Sprite)      entityType = 'sprite';
 

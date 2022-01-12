@@ -97,8 +97,6 @@ export default abstract class Pipeline<
       this.ibo = <WebGLBuffer> gl.createBuffer();
    }
 
-
-
    private generateAttributes(list: readonly string[]) {
       let gl = this.renderer.gl;
       let position = 0;
