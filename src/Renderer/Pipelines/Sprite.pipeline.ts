@@ -1,6 +1,6 @@
-import BatchPipeline from "./Batch";
-import Renderer from "../../Renderer";
-import Sprite from "../../../Entities/Sprite";
+import Renderer from "../Renderer";
+import Pipeline from "./Pipeline";
+import Sprite from "../../Entities/Sprite";
 
 import {
    FLOAT_SIZE,
@@ -8,7 +8,7 @@ import {
    MAX_SPRITES,
    MAX_TEXTURE_UNITS,
    VERTEX_PER_QUAD
-} from '../../CONST';
+} from '../CONST';
 
 import {
    vertexShader   as vsSource,
@@ -17,10 +17,10 @@ import {
    uniforms       as U,
    attributeList,
    uniformList
-} from '../../Shaders/Sprite';
-import { createQuadIAO } from "../../../Util/webgl";
+} from '../Shaders/Sprite.shader';
+import { createQuadIAO } from "../../Util/webgl";
 
-export default class SpritePipeline extends BatchPipeline <Sprite, A, U> {
+export default class SpritePipeline extends Pipeline <Sprite, A, U> {
 
    public MAX_TEXTURE_UNITS: number = MAX_TEXTURE_UNITS;
 
@@ -59,20 +59,17 @@ export default class SpritePipeline extends BatchPipeline <Sprite, A, U> {
       gl.bufferData(gl.ARRAY_BUFFER, this.MAX_SIZE, gl.DYNAMIC_DRAW);
 
       /* SETTING UP INDEX BUFFER/ARRAY OBJECT */
-      this.iao.set(createQuadIAO(this.MAX_ELEMS));
+      this.iao.set(createQuadIAO(this.MAX_OBJS));
       gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.ibo);
       gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, this.iao, gl.STATIC_DRAW);
    }
 
    protected createQuadData(sprite: Sprite) {
-      let transform = sprite.transform;
-
-      let [ x, y ] = transform.position.getValues();
-      let z = sprite.layer;
-      let [ ofx, ofy ] = transform.offset.getValues();
-      let [ orx, ory ] = transform.origin.getValues();
-      let a = transform.rotation;
-      let [ width, height ] = transform.size.getValues();
+      let [ x, y, z ] = [ sprite.x, sprite.y, sprite.layer ];
+      let [ ofx, ofy ] = [ sprite.xOffset, sprite.yOffset ];
+      let [ orx, ory ] = [ sprite.xOrigin, sprite.yOrigin ];
+      let [ width, height ] = [ sprite.width, sprite.height ];
+      let a = sprite.angle;
       let texture = sprite.texture;
       let frame = sprite.frame;
 

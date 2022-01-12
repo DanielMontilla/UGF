@@ -1,10 +1,6 @@
-declare namespace WEBGL {
-   type UNIT_TYPE = 'FLOAT' | 'INT' | 'BOOL';
-   type DATA_TYPE = '_VEC' | '_MAT' | '';
-   // type TYPE = 'VEC2' | 'VEC3' | 'VEC4' | 'MAT2' | 'MAT3' | 'MAT4'
-}
 
 /**
+ * TODO: move
  * @member id attribute's string identifier inside its shader
  * @member location index location within shader
  * @member type WEBGL.TYPE
@@ -13,7 +9,7 @@ declare namespace WEBGL {
  * @member size total size in bytes
  * @member offset offset position in bytes
  */
-interface attributeInfo {
+export interface attributeInfo {
    id: string;
    location: number;
    type: number;
@@ -23,7 +19,7 @@ interface attributeInfo {
    offset: number;
 }
 
-interface uniformInfo {
+export interface uniformInfo {
    location: WebGLUniformLocation,
    type: number,
    size: number

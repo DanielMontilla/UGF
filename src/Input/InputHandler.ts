@@ -1,10 +1,12 @@
+import { keyCode, keyEvent } from "../Types/input";
+import { Dictionary } from "../Types/util";
 import Key from "./Key";
 
 export default class InputHandler {
 
    public readonly canvas: HTMLCanvasElement;
 
-   private keyResgistry: Dictionary < keyCode, Key > = {};
+   private keyResgistry: Dictionary<keyCode, Key> = {};
    
    constructor(canvas: HTMLCanvasElement) {
       this.canvas = canvas;

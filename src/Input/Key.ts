@@ -1,3 +1,4 @@
+import { keyCode } from "../Types/input";
 import { emptyFunc } from "../Util/general";
 
 export default class Key {

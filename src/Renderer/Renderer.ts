@@ -1,12 +1,12 @@
 import Surface from "../Core/Surface";
 import Pipeline from "./Pipelines/Pipeline";
-import SpritePipeline from "./Pipelines/Batch/Sprite";
-import RectanglePipeline from "./Pipelines/Batch/Rectangle";
+import SpritePipeline from "./Pipelines/Sprite.pipeline";
+import RectanglePipeline from "./Pipelines/Rectangle.pipeline";
 import Entity from "../Entities/Entity";
 import { createContext, createOrthoMatrix } from "../Util/webgl";
 import Texture from "./Texture";
 import Camera from "./Camera";
-import CirclePipeline from "./Pipelines/Batch/Circle";
+import { EntityPrimitive } from "../Types/UFG";
 
 export default class Renderer {
 
@@ -14,8 +14,8 @@ export default class Renderer {
    private readonly camera: Camera;
    public readonly gl: WebGLRenderingContext;
 
-   public pipelines: Record<EntityType, Pipeline>;
-   public entityLists: Record<EntityType, Entity[]>;
+   public pipelines: Record<EntityPrimitive, Pipeline>;
+   public entityLists: Record<EntityPrimitive, Entity[]>;
    
    public projectionMat: number[];
    public cameraMat: number[];
@@ -32,13 +32,12 @@ export default class Renderer {
       Texture.init(this.gl);
       this.pipelines       = {
          sprite:     new SpritePipeline(this),
-         rectangle:  new RectanglePipeline(this),
-         circle:     new CirclePipeline(this)
+         rectangle:  new RectanglePipeline(this)
       };
       
       // Setting up surface for drawing
       let gl         = this.gl;
-      let [r, g, b]  = surface.background.getNormalized();
+      let [r, g, b]  = surface.backgroundColor;
 
       gl.enable(gl.BLEND);
       gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
@@ -53,7 +52,7 @@ export default class Renderer {
       gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
       
       for (const type in this.pipelines) {
-         this.pipelines[type as EntityType].begin();
+         this.pipelines[type as EntityPrimitive].begin();
       }
    }
 }

@@ -1,7 +1,3 @@
-import Mat4 from "../Util/Classes/Math/Matrix/Mat4";
-import Point from "../Util/Classes/Transform/Point";
-import Size from "../Util/Classes/Transform/Size";
-
 enum indexes {
    x  = 12,
    y  = 13,
@@ -15,27 +11,18 @@ enum indexes {
  */
 export default class Camera {
    
-   private _mat: Mat4;
-   private offset: Point;
-   public focus: Point;
-   public resolution: Size;
-   public zoomRange: [x: number, y: number] = [0.5, 2];
+   private _mat: number[];
 
    constructor(
-      fx: number,
-      fy: number,
-      rx: number,
-      ry: number,
-      x: number = 0,
-      y: number = 0,
-      zoom: number = 1
+      public readonly xResolution: number,
+      public readonly yResolution: number
    ) {
-      this._mat = Mat4.Identity();
-      this.focus = new Point(fx, fy);
-      this.offset = new Point(fx, fy);
-      this.resolution = new Size(rx, ry);
-      
-      this.reset();
+      this._mat = [
+         1, 0, 0, 0,
+         0, 1, 0, 0,
+         0, 0, 1, 0,
+         0, 0, 0, 1
+      ];
    }
 
    public moveTo(x: number, y: number) {
@@ -57,25 +44,6 @@ export default class Camera {
       this._mat[indexes.sy] = n;
    }
 
-   public scale(n: number) {
-      let newZoom = new Point(
-         this._mat[indexes.sx] + n,
-         this._mat[indexes.sy] + n
-      );
-
-      newZoom.x = (newZoom.x < this.zoomRange[0]) ? this.zoomRange[0] : newZoom.x;
-      newZoom.x = (newZoom.x > this.zoomRange[1]) ? this.zoomRange[1] : newZoom.x;
-      newZoom.y = (newZoom.y < this.zoomRange[0]) ? this.zoomRange[0] : newZoom.y;
-      newZoom.y = (newZoom.y > this.zoomRange[1]) ? this.zoomRange[1] : newZoom.y;
-
-      this._mat[indexes.sx] = newZoom.x;
-      this._mat[indexes.sy] = newZoom.y;
-
-      // this._mat[indexes.x] = -newZoom.x * (this.focus.x) + ( this.resolution.x / 2 );
-      // this._mat[indexes.y] = -newZoom.y * (this.focus.y) + ( this.resolution.y / 2 );
-
-   }
-
    public reset(
       x: number = 0,
       y: number = 0,
@@ -83,10 +51,6 @@ export default class Camera {
    ) {
       this.moveTo(x, y);
       this.scaleTo(zoom);
-   }
-
-   public get zoom() {
-      return new Point(this._mat[indexes.sx], this._mat[indexes.sy]); 
    }
 
    public get x() {
@@ -97,11 +61,11 @@ export default class Camera {
       return this._mat[indexes.y];
    }
    
-   public get mat(): Mat4 {
+   public get mat() {
       return this._mat;
    }
 
-   public getMat(): Mat4 {
+   public getMat() {
       return this._mat;
    }
 }

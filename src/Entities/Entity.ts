@@ -1,97 +1,144 @@
 import Surface from "../Core/Surface";
-import Transform from "../Util/Classes/Transform/Transform";
-import Size from "../Util/Classes/Transform/Size";
-import Point from "../Util/Classes/Transform/Point";
 
-/**
- * @template VertexDataLayout
- */
 export default abstract class Entity {
-   
-   public readonly surface: Surface;
 
-   // TODO: put layer in transform
-   public transform: Transform;
-   public layer: number;
+   public layer: number = 0;
 
-   /**
-    * @description entity's (initial) position within its corresponding vertex array object.
-    */
-   protected VAO_INDEX: number = 0;
-
-   constructor(
-      surface: Surface,
-      x: number,
-      y: number,
-      width: number,
-      height: number
-   ) {
-      this.surface = surface;
-      this.transform = new Transform(
-         new Point(x, y),
-         new Size(width, height),
-         new Point(.5, .5)
-      );
-      this.layer = 0;
+   public constructor(
+      public readonly surface: Surface,
+      private _x: number,
+      private _y: number,
+      private _width: number,
+      private _height: number,
+      private _angle: number = 0,
+      private _xAnchor: number = .5,
+      private _yAnchor: number = .5,
+      private _xOffset: number = 0,
+      private _yOffset: number = 0,
+      private _xOrigin: number = 0,
+      private _yOrigin: number = 0,
+   ) { 
+      this.updateOffset();
+      this.updateOrigin();
    }
 
-   setSize (width: number, height?: number) {
-      this.width = width;
-      this.height = height ? height : width;
-      return this;
+   set x(x: number) {
+      this._x = x;
+      this.updateXOrigin();
    }
 
-   setLayer(n: number) {
-      this.layer = n;
-      return this;
+   set y(y: number) {
+      this._y = y;
+      this.updateYOrigin();
    }
 
-   rotate(rad: number) {
-      this.transform.rotation = rad;
-      return this;
+   set width(width: number) {
+      this._width = width;
+      this.updateXOffset();
+      this.updateXOrigin();
    }
 
-   scale(n: number) {
-      this.height *= n;
-      this.width *= n;
-      return this;
+   set height(height: number) {
+      this._height = height;
+      this.updateYOffset();
+      this.updateYOrigin();
    }
 
-   flip() {
-      this.width *= -1;
-      this.height *= -1;
-      return this;
+   set xAnchor(xAnchor: number) {
+      this._xAnchor = xAnchor;
+      this.updateXOffset();
+      this.updateXOrigin();
    }
 
-   flipX() {
-      this.width *= -1;
-      return this;
-   }
-   
-   rotateBy(rad: number) {
-      this.transform.rotation += rad;
-      return this;
+   set yAnchor(yAnchor: number) {
+      this._yAnchor = yAnchor;
+      this.updateYOffset();
+      this.updateYOrigin();
    }
 
-   setAnchor(x: number, y?: number) {
-      this.transform.anchorX = x;
-      this.transform.anchorY = y ? y : x;
-      return this;
+   set angle(angle: number) {
+      this._angle = angle;
+   }
+   /** x surface position */
+   get x() { return this._x }
+   /** y surface position */
+   get y() { return this._y }
+   /** width of entity */
+   get width() { return this._width }
+   /** height of entity */
+   get height() { return this._height }
+   /** entity's angle in radians. rotation is relative to origin point */
+   get angle() { return this._angle }
+   /** entity's x anchor. Used for other pre-computed properties */
+   get xAnchor() { return this._xAnchor }
+   /** entity's y anchor. Used for other pre-computed properties */
+   get yAnchor() { return this._yAnchor }
+   /** precomputed x offset relative to entity's surface position and size */
+   get xOffset() { return this._xOffset }
+   /** precomputed y offset relative to entity's surface position and size */
+   get yOffset() { return this._yOffset }
+   /** precomputed x coordinate for entity's origin point in surface */
+   get xOrigin() { return this._xOrigin }
+   /** precomputed y coordinate for entity's origin point in surface */
+   get yOrigin() { return this._yOrigin }
+
+   private updateOffset() {
+      this.updateXOffset();
+      this.updateYOffset();
    }
 
-   get x() { return this.transform.x }
-   set x(n: number) { this.transform.x = n }
+   private updateXOffset() {
+      this._xOffset = this._width * this._xAnchor;
+   }
 
-   get y() { return this.transform.y }
-   set y(n: number) { this.transform.y = n }
+   private updateYOffset() {
+      this._yOffset = this._height * this._yAnchor
+   }
 
-   get width() { return this.transform.width }
-   set width(n: number) { this.transform.width = n }
+   private updateOrigin() {
+      this.updateXOrigin();
+      this.updateYOrigin();
+   }
 
-   get height() { return this.transform.height }
-   set height(n: number) { this.transform.height = n }
+   private updateXOrigin() {
+      this._xOrigin = this._x + this._xOffset;
+   }
 
-   // ABSTRACT METHODS
-   private uploadVertexData() {};
-   private modifyVertexData() {};
+   private updateYOrigin() {
+      this._yOrigin = this._y + this._yOffset;
+   }
+
+   public moveXBy(x: number) {
+      this.x += x;
+   }
+
+   public moveYBy(y: number) {
+      this.y += y;
+   }
+
+   public moveBy(x: number, y: number) {
+      this.moveXBy(x);
+      this.moveYBy(y);
+   }
+
+   public moveXTo(x: number) {
+      this.x = x;
+   }
+
+   public moveYTo(y: number) {
+      this.y = y;
+   }
+
+   public moveTo(x: number, y: number) {
+      this.moveXTo(x);
+      this.moveYTo(y);
+   }
+
+   public rotateBy(angle: number) {
+      this.angle += angle;
+   }
+
+   public rotateTo(angle: number) {
+      this.angle = angle;
+   }
 }

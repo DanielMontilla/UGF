@@ -1,4 +1,3 @@
-import Circle from "../Entities/Circle";
 import Entity from "../Entities/Entity";
 import Rectangle from "../Entities/Rectangle";
 import Sprite from "../Entities/Sprite";
@@ -6,17 +5,15 @@ import InputHandler from "../Input/InputHandler";
 import Key from "../Input/Key";
 import Camera from "../Renderer/Camera";
 import Renderer from "../Renderer/Renderer";
-import RGB from "../Util/Classes/RGB";
-import Size from "../Util/Classes/Transform/Size";
+import { keyCode } from "../Types/input";
+import { EntityPrimitive, rgb } from "../Types/UFG";
 import { emptyFunc } from "../Util/general";
 import { createCanvas } from "../Util/webgl";
 
 export default class Surface {
 
-   public readonly size: Size;
    public readonly canvas: HTMLCanvasElement;
-   public readonly background: RGB;
-   public entityLists: Record<EntityType, Entity[]>;
+   public entityLists: Record<EntityPrimitive, Entity[]>;
 
    public readonly renderer: Renderer;
    public readonly camera: Camera;
@@ -27,21 +24,22 @@ export default class Surface {
 
    public fps: number = 0;
 
-   // TODO: create overloads for constructor
-   constructor(width: number = 1200, height: number = 900, background: rgb = [50, 50, 50]) {
+   constructor(
+      public readonly width: number = 1200,
+      public readonly height: number = 900,
+      public readonly backgroundColor: rgb = [50, 50, 50]
 
-      this.size         = new Size(width, height);
-      this.canvas       = createCanvas(width, height);
-      this.update       = emptyFunc;
-      this.background   = RGB.fromArr(background);
+      ) {
+
+      this.canvas = createCanvas(width, height);
+      this.update = emptyFunc;
 
       this.entityLists  = {   // TODO: create a const array to tidy up this code
          rectangle:  [],
-         sprite:     [],
-         circle:     []
+         sprite:     []
       }
 
-      this.camera       = new Camera(0, 0, width, height);
+      this.camera       = new Camera(width, height);
       this.renderer     = new Renderer(this);
       this.inputHandler = new InputHandler(this.canvas);
       this.previousTime = performance.now();
@@ -67,10 +65,9 @@ export default class Surface {
    }
 
    public addEntity(e: Entity) {
-      let entityType: EntityType = 'rectangle';
+      let entityType: EntityPrimitive = 'rectangle';
       if (e instanceof Rectangle)   entityType = 'rectangle';
       if (e instanceof Sprite)      entityType = 'sprite';
-      if (e instanceof Circle)      entityType = 'circle';
 
       this.entityLists[entityType].push(e);
    }
@@ -92,8 +89,4 @@ export default class Surface {
 
       return arr;
    }
-
-   get width() { return this.size.width }
-   get height() { return this.size.height }
-   get center() { return this.size.getCenter() }
 }

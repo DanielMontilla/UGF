@@ -1,5 +1,6 @@
 import { createTexture, loadImage } from "../Util/webgl";
 import { mapValue } from "../Util/math";
+import { frame, frameDataConfig } from "../Types/UFG";
 
 /**
  * @description both the texture object intances and texture manager in one :) im dumb
