@@ -3,6 +3,7 @@ import Entity from "../../Entities/Entity";
 import { createProgram, createShader, getDataFromType } from "../../Util/webgl";
 import { emptyRecord } from "../../Util/general";
 import { attributeInfo, uniformInfo } from "../../Types/webgl";
+import EntityManager from "../../Entities/EntityManager";
 
 
 export default abstract class Pipeline<
@@ -50,15 +51,12 @@ export default abstract class Pipeline<
    /** Index Buffer Object  -> GPU side index buffer */
    protected ibo: WebGLBuffer;
 
-   protected nextElemOffset: number = 0;
-   protected elemsToDraw: number = 0;
-
    // DEBUGING & PERFORMANCE/STATS
    public lastDrawCalls: number = 0;
 
    public constructor(
       public readonly renderer: Renderer,
-      protected entityList: EntityT[],
+      public readonly manager: EntityManager<Entity, AttributeT>,
       vsSource: string,
       fsSource: string,
       attributeList: readonly AttributeT[],
@@ -75,6 +73,7 @@ export default abstract class Pipeline<
       this.fragmentShader = createShader(gl, 'fragment', fsSource);
       this.program = createProgram(gl, this.vertexShader, this.fragmentShader);
 
+      // TODO: DO THIS WORK IN VERTEXDESCRIPTOR
       this.generateAttributes(attributeList);
       this.generateUniforms(uniformList);
 
@@ -164,37 +163,31 @@ export default abstract class Pipeline<
    }
 
    public begin(): void {
-      this.elemsToDraw = this.entityList.length;
+      let count = this.manager.count;
 
-      if (!this.elemsToDraw) return;
+      if (!count) return;
 
       let gl = this.renderer.gl;
       gl.useProgram(this.program);
 
       this.setPerDrawUniforms();
-      
-      this.lastDrawCalls = 0;
-      this.nextElemOffset = 0;
 
-      this.flush();
+      this.flush(count);
    };
 
-   protected flush(): void {
+   // TODO: set up robust flushing system maybe
+   private flush(count: number, offset: number = 0): void {
       let gl = this.renderer.gl;
       let toDrawElementCount: number;
-      let entities = this.entityList;
-      let offset = this.nextElemOffset;
 
-      if (this.elemsToDraw > this.MAX_OBJS) {
+      if (count > this.MAX_OBJS) {
          toDrawElementCount = this.MAX_OBJS;
+         return;
       } else {
-         toDrawElementCount = this.elemsToDraw;
+         toDrawElementCount = count;
       }
       
-      for (let i = 0; i < toDrawElementCount; i++) {
-         const e = entities[i + offset];
-         this.vao.set(this.createQuadData(e), i * this.UNITS_PER_OBJ);
-      };
+      this.manager.populateVAO(this.vao);
 
       gl.bindBuffer(gl.ARRAY_BUFFER, this.vbo);
       this.setAllAttributes();
@@ -208,12 +201,11 @@ export default abstract class Pipeline<
          0
       );
 
-      this.elemsToDraw -= toDrawElementCount;
+      count -= toDrawElementCount;
       this.lastDrawCalls++;
-      if (this.elemsToDraw) this.flush();
+      if (count) this.flush(count, offset);
    };
 
-   protected abstract createQuadData(r: Entity): number[];
    /** can only be called within begin method or itself recursively */
    protected abstract setPerDrawUniforms(): void;
 }

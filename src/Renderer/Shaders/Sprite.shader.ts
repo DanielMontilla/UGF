@@ -1,5 +1,7 @@
-export const attributeList = ['a_position', 'a_offset', 'a_origin', 'a_angle', 'a_texIndex', 'a_texCoord'] as const;
-export const uniformList = ['u_projection', 'u_textures', 'u_camera'] as const;
+import { 
+   SpriteAttributeList as attributeList,
+   SpriteUniformList as uniformList
+} from "../CONST";
 
 const position = attributeList[0];
 const offset = attributeList[1];

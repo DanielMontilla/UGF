@@ -4,12 +4,14 @@ import EntityManager from "./EntityManager";
 
 export default abstract class Entity {
 
-   public abstract readonly manager: EntityManager<EntityPrimitive, string>;
+   public abstract readonly manager: EntityManager<Entity, string>;
+   protected abstract id: number;
 
    public layer: number = 0;
 
+   
+
    public constructor(
-      public readonly surface: Surface,
       private _x: number,
       private _y: number,
       private _width: number,
@@ -27,7 +29,7 @@ export default abstract class Entity {
    }
 
    public add() {
-      this.manager.add((this as unknown) as EntityPrimitive); // wtf
+      this.manager.add(this); // wtf
    };
 
    set x(x: number) {
@@ -89,6 +91,10 @@ export default abstract class Entity {
    get xOrigin() { return this._xOrigin }
    /** precomputed y coordinate for entity's origin point in surface */
    get yOrigin() { return this._yOrigin }
+
+   get position(): [x: number, y: number, z: number] { return [this._x, this._y, this.layer] }
+   get origin(): [xOrigin: number, yOrigin: number] { return [this._xOrigin, this._yOrigin] }
+   get offset(): [xOffset: number, yOffset: number] { return [this._xOffset, this._yOffset] }
 
    private updateOffset() {
       this.updateXOffset();

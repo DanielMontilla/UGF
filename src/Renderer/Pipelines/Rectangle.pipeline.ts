@@ -1,27 +1,32 @@
 import Renderer from "../Renderer";
 import Pipeline from "./Pipeline";
 import Rectangle from "../../Entities/Rectangle";
-import { FLOAT_SIZE, VERTEX_PER_QUAD, INDICES_PER_QUAD, MAX_RECTANGLES } from "../CONST";
+import {
+   FLOAT_SIZE,
+   VERTEX_PER_QUAD,
+   INDICES_PER_QUAD,
+   MAX_RECTANGLES,
+   MANAGERS,
+   RectangleAttributeList as attributeList,
+   RectangleAttribute as AttributeT,
+   RectangleUniformList as uniformList,
+   RectangleUniform as UniformT
+} from '../CONST';
 
 
 import {
    vertexShader   as vsSource,
-   fragmentShader as fsSource,
-   attributes     as A, 
-   uniforms       as U,
-   attributeList,
-   uniformList
+   fragmentShader as fsSource
 } from "../Shaders/Rectangle.shader";
 import { createQuadIAO } from "../../Util/webgl";
 
 
-// TODO: dynamically change max size
-export default class RectanglePipeline extends Pipeline <Rectangle, A, U> {
+export default class RectanglePipeline extends Pipeline <Rectangle, AttributeT, UniformT> {
 
    public constructor(renderer: Renderer) {
       super(
          renderer,
-         <Rectangle[]>renderer.entityLists.rectangle,
+         MANAGERS.rectangle,
          vsSource, 
          fsSource, 
          attributeList, 
@@ -50,22 +55,6 @@ export default class RectanglePipeline extends Pipeline <Rectangle, A, U> {
       this.iao.set(createQuadIAO(this.MAX_OBJS));
       gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.ibo);
       gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, this.iao, gl.STATIC_DRAW);
-   }
-
-   protected createQuadData(rect: Rectangle) {
-      let [ x, y, z ] = [ rect.x, rect.y, rect.layer ];
-      let [ ofx, ofy ] = [ rect.xOffset, rect.yOffset ];
-      let [ orx, ory ] = [ rect.xOrigin, rect.yOrigin ];
-      let [ width, height ] = [ rect.width, rect.height ];
-      let a = rect.angle;
-      let [ r, g, b ] = rect.color;
-
-      return [
-         x        , y         , z, ofx, ofy, orx, ory, a, r, g, b,  // ↖ VERTEX
-         x + width, y         , z, ofx, ofy, orx, ory, a, r, g, b,  // ↗ VERTEX
-         x        , y + height, z, ofx, ofy, orx, ory, a, r, g, b,  // ↙ VERTEX
-         x + width, y + height, z, ofx, ofy, orx, ory, a, r, g, b   // ↘ Vertex
-      ]
    }
 
    protected setPerDrawUniforms(): void {

@@ -5,29 +5,30 @@ import Sprite from "../../Entities/Sprite";
 import {
    FLOAT_SIZE,
    INDICES_PER_QUAD,
+   MANAGERS,
    MAX_SPRITES,
    MAX_TEXTURE_UNITS,
-   VERTEX_PER_QUAD
+   VERTEX_PER_QUAD,
+   SpriteAttributeList as attributeList,
+   SpriteAttribute as AttributeT,
+   SpriteUniformList as uniformList,
+   SpriteUniform as UniformT
 } from '../CONST';
 
 import {
    vertexShader   as vsSource,
-   fragmentShader as fsSource,
-   attributes     as A,
-   uniforms       as U,
-   attributeList,
-   uniformList
+   fragmentShader as fsSource
 } from '../Shaders/Sprite.shader';
 import { createQuadIAO } from "../../Util/webgl";
 
-export default class SpritePipeline extends Pipeline <Sprite, A, U> {
+export default class SpritePipeline extends Pipeline <Sprite, AttributeT, UniformT> {
 
    public MAX_TEXTURE_UNITS: number = MAX_TEXTURE_UNITS;
 
    public constructor(renderer: Renderer) {
       super(
          renderer, 
-         <Sprite[]>renderer.entityLists.sprite,
+         MANAGERS.sprite,
          vsSource, 
          fsSource, 
          attributeList, 

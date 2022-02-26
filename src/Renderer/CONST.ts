@@ -1,9 +1,63 @@
 import EntityManager from "../Entities/EntityManager";
-import { createLayout } from "../Util/webgl";
+import { VertexDescriptor, AttributeDescriptor, UnitDescriptor } from "../Types/webgl";
+
+// TODO: figure out how to move this elsewhere
+const createDescriptor = <A extends string>(config: Record<A, string[]>): VertexDescriptor<A> => {
+   let vUnits = 0;
+   let vSize = 0;
+   let offset = 0;
+
+   let attributeList = {} as Record<A, AttributeDescriptor<string>>;
+
+   for (const key in config) {
+      let aUnits = 0;
+      let aSize = 0;
+
+      let elementKeys: string[] = config[key];
+      let elementList = {} as Record<string, UnitDescriptor>;
+
+      for (const elementKey of elementKeys) {
+         elementList[elementKey] = {
+            relativeOffset: aUnits * /* FLOAT_SIZE */ 4,
+            absoluteOffset: offset * /* FLOAT_SIZE */ 4
+         }
+         offset++;
+         aUnits++;
+         aSize += /* FLOAT_SIZE */ 4;
+      }
+
+      let attributeObj: AttributeDescriptor<string> = {
+         units: aUnits,
+         size: aSize,
+         offset: vSize,
+         elements: elementList,
+      }
+
+      attributeList[key as A] = attributeObj;
+      vUnits += attributeObj.units;
+      vSize += attributeObj.size;
+   }
+
+   return {
+      units: vUnits,
+      size: vSize,
+      attributes: attributeList
+   };
+}
+
+export const RectangleAttributeList = ['position', 'offset', 'origin', 'angle', 'color'] as const;
+export type RectangleAttribute = typeof RectangleAttributeList[number];
+export const RectangleUniformList = ['u_projection', 'u_camera'] as const;
+export type RectangleUniform = typeof RectangleUniformList[number];
+
+export const SpriteAttributeList = ['position', 'offset', 'origin', 'angle', 'textureIndex', 'textureCoord'] as const;
+export type SpriteAttribute = typeof SpriteAttributeList[number];
+export const SpriteUniformList = ['u_projection', 'u_textures', 'u_camera'] as const;
+export type SpriteUniform = typeof SpriteUniformList[number];
 
 export const MANAGERS = {
    rectangle: new EntityManager(
-      createLayout({
+      createDescriptor<RectangleAttribute>({
          position: `xyz`.split(''),
          offset: `xy`.split(''),
          origin: `xy`.split(''),
@@ -12,7 +66,7 @@ export const MANAGERS = {
       })
    ),
    sprite: new EntityManager(
-      createLayout({
+      createDescriptor<SpriteAttribute>({
          position: `xyz`.split(''),
          offset: `xy`.split(''),
          origin: `xy`.split(''),

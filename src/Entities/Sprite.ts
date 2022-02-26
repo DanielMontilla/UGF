@@ -7,17 +7,16 @@ import { MANAGERS } from "../Renderer/CONST";
 export default class Sprite extends Entity {
 
    public readonly manager = MANAGERS.sprite;
+   protected id: number = 0;
 
    public readonly texture: Texture;
    public frame: number;
 
-   constructor(surface: Surface, x: number, y: number, texture: Texture, frame: number = 0) { 
-      super(surface, x, y, texture.img.width, texture.img.height);
+   constructor(x: number, y: number, texture: Texture, frame: number = 0) { 
+      super(x, y, texture.img.width, texture.img.height);
 
       this.texture   = texture;
       this.frame     = this.frameExists(frame) ? frame : 0;
-
-      surface.addEntity(this);
    }
 
    public nextFrame() {

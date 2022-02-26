@@ -6,18 +6,17 @@ import Entity from "./Entity";
 export default class Rectangle extends Entity {
 
    public readonly manager = MANAGERS.rectangle;
+   protected id: number;
 
    constructor(
-      surface: Surface,
       x: number = 0,
       y: number = 0,
       width: number = 2 ** 4,
       height: number = 2 ** 4,
-      public color: rgb = [ 0, 0, 0 ]
+      public color: rgb = [ .5, 1, 0 ]
    ) {
-      super(surface, x, y, width, height);
-
-      surface.addEntity(this);
+      super( x, y, width, height);
+      this.id = this.manager.add(this);
    }
 
    public getVertexData(): number[] {

@@ -1,5 +1,7 @@
-export const attributeList = ['a_position', 'a_offset', 'a_origin', 'a_angle', 'a_color'] as const;
-export const uniformList = ['u_projection', 'u_camera'] as const;
+import { 
+   RectangleAttributeList as attributeList,
+   RectangleUniformList as uniformList
+} from "../CONST";
 
 const position = attributeList[0];
 const offset = attributeList[1];
@@ -9,9 +11,6 @@ const color = attributeList[4];
 
 const projection = uniformList[0];
 const camera = uniformList[1];
-
-export type attributes = typeof attributeList[number];
-export type uniforms = typeof uniformList[number];
 
 export const vertexShader = `
    precision mediump float;

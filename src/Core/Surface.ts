@@ -28,7 +28,6 @@ export default class Surface {
       public readonly width: number = 1200,
       public readonly height: number = 900,
       public readonly backgroundColor: rgb = [50, 50, 50]
-
       ) {
 
       this.canvas = createCanvas(width, height);
@@ -62,14 +61,6 @@ export default class Surface {
 
       this.previousTime = currentTime;
       requestAnimationFrame(this.loop);
-   }
-
-   public addEntity(e: Entity) {
-      let entityType: EntityPrimitiveKeys = 'rectangle';
-      if (e instanceof Rectangle)   entityType = 'rectangle';
-      if (e instanceof Sprite)      entityType = 'sprite';
-
-      this.entityLists[entityType].push(e);
    }
 
    public addKeyInput = (
