@@ -1,18 +1,18 @@
-import { VertexDescriptor, UnitDescriptor, AttributeDescriptor } from "../Types/webgl";
-import Entity from "./Entity";
+import { VertexDescriptor, UnitDescriptor, AttributeDescriptor } from '../Types/webgl';
+import Entity from './Entity';
 
 /**
- * Bridge for entity layer to comunicate with their corresponding rendering pipeline. 
+ * Bridge for entity layer to comunicate with their corresponding rendering pipeline.
  * Every `PrimitiveEntity` has a 1-to-1 relationship with its manager & pipeline
- * 
+ *
  * @template AttributeT string literal of active attributes in vertex
- * 
+ *
  * NOTE:
  * Originally I had planned for a change in an entity to trigger some kind of direct change in vao.
  * Sadly this proved to be a bit more complicated than I anticipated. Since some values in an entity
  * affect a variable amount of verticies it becomes insanely tediouse to model each change. For this to work
  * many intances of children classes would have to be implemented to account for every edge case. Alternatively
- * entity objects would include a web of methods that monitor each property change which (I believe) would 
+ * entity objects would include a web of methods that monitor each property change which (I believe) would
  * ultimately defeat the purpose of increase performance. Perhaps there is a simpler more elegant solution
  * but atm I can't bother to find it.
  */
@@ -40,9 +40,7 @@ export default class EntityManager<EntityT extends Entity, AttributeT extends st
    public add(entity: EntityT) {
       let id = this._next;
       this._entityList.push(entity);
-      this._vertexArray.push(
-         ...new Array<number>().fill(0, 0, this.layout.size)
-      );
+      this._vertexArray.push(...new Array<number>().fill(0, 0, this.layout.size));
       this._next++;
       return id;
    }
@@ -70,10 +68,9 @@ export default class EntityManager<EntityT extends Entity, AttributeT extends st
       }
    }
 
-   public static fromConfig = <
-      E extends Entity,
-      A extends string
-   >(config: Record<A, string[]>): EntityManager<E, A> => {
+   public static fromConfig = <E extends Entity, A extends string>(
+      config: Record<A, string[]>
+   ): EntityManager<E, A> => {
       let vUnits = 0;
       let vSize = 0;
       let offset = 0;
@@ -90,8 +87,8 @@ export default class EntityManager<EntityT extends Entity, AttributeT extends st
          for (const elementKey of elementKeys) {
             elementList[elementKey] = {
                relativeOffset: aUnits * /* FLOAT_SIZE */ 4,
-               absoluteOffset: offset * /* FLOAT_SIZE */ 4
-            }
+               absoluteOffset: offset * /* FLOAT_SIZE */ 4,
+            };
             offset++;
             aUnits++;
             aSize += /* FLOAT_SIZE */ 4;
@@ -102,7 +99,7 @@ export default class EntityManager<EntityT extends Entity, AttributeT extends st
             size: aSize,
             offset: vSize,
             elements: elementList,
-         }
+         };
 
          attributeList[key as A] = attributeObj;
          vUnits += attributeObj.units;
@@ -112,7 +109,7 @@ export default class EntityManager<EntityT extends Entity, AttributeT extends st
       return new EntityManager<E, A>({
          units: vUnits,
          size: vSize,
-         attributes: attributeList
+         attributes: attributeList,
       });
-   }
+   };
 }

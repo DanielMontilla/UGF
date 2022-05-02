@@ -11,11 +11,11 @@ export default abstract class Pipeline<
    AttributeT extends string = string,
    UniformT extends string = string
 > {
-   /**  */
+   /** webgl program for current pipeline */
    public readonly program: WebGLProgram;
-   /**  */
+   /** webgl vertex-shader for current pipeline */
    public readonly vertexShader: WebGLShader;
-   /**  */
+   /** webgl fragment-shader for current pipeline */
    public readonly fragmentShader: WebGLShader;
 
    protected attributes = emptyRecord<AttributeT, attributeInfo>();

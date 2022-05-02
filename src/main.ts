@@ -1,13 +1,9 @@
-import EntityManager from './Entities/EntityManager';
-import { rand, randInt, Rectangle, Sprite, Surface } from './UGF';
-import { emptyRecord } from './Util/general';
+import { rand, Rectangle, Surface } from '.';
 
 let main = async () => {
-
    let s = new Surface(1200, 800, [0.2, 0.2, 0.2]);
 
    class myRect extends Rectangle {
-
       constructor(
          x = rand(0, s.width),
          y = rand(0, s.height),
@@ -16,16 +12,22 @@ let main = async () => {
          super(x, y);
       }
 
-      changeX (amount: number) {
+      changeX(amount: number) {
          this.x += amount;
-         if (this.x + this.width / this.xAnchor > s.width || this.x - this.width / this.xAnchor < 0) {
+         if (
+            this.x + this.width / this.xAnchor > s.width ||
+            this.x - this.width / this.xAnchor < 0
+         ) {
             this.speed.x *= -1;
          }
       }
 
-      changeY (amount: number) {
+      changeY(amount: number) {
          this.y += amount;
-         if (this.y + this.height / this.yAnchor > s.height || this.y - this.height / this.yAnchor < 0) {
+         if (
+            this.y + this.height / this.yAnchor > s.height ||
+            this.y - this.height / this.yAnchor < 0
+         ) {
             this.speed.y *= -1;
          }
       }
@@ -43,17 +45,14 @@ let main = async () => {
    }
 
    s.update = (dt: number) => {
-      myRects.forEach(
-         r => {
-            let dx = r.speed.x * dt;
-            let dy = r.speed.y * dt;
+      myRects.forEach(r => {
+         let dx = r.speed.x * dt;
+         let dy = r.speed.y * dt;
 
-            r.change(dx, dy);
-         }
-      )
-   }
-
-}
+         r.change(dx, dy);
+      });
+   };
+};
 
 // let arr: any[] = [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 ]
 
