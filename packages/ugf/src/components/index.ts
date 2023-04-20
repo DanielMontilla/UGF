@@ -1,4 +1,4 @@
-import Component from "./component";
-import PositionComponent from "./rectangle";
+import PositionComponent from "./positional_component";
+import RectangleComponent from "./rectangle_component";
 
-export { Component, PositionComponent };
+export { PositionComponent, RectangleComponent };

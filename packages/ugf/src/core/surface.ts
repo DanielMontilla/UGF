@@ -1,24 +1,31 @@
-import { Component } from "./components";
-import { DEFAULT_RESOLUTION } from "./data";
-import Renderer from "./renderer";
-import { Resolution, AppOptions } from "./types";
-
+import { defineOptions } from "solzu";
+import { Component } from "../core";
+import { DEFAULT_RESOLUTION } from "../data";
+import { type Renderer, WebGL2Renderer } from "../renderer";
+import { Resolution, AppOptions, Color } from "../types";
+import { Rgb } from "../utility";
 
 export default abstract class Surface extends Component {
   public readonly canvas: HTMLCanvasElement;
   public readonly resolution: Resolution;
   public readonly renderer: Renderer;
+  public readonly backgroundColor: Color;
 
-  public constructor(options: AppOptions) {
+  public constructor(options?: Partial<AppOptions>) {
     super();
 
-    const { resolution } = options;
+    const { resolution, backgroundColor } = defineOptions<AppOptions>(options, {
+      resolution: DEFAULT_RESOLUTION,
+      backgroundColor: Rgb.All(0)
+    });
 
-    this.resolution = resolution ? resolution : DEFAULT_RESOLUTION;
+    this.resolution = resolution;
+    this.backgroundColor = backgroundColor;
+
     this.canvas = document.createElement('canvas');
     this.setupCanvas();
 
-    this.renderer = new Renderer(this);
+    this.renderer = new WebGL2Renderer(this);
   }
 
   private setupCanvas(): void {

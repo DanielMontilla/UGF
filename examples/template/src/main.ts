@@ -4,6 +4,6 @@ class Game extends Surface {
 
 }
 
-const game = new Game({});
+const game = new Game();
 
 game.mount(document.getElementById('app')!);
