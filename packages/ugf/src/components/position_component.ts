@@ -70,7 +70,7 @@ export class PositionComponent extends Component {
     const parent = this.getNearestParentPosition();
     this._worldPosition.x = this.x + parent.x;
     this._worldPosition.y = this.y + parent.y;
-    this.computeLocalOrigin();
+    this.computeOffset();
     if (propagate) {
       this.traverseChildren(child => {
         if (child instanceof PositionComponent) child.syncTransform(false);
@@ -78,37 +78,37 @@ export class PositionComponent extends Component {
     }
   }
 
-  public computeLocalOrigin() {
-    let xOffset = 0;
-    let yOffset = 0;
-
+  public computeOffset() {
     switch (this._anchor) {
       case 'bottom left':
       case 'bottom center':
       case 'bottom right':
-        yOffset = -this.size.y;
+        this._offset.y = -this.size.y;
         break;
-        case 'center left':
+      case 'center left':
       case 'center':
       case 'center right':
-        yOffset = -(this.size.y / 2);
+        this._offset.y = -(this.size.y / 2);
+        break;
+      default:
+        this._offset.y = 0;
         break;
     }
     switch (this._anchor) {
       case 'top right':
       case 'center right':
       case 'bottom right':
-        xOffset = -this.size.x;
+        this._offset.x = -this.size.x;
         break;
       case 'top center':
       case 'center':
       case 'bottom center':
-        xOffset = -(this.size.x / 2);
+        this._offset.x = -(this.size.x / 2);
+        break;
+      default:
+        this._offset.x = 0;
         break;
     }
-
-    this._offset.x = xOffset;
-    this._offset.y = yOffset;
   }
 
   get x(): number { return this.position.x }
@@ -143,7 +143,7 @@ export class PositionComponent extends Component {
   set anchor(a: Anchor) {
     if (a === this._anchor) return;
     this._anchor = a;
-    this.computeLocalOrigin();
+    this.computeOffset();
   }
 
   public setAnchor(a: Anchor): typeof this {
