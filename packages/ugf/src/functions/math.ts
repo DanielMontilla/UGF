@@ -1,4 +1,4 @@
-import type { Mat4 } from "../types";
+import type { Matrix4 } from "../types";
 
 /**
  *
@@ -11,7 +11,7 @@ export function createOrthographicMatrix(
   top: number = 0,
   far: number = 1000,
   near: number = -1000
-): Mat4 {
+): Matrix4 {
   let mat = create4x4EmptyMatrix();
 
   mat[0] = 2 / (right - left);
@@ -25,7 +25,7 @@ export function createOrthographicMatrix(
   return mat;
 }
 
-export function create4x4IdentityMatrix(): Mat4 {
+export function create4x4IdentityMatrix(): Matrix4 {
   return [
     1, 0, 0, 0,
     0, 1, 0, 0,
@@ -34,7 +34,7 @@ export function create4x4IdentityMatrix(): Mat4 {
   ]
 }
 
-export function create4x4EmptyMatrix(): Mat4 {
+export function create4x4EmptyMatrix(): Matrix4 {
   return [
     0, 0, 0, 0,
     0, 0, 0, 0,

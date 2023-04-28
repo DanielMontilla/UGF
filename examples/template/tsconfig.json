@@ -16,7 +16,8 @@
     "skipLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "ugf": ["../../packages/ugf/src/index.ts"]
+      "ugf": ["../../packages/ugf/src/index.ts"],
+      "ugf-input": ["../../packages/ugf-input/src/index.ts"]
     }
   },
   "include": ["src"]

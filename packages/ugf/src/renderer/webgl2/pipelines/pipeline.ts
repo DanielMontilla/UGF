@@ -1,4 +1,4 @@
-import { Attribute, ComponentPrimitive, Mat4 } from "../../../types";
+import { Attribute, ComponentPrimitive, Matrix4 } from "../../../types";
 import { WebGL2Renderer } from "../../../renderer";
 import { constructAttributes, tryCreateBuffer, tryCreateProgram, tryCreateShader, tryCreateVertexArrayObject } from "../../../functions";
 import { Component } from "../../../core";
@@ -9,8 +9,8 @@ export abstract class Pipeline<C extends Component = Component> {
   public readonly attributes: Record<string, Attribute>;
 
   get context(): WebGL2RenderingContext { return this.rendererRef.context };
-  get viewMatrix(): Mat4 { return this.rendererRef.viewMatrix };
-  get projectionMatrix(): Mat4 { return this.rendererRef.projectionMatrix };
+  get viewMatrix(): Matrix4 { return this.rendererRef.viewMatrix };
+  get projectionMatrix(): Matrix4 { return this.rendererRef.projectionMatrix };
 
   /** Corresponding `WebGLProgram` program */
   public readonly program: WebGLProgram;

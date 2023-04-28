@@ -1,9 +1,13 @@
 lockfileVersion: 5.4
 
 specifiers:
+  '@rwh/keystrokes': 1.0.0-beta.12
   '@types/node': ^18.15.11
   typescript: ^4.9.3
   vite: ^4.2.0
+
+dependencies:
+  '@rwh/keystrokes': 1.0.0-beta.12
 
 devDependencies:
   '@types/node': 18.15.11
@@ -209,6 +213,10 @@ packages:
     requiresBuild: true
     dev: true
     optional: true
+
+  /@rwh/keystrokes/1.0.0-beta.12:
+    resolution: {integrity: sha512-T5dYwoYJaLYJCPGHkU1AyK/XSvYdcLwFq3SG7CZxw1O/nPGXfClifgo9L/ldL9EiOK8lveZqESmsXXuxrF04Bg==}
+    dev: false
 
   /@types/node/18.15.11:
     resolution: {integrity: sha512-E5Kwq2n4SbMzQOn6wnmBjuK9ouqlURrcZDVfbo9ftDDTFt3nk7ZKK4GMOzoYgnpQJKcxwQw+lGaBvvlMo0qN/Q==}
