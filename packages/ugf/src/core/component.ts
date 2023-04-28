@@ -1,4 +1,5 @@
 import { TickCallback } from "../types";
+import { Surface } from "../core";
 
 export class Component {
   public parent: Component | null = null;
@@ -10,7 +11,7 @@ export class Component {
     if (component.parent !== null) throw Error('component already has a parent');
     component.parent = this;
     this.children.push(component);
-    component.onMount(this);
+    if (component.isAttachedToSurface) component.onMount(this);
     return component;
   }
 
@@ -26,7 +27,19 @@ export class Component {
     for (let i = this.children.length - 1; i >= 0; i--) this.children[i].update(dt);
   }
 
-  protected onMount(_to: Component) {}
+  protected get isAttachedToSurface(): boolean {
+    let component = this.parent;
+    while (component !== null) {
+      if (component instanceof Surface) return true;
+      component = component.parent;
+    }
+    return false;
+  }
+
+  protected onMount(to: Component) {
+    this.traverseChildren(child => child.onMount(to));
+  }
+
   protected onRemove(_from: Component) {};
 
   public addOnUpdateCallback(callback: TickCallback) {
@@ -40,6 +53,13 @@ export class Component {
       allChildren.push(...child.getAllChildren());
     }
     return allChildren;
+  }
+
+  public traverseChildren(actionCallback: (child: Component) => void) {
+    for (const child of this.children) {
+      actionCallback(child);
+      child.traverseChildren(actionCallback);
+    }
   }
 
 }

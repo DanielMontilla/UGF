@@ -12,7 +12,7 @@ export class PositionComponent extends Component {
   public readonly layer: number;
   public readonly anchor: Anchor;
 
-  public _worldPosition: Vec2 = Vec2.zero();
+  public readonly _worldPosition: Vec2 = Vec2.zero();
 
   public constructor(options?: PositionComponentOptions) {
     super();
@@ -35,34 +35,54 @@ export class PositionComponent extends Component {
     this.rotation = rotation;
   }
 
-  public add(component: Component): Component {
-    super.add(component);
-    if (component instanceof PositionComponent) {
-      component._worldPosition.x = component.x + this.x;
-      component._worldPosition.y = component.y + this.y;
-    }
-    return component;
-  }
-
-  protected onMount(parent: Component): void {
-    super.onMount(parent);
+  protected onMount(to: Component): void {
+    super.onMount(to);
+    this.syncPostion();
   }
 
   public hasPositionParent(): this is PositionComponent & { parent: PositionComponent } {
     return this.parent instanceof PositionComponent;
   }
 
-  public isRoot(): this is PositionComponent & { parent: Component } {
-    return !this.hasPositionParent()
-  };
+  public getNearestPositionParent(): PositionComponent | null {
+    let component = this.parent;
+
+    while (component !== null) {
+      if (component instanceof PositionComponent) return component;
+      component = component.parent;
+    }
+
+    return null;
+  }
+
+  public getNearestParentPosition(): Vec2 {
+    const parent = this.getNearestPositionParent();
+    return parent !== null 
+      ? parent._worldPosition
+      : this.position.copy();
+  }
+
+  /**
+   * Correctly sets `_worldPosition` and children's `_wordlPosition` for rendering
+   */
+  public syncPostion(propagate: boolean = true): void {
+    const origin = this.getNearestParentPosition();
+    this._worldPosition.x = this.x + origin.x;
+    this._worldPosition.y = this.y + origin.y;
+    if (propagate) {
+      this.traverseChildren(child => {
+        if (child instanceof PositionComponent) child.syncPostion(false);
+      });
+    }
+  }
 
   get x(): number { return this.position.x }
   get y(): number { return this.position.y }
   set x(n: number) { this.position.x = n }
   set y(n: number) { this.position.y = n }
 
-  get worldX(): number { return this.isRoot() ? this.x : this._worldPosition.x }
-  get worldY(): number { return this.isRoot() ? this.y : this._worldPosition.y }
+  get worldX(): number { return this._worldPosition.x }
+  get worldY(): number { return this._worldPosition.y }
 
   get scaleX(): number { return this.scale.x }
   get scaleY(): number { return this.scale.y }
@@ -82,17 +102,7 @@ function applyPositionProxy(component: PositionComponent, position: Vec2) {
   return new Proxy<Vec2>(position, {
     set<P extends keyof Vec2>(vec: Vec2, prop: P, value: Vec2[P]) {
       vec[prop] = value; // update property
-      if (prop === 'x' || prop  === 'y') { // if prop is a vec component
-        const vec_component: 'x' | 'y' = prop;
-        if (component.hasPositionParent()) { // if parent is position component
-          component._worldPosition[vec_component] = component.parent[vec_component] + component.position[vec_component];
-        }
-        for (const child of component.children) {
-          if (child instanceof PositionComponent) {
-            child._worldPosition[vec_component] = child.position[vec_component] + component.position[vec_component];
-          }
-        }
-      }
+      if (prop === 'x' || prop  === 'y') component.syncPostion();
       return true;
     }
   });

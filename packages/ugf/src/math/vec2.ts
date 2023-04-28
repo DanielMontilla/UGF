@@ -19,6 +19,10 @@ export class Vec2 {
   static zero() {
     return new Vec2(0, 0);
   }
+  
+  public copy(): Vec2 {
+    return new Vec2(this.x, this.y);
+  }
 }
 
 export function vec2(x: number, y: number) { return new Vec2(x, y) };
