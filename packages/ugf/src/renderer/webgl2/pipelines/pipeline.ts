@@ -1,6 +1,6 @@
-import { Attribute, ComponentPrimitive } from "../../../types";
+import { Attribute, ComponentPrimitive, Mat4 } from "../../../types";
 import { WebGL2Renderer } from "../../../renderer";
-import { constructAttributes, tryCreateBuffer, tryCreateProgram, tryCreateShader, tryCreateVertexArrayObject, unwrap } from "../../../functions";
+import { constructAttributes, tryCreateBuffer, tryCreateProgram, tryCreateShader, tryCreateVertexArrayObject } from "../../../functions";
 import { Component } from "../../../core";
 
 export abstract class Pipeline<C extends Component = Component> {
@@ -9,6 +9,8 @@ export abstract class Pipeline<C extends Component = Component> {
   public readonly attributes: Record<string, Attribute>;
 
   get context(): WebGL2RenderingContext { return this.rendererRef.context };
+  get viewMatrix(): Mat4 { return this.rendererRef.viewMatrix };
+  get projectionMatrix(): Mat4 { return this.rendererRef.projectionMatrix };
 
   /** Corresponding `WebGLProgram` program */
   public readonly program: WebGLProgram;
@@ -60,12 +62,10 @@ export abstract class Pipeline<C extends Component = Component> {
   /** Max amount of units. Used to set VAO length */
   public readonly MAX_UNITS: number;
 
-  /** Vertex Array Object. Stores vertex layout state*/
+  /** Vertex Array Object. Stores layout state (IBO, attributes, ) */
   protected VAO: WebGLVertexArrayObject;
   /** Vertex Buffer Object. GPU side vertex buffer */
   protected VBO: WebGLBuffer;
-  /** Index Array Buffer. CPU side index buffer */
-  protected IAO: Uint16Array;
   /** Index Buffer Object. GPU side index buffer */
   protected IBO: WebGLBuffer;
 
@@ -78,13 +78,13 @@ export abstract class Pipeline<C extends Component = Component> {
     VERTEX_PER_PRIMITIVE: number,
     INDICES_PER_PRIMITIVE: number,
   ) {
-    const { context, program } = this;
+    const { context } = this;
 
-    this.vertexShader = unwrap(tryCreateShader(context, 'vertex', vertexShaderSource));
-    this.fragmentShader = unwrap(tryCreateShader(context, 'fragment', fragmentShaderSource));
-    this.program = unwrap(tryCreateProgram(context, this.vertexShader, this.fragmentShader));
+    this.vertexShader = tryCreateShader(context, 'vertex', vertexShaderSource).unwrap();
+    this.fragmentShader = tryCreateShader(context, 'fragment', fragmentShaderSource).unwrap();
+    this.program = tryCreateProgram(context, this.vertexShader, this.fragmentShader).unwrap();
 
-    const { attributes, stride, units } = unwrap(constructAttributes(context, program, attributesNames));
+    const { attributes, stride, units } = constructAttributes(context, this.program, attributesNames).unwrap();
 
     this.attributes = attributes;
 
@@ -97,33 +97,29 @@ export abstract class Pipeline<C extends Component = Component> {
     this.MAX_INDICES = this.INDICES_PER_PRIMITIVE * this.MAX_OBJECTS;
     this.MAX_UNITS = this.UNITS_PER_OBJECT * this.MAX_OBJECTS;
 
-    this.VAO = unwrap(tryCreateVertexArrayObject(context));
-    this.VBO = unwrap(tryCreateBuffer(context));
-    this.IAO = new Uint16Array(this.MAX_INDICES);
-    this.IBO = unwrap(tryCreateBuffer(context));
+    this.VAO = tryCreateVertexArrayObject(context).unwrap();
+    this.VBO = tryCreateBuffer(context).unwrap();
+    this.IBO = tryCreateBuffer(context).unwrap();
 
-    this.setupIndexBuffer();
-    this.setupAttributes();
-    this.setupUniforms();
+    this.setup();
   }
 
-  protected stageProgram(): void {
-    this.context.useProgram(this.program);
+  protected stage() {
+    const { context, program, VAO } = this;
+    context.useProgram(program);
+    context.bindVertexArray(VAO);
   }
 
-  public begin(components: C[]): void {
-    this.stageProgram();
-    this.stageUniforms();
-    this.stageAttributes();
-    this.draw(components, 0);
+  protected unstage() {
+    const { context } = this;
+    context.useProgram(null);
+    context.bindVertexArray(null);
   }
 
-  protected abstract setupIndexBuffer(): void;
-  protected abstract setupAttributes(): void;
-  protected abstract setupUniforms(): void;
+  /** The required gl calls to setup pipeline */
+  protected abstract setup(): void;
 
-  protected abstract stageUniforms(): void;
-  protected abstract stageAttributes(): void;
+  public abstract draw(components: C[]): void;
 
-  protected abstract draw(components: C[], offset: number): void;
+  protected abstract getVertexData(component: C): number[];
 }

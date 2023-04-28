@@ -1,26 +1,30 @@
-import { COMPONENT_SIZES as COMPONENT_COUNTS, GL_TYPES } from "../data";
+import { UNIT_COUNTS, GL_UNIT_TYPES, GL_TYPES } from "../data";
 
 export type ComponentPrimitive =
-  'rectangle' | 'sprite' /* | 'polygon' | 'circle' */;
+  'rectangle' //| 'sprite' /* | 'polygon' | 'circle' */;
 
+export type GLUnitType = typeof GL_UNIT_TYPES[number];
 export type GLType = typeof GL_TYPES[number];
-export type ComponentCount = typeof COMPONENT_COUNTS[number];
+export type UnitCount = typeof UNIT_COUNTS[number];
 
 export type Attribute = {
   /** string matching unique shader attribute symbol */
-  readonly name: string,
+  readonly name: string;
 
   /** logical index position within shader */
-  readonly location: number,
+  readonly location: number;
 
   /** amount of components */
-  readonly componentCount: ComponentCount;
+  readonly unitCount: UnitCount;
 
   /** total size (in bytes) */
   readonly size: number;
 
   /** gl type id */
-  readonly type: GLType
+  readonly type: GLType;
+
+  /** singular gl type id */
+  readonly unitType: GLUnitType;
 
   /** distance (in bytes) from vertex start */
   readonly offset: number;

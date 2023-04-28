@@ -1,6 +1,6 @@
-import Surface from './core/surface';
-
+export * from './core';
 export * from './types';
 export * from './functions';
-
-export { Surface };
+export * from './components';
+export * from './utility';
+export * from './math';

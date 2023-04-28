@@ -1,5 +1,4 @@
-import Surface from "./surface";
-import Camera from "./camera";
-import Component from "./component";
-
-export { Surface, Camera, Component };
+export * from "./component";
+export * from "./surface";
+export * from "./camera";
+export * from "./sprite";

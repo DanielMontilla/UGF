@@ -1,0 +1,1 @@
+1. Add way for `PositionComponet` to recursively check for root node to compute absolute positions

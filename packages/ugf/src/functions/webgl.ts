@@ -1,6 +1,6 @@
 import { Result, err, ok } from "solzu";
-import { Attribute, ComponentCount, GLType } from "../types";
-import { COMPONENT_SIZES, GL_TYPES } from "../data";
+import { Attribute, UnitCount, GLUnitType, GLType } from "../types";
+import { UNIT_COUNTS, GL_UNIT_TYPES, INDICES_PER_QUAD, VERTEX_PER_QUAD, GL_TYPES } from "../data";
 const { ACTIVE_ATTRIBUTES } = WebGL2RenderingContext;
 
 export function tryCreateWebGL2Context(
@@ -76,8 +76,8 @@ export function trySetupAttribute(
 ): Result<void, string> {
   context.vertexAttribPointer(
     attribute.location,
-    attribute.componentCount,
-    attribute.type,
+    attribute.unitCount,
+    attribute.unitType,
     normalize,
     stride,
     attribute.offset,
@@ -86,21 +86,36 @@ export function trySetupAttribute(
   return ok();
 }
 
+export function isValidGLUnitType(type: number): type is GLUnitType {
+  return GL_UNIT_TYPES.includes(type as GLUnitType);
+}
+
 export function isValidGLType(type: number): type is GLType {
   return GL_TYPES.includes(type as GLType);
 }
 
-export function isValidComponentCount(size: number): size is ComponentCount {
-  return COMPONENT_SIZES.includes(size as ComponentCount);
+export function isValidComponentCount(size: number): size is UnitCount {
+  return UNIT_COUNTS.includes(size as UnitCount);
 }
 
-export function sizeOf(type: GLType): number {
+export function typeInfoOf(type: GLType): {
+  unitType: GLUnitType,
+  unitSize: number,
+  unitCount: UnitCount,
+} {
   const gl = WebGL2RenderingContext;
+
   switch (type) {
     case gl.FLOAT:
-      return 4;
+      return { unitType: gl.FLOAT, unitSize: 4, unitCount: 1 };
     case gl.INT:
-      return 4;
+      return { unitType: gl.INT, unitSize: 4, unitCount: 1 };
+    case gl.FLOAT_VEC2:
+      return { unitType: gl.FLOAT, unitSize: 4, unitCount: 2 };
+    case gl.FLOAT_VEC3:
+      return { unitType: gl.FLOAT, unitSize: 4, unitCount: 3 };
+    case gl.FLOAT_VEC4:
+      return { unitType: gl.FLOAT, unitSize: 4, unitCount: 4 };
     default:
       throw Error(`unsupported type`)
   }
@@ -119,11 +134,12 @@ export function constructAttributes(
   const totalAttributes = context.getProgramParameter(program, ACTIVE_ATTRIBUTES);
 
   if (typeof totalAttributes !== 'number') return err('unable to read attribute count');
-  if (totalAttributes !== attributeNames.length) return err('mismatched amount of attributes');
+  if (totalAttributes !== attributeNames.length) 
+    return err(`mismatched amount of attributes. Should have ${totalAttributes} amount of attributes`);
 
   const attributes: Record<string, Attribute> = {};
   let offset = 0;
-  let units = 0;
+  let totalUnits = 0;
 
   for (let location = 0; location < attributeNames.length; location++) {
     const attributeName = attributeNames[location];
@@ -132,25 +148,43 @@ export function constructAttributes(
     if (info === null) return err(`invalid attribute "${attributeName}"`);
     if (info.name !== attributeName) return err(`incorrect attribute location "${attributeName}"`);
 
-    const componentCount = info.size;
-    if (!isValidComponentCount(componentCount)) return err(`unsuported component size "${info.size}"`)
-    
     if (!isValidGLType(info.type)) return err(`invalid GL type "${info.type}"`)
-    const size = sizeOf(info.type) * componentCount;
-    
+    const { unitCount, unitSize, unitType } = typeInfoOf(info.type);
+    const size = unitCount * unitSize;
 
     attributes[attributeName] = {
       name: attributeName,
       location: location,
-      componentCount: componentCount,
+      unitCount: unitCount,
       size: size,
       type: info.type,
+      unitType: unitType,
       offset: offset,
     }
     
-    units += componentCount;
+    totalUnits += unitCount;
     offset += size;
   }
 
-  return ok({ attributes, stride: offset, units });
+  return ok({ attributes, stride: offset, units: totalUnits });
+}
+
+export function generateQUADIndices(count: number): number[] {
+  let result: number[] = [];
+  let step: number;
+  let offset: number;
+
+  for (let i = 0; i < count; i++) {
+    offset = VERTEX_PER_QUAD * i;
+    step = INDICES_PER_QUAD * i;
+
+    result[step + 0] = offset + 0; // v1
+    result[step + 1] = offset + 1; // v2
+    result[step + 2] = offset + 2; // v3
+    result[step + 3] = offset + 2; // v3
+    result[step + 4] = offset + 1; // v1
+    result[step + 5] = offset + 3; // v4
+  }
+
+  return result;
 }

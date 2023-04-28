@@ -1,22 +1,30 @@
-import { Vector2 } from "../math";
-import { Anchor, Color, Resolution } from "../types";
-import { Size } from "../utility";
+import { Vec2 } from "../math";
+import { Color } from "../utility";
+import { Anchor } from "../types";
+import { Sprite } from "../core";
 
 export type AppOptions = {
-  resolution: Resolution;
-  backgroundColor: Color;
+  size?: Vec2;
+  backgroundColor?: Color;
 }
 
 export interface PositionComponentOptions {
-  position: Vector2;
-  layer: number;
-  size: Size;
-  scale: Vector2;
-  rotation: number;
-  anchor: Anchor;
+  position?: Vec2;
+  layer?: number;
+  size?: Vec2;
+  scale?: Vec2;
+  rotation?: number;
+  anchor?: Anchor;
 }
 
-export type RectangleComponentOptions = 
-  PositionComponentOptions & {
-    color: Color
-  }
+export interface RectangleComponentOptions extends PositionComponentOptions {
+  color?: Color
+}
+
+export interface SpriteComponentOptions extends PositionComponentOptions {
+  sprite: Sprite
+}
+
+export interface SpriteOptions {
+  image: HTMLImageElement
+}

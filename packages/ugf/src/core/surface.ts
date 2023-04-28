@@ -1,36 +1,57 @@
 import { defineOptions } from "solzu";
-import { Component } from "../core";
-import { DEFAULT_RESOLUTION } from "../data";
-import { type Renderer, WebGL2Renderer } from "../renderer";
-import { Resolution, AppOptions, Color } from "../types";
-import { Rgb } from "../utility";
+import { Camera, Component } from "../core";
+import { DEFAULT_SURFACE_SIZE } from "../data";
+import { Renderer, WebGL2Renderer } from "../renderer";
+import { AppOptions } from "../types";
+import { Vec2 } from "../math";
+import { Color } from "../utility";
 
-export default abstract class Surface extends Component {
+export class Surface extends Component {
   public readonly canvas: HTMLCanvasElement;
-  public readonly resolution: Resolution;
+  public readonly size: Vec2;
   public readonly renderer: Renderer;
   public readonly backgroundColor: Color;
+  public readonly camera: Camera;
 
-  public constructor(options?: Partial<AppOptions>) {
+  public constructor(options?: AppOptions) {
     super();
 
-    const { resolution, backgroundColor } = defineOptions<AppOptions>(options, {
-      resolution: DEFAULT_RESOLUTION,
-      backgroundColor: Rgb.All(0)
+    const { size, backgroundColor } = defineOptions<AppOptions>(options, {
+      size: DEFAULT_SURFACE_SIZE,
+      backgroundColor: Color.black(),
     });
 
-    this.resolution = resolution;
+    this.size = size;
     this.backgroundColor = backgroundColor;
+    this.camera = new Camera();
 
     this.canvas = document.createElement('canvas');
-    this.setupCanvas();
+    this.syncCanvas();
 
     this.renderer = new WebGL2Renderer(this);
+    requestAnimationFrame(this.tick);
   }
 
-  private setupCanvas(): void {
-    this.canvas.width = this.resolution.width;
-    this.canvas.height = this.resolution.height;
+  private lastTime = 0;
+  private tick = (currentTime: DOMHighResTimeStamp) => {
+
+    const dt = (currentTime - this.lastTime) / 1000;
+    this.lastTime = currentTime;
+
+    this.update(dt);
+
+    this.draw();
+
+    requestAnimationFrame(this.tick);
+  }
+
+  private draw() {
+    this.renderer.draw(this.getAllChildren());
+  }
+
+  private syncCanvas(): void {
+    this.canvas.width = this.size.x;
+    this.canvas.height = this.size.y;
   }
 
   public mount(on: 'body'): void;

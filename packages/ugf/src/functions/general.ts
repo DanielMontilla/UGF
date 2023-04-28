@@ -1,6 +1,8 @@
-import { Result, isErr } from "solzu";
+export const _ = null;
 
-export function unwrap<V, E>(result: Result<V, E>): V {;
-  if (isErr(result)) throw Error(typeof result.error === 'string' ? result.error : String(result.error));
-  return result.value;
+export function isIn<T extends string | symbol | number>(
+  object: Record<T, any>,
+  key: string | symbol | number,
+): key is T {
+  return key in object;
 }

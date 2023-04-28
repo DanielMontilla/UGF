@@ -2,7 +2,7 @@ lockfileVersion: 5.4
 
 specifiers:
   '@types/node': ^18.15.11
-  solzu: ^0.0.1
+  solzu: ^0.0.2
   typescript: ^4.9.3
   vite: ^4.2.0
   vite-plugin-dts: ^2.1.0
@@ -10,7 +10,7 @@ specifiers:
   zod: ^3.21.4
 
 dependencies:
-  solzu: 0.0.1
+  solzu: 0.0.2
   zod: 3.21.4
 
 devDependencies:
@@ -959,8 +959,8 @@ packages:
       is-fullwidth-code-point: 4.0.0
     dev: true
 
-  /solzu/0.0.1:
-    resolution: {integrity: sha512-bJLE3FsNxHXbrjbkakmlY3iYiHmdBOJZgTf6/BKSjMZR2kAj3+HFd43/JseEMDPbQn91TSYX0dg42p5Bn6Utqw==}
+  /solzu/0.0.2:
+    resolution: {integrity: sha512-hBEjiJs8TD3dolBlkBSSG/Rloymf090crWA4CxYgfvBwFxm5pd16uamOue/NSrI7WMXGrrpXEzrh1+5YaWQ24A==}
     dev: false
 
   /source-map-js/1.0.2:

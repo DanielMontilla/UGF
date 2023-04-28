@@ -1,20 +1,20 @@
-import { Surface } from "../core";
-import { Mat4, Resolution } from "../types";
+import { Component, Surface } from "../core";
+import { Mat4 } from "../types";
 import { createOrthographicMatrix } from "../functions";
+import { Vec2 } from "../math";
 
-export default abstract class Renderer {
+export abstract class Renderer {
   public readonly surfaceRef: Surface;
   public projectionMatrix: Mat4;
-
-  abstract readonly context: WebGL2RenderingContext;
   
   get canvas(): HTMLCanvasElement { return this.surfaceRef.canvas };
-  get resolution(): Resolution { return this.surfaceRef.resolution };
+  get surfaceSize(): Vec2 { return this.surfaceRef.size };
+  get viewMatrix(): Mat4 { return this.surfaceRef.camera.viewMatrix };
 
   public constructor(surfaceRef: Surface) {
     this.surfaceRef = surfaceRef;
-    this.projectionMatrix = createOrthographicMatrix(this.resolution.width, this.resolution.width);
+    this.projectionMatrix = createOrthographicMatrix(this.surfaceSize.x, this.surfaceSize.y);
   }
 
-  public abstract draw(): void;
+  public abstract draw(components: Component[]): void;
 }
