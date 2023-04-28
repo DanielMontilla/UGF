@@ -23,6 +23,10 @@ export class Vec2 {
   public copy(): Vec2 {
     return new Vec2(this.x, this.y);
   }
+
+  public toString(): string {
+    return `(${this.x}, ${this.y})`
+  }
 }
 
 export function vec2(x: number, y: number) { return new Vec2(x, y) };

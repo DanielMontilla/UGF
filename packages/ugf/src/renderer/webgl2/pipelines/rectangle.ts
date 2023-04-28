@@ -16,7 +16,7 @@ export class RectanglePipeline extends Pipeline<RectangleComponent> {
     super(
       rendererRef,
       vertexSource, fragmentSource,
-      ['a_position', 'a_layer', 'a_color'],
+      ['a_position', 'a_offset', 'a_layer', 'a_origin', 'a_rotation', 'a_color'],
       2048, VERTEX_PER_QUAD, INDICES_PER_QUAD
     );
   }
@@ -75,10 +75,10 @@ export class RectanglePipeline extends Pipeline<RectangleComponent> {
 
   protected getVertexData(r: RectangleComponent): number[] {
     return [
-      r.worldX          , r.worldY           , r.layer, r.r, r.g, r.b, r.alpha, // ↖ TOP LEFT VERTEX
-      r.worldX + r.width, r.worldY           , r.layer, r.r, r.g, r.b, r.alpha, // ↗ TOP RIGHT VERTEX
-      r.worldX          , r.worldY + r.height, r.layer, r.r, r.g, r.b, r.alpha, // ↙ BOT LEFT VERTEX
-      r.worldX + r.width, r.worldY + r.height, r.layer, r.r, r.g, r.b, r.alpha, // ↘ BOT RIGHT VERTEX
+      r.worldX          , r.worldY           , r.offsetX, r.offsetY, r.layer, r.worldX, r.worldY, r.rotation, r.r, r.g, r.b, r.alpha, // ↖ TOP LEFT VERTEX
+      r.worldX + r.width, r.worldY           , r.offsetX, r.offsetY, r.layer, r.worldX, r.worldY, r.rotation, r.r, r.g, r.b, r.alpha, // ↗ TOP RIGHT VERTEX
+      r.worldX          , r.worldY + r.height, r.offsetX, r.offsetY, r.layer, r.worldX, r.worldY, r.rotation, r.r, r.g, r.b, r.alpha, // ↙ BOT LEFT VERTEX
+      r.worldX + r.width, r.worldY + r.height, r.offsetX, r.offsetY, r.layer, r.worldX, r.worldY, r.rotation, r.r, r.g, r.b, r.alpha, // ↘ BOT RIGHT VERTEX
     ]
   }
 

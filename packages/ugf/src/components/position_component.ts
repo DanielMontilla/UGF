@@ -8,10 +8,11 @@ export class PositionComponent extends Component {
   public readonly position: Vec2;
   public readonly size: Vec2;
   public readonly scale: Vec2;
-  public readonly rotation: number;
-  public readonly layer: number;
-  public readonly anchor: Anchor;
+  private _rotation: number;
+  private _layer: number;
+  private _anchor: Anchor;
 
+  private readonly _offset: Vec2 = Vec2.zero();
   public readonly _worldPosition: Vec2 = Vec2.zero();
 
   public constructor(options?: PositionComponentOptions) {
@@ -30,14 +31,14 @@ export class PositionComponent extends Component {
     this.size = size;
     this.scale = scale;
 
-    this.layer = layer;
-    this.anchor = anchor;
-    this.rotation = rotation;
+    this._layer = layer;
+    this._anchor = anchor;
+    this._rotation = rotation;
   }
 
   protected onMount(to: Component): void {
     super.onMount(to);
-    this.syncPostion();
+    this.syncTransform();
   }
 
   public hasPositionParent(): this is PositionComponent & { parent: PositionComponent } {
@@ -63,17 +64,51 @@ export class PositionComponent extends Component {
   }
 
   /**
-   * Correctly sets `_worldPosition` and children's `_wordlPosition` for rendering
+   * Correctly sets computes all required transform properties
    */
-  public syncPostion(propagate: boolean = true): void {
-    const origin = this.getNearestParentPosition();
-    this._worldPosition.x = this.x + origin.x;
-    this._worldPosition.y = this.y + origin.y;
+  public syncTransform(propagate: boolean = true): void {
+    const parent = this.getNearestParentPosition();
+    this._worldPosition.x = this.x + parent.x;
+    this._worldPosition.y = this.y + parent.y;
+    this.computeLocalOrigin();
     if (propagate) {
       this.traverseChildren(child => {
-        if (child instanceof PositionComponent) child.syncPostion(false);
+        if (child instanceof PositionComponent) child.syncTransform(false);
       });
     }
+  }
+
+  public computeLocalOrigin() {
+    let xOffset = 0;
+    let yOffset = 0;
+
+    switch (this._anchor) {
+      case 'bottom left':
+      case 'bottom center':
+      case 'bottom right':
+        yOffset = -this.size.y;
+        break;
+        case 'center left':
+      case 'center':
+      case 'center right':
+        yOffset = -(this.size.y / 2);
+        break;
+    }
+    switch (this._anchor) {
+      case 'top right':
+      case 'center right':
+      case 'bottom right':
+        xOffset = -this.size.x;
+        break;
+      case 'top center':
+      case 'center':
+      case 'bottom center':
+        xOffset = -(this.size.x / 2);
+        break;
+    }
+
+    this._offset.x = xOffset;
+    this._offset.y = yOffset;
   }
 
   get x(): number { return this.position.x }
@@ -89,20 +124,44 @@ export class PositionComponent extends Component {
   set scaleX(n: number) { this.scale.x = n }
   set scaleY(n: number) { this.scale.y = n }
 
-  public setScale(n: number): void;
-  public setScale(x: number, y?: number) {
+  public setScale(n: number): typeof this;
+  public setScale(x: number, y?: number): typeof this {
     this.scaleX = x;
     this.scaleY = y !== undefined
       ? y
       : x;
+    return this;
   }
+
+  get rotation(): number { return this._rotation }
+  set rotation(n: number) { this._rotation = n }
+
+  get layer(): number { return this._layer }
+  set layer(n: number) { this._layer = n }
+
+  get anchor(): Anchor { return this._anchor }
+  set anchor(a: Anchor) {
+    if (a === this._anchor) return;
+    this._anchor = a;
+    this.computeLocalOrigin();
+  }
+
+  public setAnchor(a: Anchor): typeof this {
+    this.anchor = a;
+    return this;
+  }
+
+  get offset(): Vec2 { return this._offset }
+  get offsetX(): number { return this.offset.x }
+  get offsetY(): number { return this.offset.y }
+
 }
 
 function applyPositionProxy(component: PositionComponent, position: Vec2) {
   return new Proxy<Vec2>(position, {
     set<P extends keyof Vec2>(vec: Vec2, prop: P, value: Vec2[P]) {
       vec[prop] = value; // update property
-      if (prop === 'x' || prop  === 'y') component.syncPostion();
+      if (prop === 'x' || prop  === 'y') component.syncTransform();
       return true;
     }
   });
