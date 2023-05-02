@@ -16,7 +16,6 @@
     "vitest": "^0.29.8"
   },
   "dependencies": {
-    "gl-matrix": "^3.4.3",
     "solzu": "^0.0.2",
     "zod": "^3.21.4"
   }

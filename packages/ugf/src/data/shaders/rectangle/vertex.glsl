@@ -1,11 +1,9 @@
 #version 300 es
 
 in vec2 a_position;
-in vec2 a_offset;
-in float a_layer;
-in vec2 a_origin;
-in float a_rotation;
+
 in vec4 a_color;
+in mat4 a_worldMatrix;
 
 uniform mat4 u_projection;
 uniform mat4 u_view;
@@ -13,25 +11,9 @@ uniform mat4 u_view;
 out vec4 v_color;
 
 void main() {
-  vec3 position = vec3(a_position + a_offset, a_layer);
+  vec4 worldPosition = a_worldMatrix * vec4(a_position, 0.0, 1.0);
 
-  float s = sin(a_rotation);
-  float c = cos(a_rotation);
-
-  // Translate by the negative origin
-  position.xy -= a_origin;
-
-  // Apply rotation
-  float originalX = position.x;
-  float originalY = position.y;
-
-  position.x = originalX * c - originalY * s;
-  position.y = originalX * s + originalY * c;
-
-  // Translate back by the origin
-  position.xy += a_origin;
-
-  gl_Position = (u_projection * u_view) * vec4(position, 1);
+  gl_Position = u_projection * u_view * worldPosition;
 
   v_color = a_color;
 }

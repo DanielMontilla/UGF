@@ -1,11 +1,11 @@
-import { create4x4IdentityMatrix } from "../functions";
-import { Matrix4 } from "../types";
+import { Mat4 } from "../math";
+
 
 export class Camera {
 
-  public readonly viewMatrix: Matrix4;
+  public readonly viewMatrix: Mat4;
 
   constructor() {
-    this.viewMatrix = create4x4IdentityMatrix();
+    this.viewMatrix = Mat4.identity();
   }
 }

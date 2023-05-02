@@ -61,5 +61,4 @@ export class Component {
       child.traverseChildren(actionCallback);
     }
   }
-
 }

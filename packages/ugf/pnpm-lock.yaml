@@ -2,7 +2,6 @@ lockfileVersion: 5.4
 
 specifiers:
   '@types/node': ^18.15.11
-  gl-matrix: ^3.4.3
   solzu: ^0.0.2
   typescript: ^4.9.3
   vite: ^4.2.0
@@ -11,7 +10,6 @@ specifiers:
   zod: ^3.21.4
 
 dependencies:
-  gl-matrix: 3.4.3
   solzu: 0.0.2
   zod: 3.21.4
 
@@ -671,10 +669,6 @@ packages:
   /get-func-name/2.0.0:
     resolution: {integrity: sha512-Hm0ixYtaSZ/V7C8FJrtZIuBBI+iSgL+1Aq82zSu8VQNB4S3Gk8e7Qs3VwBDJAhmRZcFqkl3tQu36g/Foh5I5ig==}
     dev: true
-
-  /gl-matrix/3.4.3:
-    resolution: {integrity: sha512-wcCp8vu8FT22BnvKVPjXa/ICBWRq/zjFfdofZy1WSpQZpphblv12/bOQLBC1rMM7SGOFS9ltVmKOHil5+Ml7gA==}
-    dev: false
 
   /glob-parent/5.1.2:
     resolution: {integrity: sha512-AOIgSQCepiJYwP3ARnGx+5VnTu2HBYdzbGP45eLw1vr3zB3vZLeyed1sC9hnbcOc9/SrMyM5RPQrkGz4aS9Zow==}

@@ -1,10 +1,22 @@
-export class Vec2 {
-  constructor(
-    public x: number,
-    public y: number
-  ) {};
+import { Vec2Arr } from "../types";
 
-  public toArr(): [x: number, y: number] {
+export class Vec2 {
+
+  public data: Float32Array;
+
+  constructor(x: number, y: number) {
+    this.data = new Float32Array(2);
+    this.data[0] = x;
+    this.data[1] = y;
+  };
+
+  get x(): number { return this.data[0] }
+  get y(): number { return this.data[1] }
+
+  set x(n: number) { this.data[0] = n }
+  set y(n: number) { this.data[1] = n }
+
+  public toArr(): Vec2Arr {
     return [this.x, this.y];
   }
 
@@ -12,7 +24,7 @@ export class Vec2 {
     return new Vec2(n, n);
   }
 
-  static fromArray(arr: [x: number, y: number]) {
+  static fromArray(arr: Vec2Arr) {
     return new Vec2(arr[0], arr[1]);
   }
 
