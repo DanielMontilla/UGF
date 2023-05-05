@@ -31,6 +31,10 @@ export class Mat4 {
   public setFromMat4(other: Mat4) {
     this.data.set(other.data);
   }
+
+  public set set(other: Mat4) {
+    this.setFromMat4(other);
+  }
   
   /**
    * Gets the value of an element in the matrix at the specified row and column.
@@ -72,10 +76,35 @@ export class Mat4 {
     return result;
   }
 
-  public translateTo(position: Vec2, layer: number) {
+  public translateTo(position: Vec2, layer: number = 0) {
     this.tx = position.x;
     this.ty = position.y;
     this.tz = layer;
+
+    return this;
+  }
+
+  public translateBy(position: Vec2) {
+    this.tx += position.x;
+    this.ty += position.y;
+    return this;
+  }
+
+  public rotateAlongZTo(radians: number): Mat4 {
+    const c = Math.cos(radians);
+    const s = Math.sin(radians);
+
+    this[0] = c;
+    this[1] = s;
+    this[4] = -s;
+    this[5] = c;
+
+    return this;
+  }
+
+  public scaleTo(scale: Vec2) {
+    this[0] = scale.x;
+    this[5] = scale.y;
   }
 
   /**

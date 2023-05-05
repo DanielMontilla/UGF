@@ -3,65 +3,29 @@ import { RectangleComponent } from "../../../components";
 import { ComponentPrimitive } from "../../../types";
 import { Pipeline } from "./pipeline";
 import { INDICES_PER_QUAD, VERTEX_PER_QUAD } from "../../../data";
-import { generateQUADIndices, tryCreateBuffer, tryCreateProgram, tryCreateShader, tryCreateVertexArrayObject } from "../../../functions";
+import { generateQUADIndices, generateQUADPositions } from "../../../functions";
 
 import vertexShaderSource from "../../../data/shaders/rectangle/vertex.glsl?raw";
 import fragmentShaderSource from "../../../data/shaders/rectangle/fragment.glsl?raw";
 
+const { ARRAY_BUFFER, FLOAT, UNSIGNED_BYTE, ELEMENT_ARRAY_BUFFER, STATIC_DRAW, DYNAMIC_DRAW } = WebGL2RenderingContext;
+const { BYTES_PER_ELEMENT: FLOAT_SIZE } = Float32Array;
+
 export class RectanglePipeline extends Pipeline<RectangleComponent> {
-
+  
   public readonly primitive: ComponentPrimitive = 'rectangle';
-
-  public readonly program: WebGLProgram;
-  public readonly vertexShader: WebGLShader;
-  public readonly fragmentShader: WebGLShader;
-
-  public readonly MAX_RECTANGLES: number = 2**12;
+  
+  public readonly MAX_RECTANGLES: number = 2**10;
   public readonly INDICES_PER_RECTANGLE: number = INDICES_PER_QUAD;
   public readonly VERTICES_PER_RECTANGLE: number = VERTEX_PER_QUAD;
-
-  protected readonly VAO: WebGLVertexArrayObject;
-  protected readonly VBO: WebGLBuffer;
-  protected readonly IBO: WebGLBuffer;
-
-  // protected readonly vertexDataBuffer: WebGLBuffer;
-  // protected readonly instanceDataBuffer: WebGLBuffer;
-
-  // protected vertexDataArray: Float32Array;
-  // protected instanceDataArray: Float32Array;
-
-  protected readonly arrayBuffer: WebGLBuffer;
-  protected readonly sizeBuffer: WebGLBuffer;
-  protected readonly colorBuffer: WebGLBuffer;
-  protected readonly worldMatrixBuffer: WebGLBuffer;
+    
+  protected instanceDataArray: Float32Array;
 
   public constructor(rendererRef: WebGL2Renderer) {
-    super(rendererRef);
-
-    const { context } = this;
-
-    this.vertexShader = tryCreateShader(context, 'vertex', vertexShaderSource).unwrap();
-    this.fragmentShader = tryCreateShader(context, 'fragment', fragmentShaderSource).unwrap();
-    this.program = tryCreateProgram(context, this.vertexShader, this.fragmentShader).unwrap();
-
-    this.VAO = tryCreateVertexArrayObject(context).unwrap();
-    this.VBO = tryCreateBuffer(context).unwrap();
-    this.IBO = tryCreateBuffer(context).unwrap();
-
-    this.arrayBuffer = tryCreateBuffer(context).unwrap();
-    this.sizeBuffer = tryCreateBuffer(context).unwrap();
-    this.colorBuffer = tryCreateBuffer(context).unwrap();
-    this.worldMatrixBuffer = tryCreateBuffer(context).unwrap();
-
-    this.setupLayout();
-
-  }
-
-  private setupLayout(): void {
-    const { context, program, projectionMatrix, viewMatrix, arrayBuffer, sizeBuffer, colorBuffer, worldMatrixBuffer, IBO, MAX_RECTANGLES } = this;
-    const { ARRAY_BUFFER, FLOAT, ELEMENT_ARRAY_BUFFER, STATIC_DRAW, DYNAMIC_DRAW } = context;
-    const { BYTES_PER_ELEMENT: FLOAT_SIZE } = Float32Array;
-
+    super(rendererRef, vertexShaderSource, fragmentShaderSource);
+    
+    const { context, program, projectionMatrix, viewMatrix, vertexDataBuffer, instanceDataBuffer, indexBuffer, MAX_RECTANGLES } = this;
+    
     this.stage();
 
     // Uniform stuff!
@@ -71,103 +35,110 @@ export class RectanglePipeline extends Pipeline<RectangleComponent> {
     context.uniformMatrix4fv(u_viewLoc, false, viewMatrix.data);
 
     // Attribute stuff!
-    const a_positionLocation = context.getAttribLocation(program, "a_position");
     const a_sizeLocation = context.getAttribLocation(program, "a_size");
+    const a_offsetLocation = context.getAttribLocation(program, "a_offset");
     const a_colorLocation = context.getAttribLocation(program, "a_color");
     const a_worldMatrixLocation = context.getAttribLocation(program, "a_worldMatrix");
-
-    // Non-instanced attributes
-    const arrayDataUnits = 2;
-    context.bindBuffer(ARRAY_BUFFER, arrayBuffer);
-    context.enableVertexAttribArray(a_positionLocation);
-    context.vertexAttribPointer(a_positionLocation, arrayDataUnits, FLOAT, false, 0, 0);
-    context.bufferData(ARRAY_BUFFER, arrayDataUnits * MAX_RECTANGLES, DYNAMIC_DRAW);
     
-    // Instanced attributes
-    const sizeDataUnits = 2;
-    context.bindBuffer(ARRAY_BUFFER, sizeBuffer);
+    const sizeUnitCount = 2;
+    const offsetUnitCount = 2;
+    const colorUnitCount = 4;
+    const worldMatrixUnitCount = 16;
+
+    this.sizeUnitOffset = 0;
+    this.offsetUnitOffset = this.sizeUnitOffset + sizeUnitCount;
+    this.colorUnitOffset = this.offsetUnitOffset + offsetUnitCount;
+    this.worldMatrixUnitOffset = this.colorUnitOffset + colorUnitCount;
+
+    const instanceUnitCount = sizeUnitCount + offsetUnitCount + colorUnitCount + worldMatrixUnitCount;
+    const stride = instanceUnitCount * FLOAT_SIZE;
+
+    this.instanceUnitCount = instanceUnitCount;
+
+    const sizeByteOffset = 0;
+    const offsetByteOffset = sizeByteOffset + sizeUnitCount * FLOAT_SIZE;
+    const colorByteOffset = offsetByteOffset + offsetUnitCount * FLOAT_SIZE;
+    const worldMatrixByteOffset = colorByteOffset + colorUnitCount * FLOAT_SIZE;
+
+    const maxUnits = instanceUnitCount * MAX_RECTANGLES;
+    const maxBytes = stride * MAX_RECTANGLES;
+    this.instanceDataArray = new Float32Array(maxUnits);
+
+    context.bindBuffer(ARRAY_BUFFER, instanceDataBuffer);
+    context.bufferData(ARRAY_BUFFER, maxBytes, DYNAMIC_DRAW);
+
     context.enableVertexAttribArray(a_sizeLocation);
-    context.vertexAttribPointer(a_sizeLocation, sizeDataUnits, FLOAT, false, 0, 0);
+    context.vertexAttribPointer(a_sizeLocation, sizeUnitCount, FLOAT, false, stride, sizeByteOffset);
     context.vertexAttribDivisor(a_sizeLocation, 1);
-    context.bufferData(ARRAY_BUFFER, sizeDataUnits * MAX_RECTANGLES, DYNAMIC_DRAW);
-
-    const colorDataUnits = 4;
-    context.bindBuffer(ARRAY_BUFFER, colorBuffer);
-    context.enableVertexAttribArray(a_colorLocation);
-    context.vertexAttribPointer(a_colorLocation, colorDataUnits, FLOAT, false, 0, 0);
-    context.vertexAttribDivisor(a_colorLocation, 1);
-    context.bufferData(ARRAY_BUFFER, colorDataUnits * MAX_RECTANGLES, DYNAMIC_DRAW);
     
-    const worldMatrixDataUnits = 16;
-    context.bindBuffer(ARRAY_BUFFER, worldMatrixBuffer);
+    context.enableVertexAttribArray(a_offsetLocation);
+    context.vertexAttribPointer(a_offsetLocation, offsetUnitCount, FLOAT, false, stride, offsetByteOffset);
+    context.vertexAttribDivisor(a_offsetLocation, 1);
+    
+    context.enableVertexAttribArray(a_colorLocation);
+    context.vertexAttribPointer(a_colorLocation, colorUnitCount, FLOAT, false, stride, colorByteOffset);
+    context.vertexAttribDivisor(a_colorLocation, 1);
+
     for (let i = 0; i < 4; ++i) {
-      context.enableVertexAttribArray(a_worldMatrixLocation + i);
-      context.vertexAttribPointer(
-        a_worldMatrixLocation + i, 4, FLOAT, false,
-        4 * 4 * FLOAT_SIZE,
-        i * 4 * FLOAT_SIZE,
-      );
-      context.vertexAttribDivisor(a_worldMatrixLocation + i, 1);
+      const location = a_worldMatrixLocation + i;
+      const unitCount = 4;
+      const size = unitCount * FLOAT_SIZE;
+      const offset = worldMatrixByteOffset + (i * size);
+
+      context.enableVertexAttribArray(location);
+      context.vertexAttribPointer(location, unitCount, FLOAT, false, stride, offset);
+      context.vertexAttribDivisor(location, 1);
     }
-    context.bufferData(ARRAY_BUFFER, worldMatrixDataUnits * MAX_RECTANGLES, DYNAMIC_DRAW);
+
+    const a_positionLocation = context.getAttribLocation(program, "a_position");
+    const positionUnitCount = 2;
+
+    context.bindBuffer(ARRAY_BUFFER, vertexDataBuffer);
+    context.enableVertexAttribArray(a_positionLocation);
+    context.vertexAttribPointer(a_positionLocation, positionUnitCount, UNSIGNED_BYTE, false, 0, 0);
+
+    const positions = generateQUADPositions(maxUnits);
+    context.bufferData(ARRAY_BUFFER, new Uint8Array(positions), STATIC_DRAW);
 
     // Index Buffer stuff
     const indices = generateQUADIndices(MAX_RECTANGLES);
-    context.bindBuffer(ELEMENT_ARRAY_BUFFER, IBO);
+    context.bindBuffer(ELEMENT_ARRAY_BUFFER, indexBuffer);
     context.bufferData(ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), STATIC_DRAW);
+
+    this.unstage();
   }
+
+  private readonly sizeUnitOffset: number;
+  private readonly offsetUnitOffset: number;
+  private readonly colorUnitOffset: number;
+  private readonly worldMatrixUnitOffset: number;
+  private readonly instanceUnitCount: number;
 
   public draw(rectangles: RectangleComponent[]): void {
 
-    const { MAX_RECTANGLES, INDICES_PER_RECTANGLE, context, arrayBuffer, sizeBuffer, colorBuffer, worldMatrixBuffer } = this;
+    const { MAX_RECTANGLES, INDICES_PER_RECTANGLE, context, instanceDataArray, instanceDataBuffer } = this;
     const { ARRAY_BUFFER, TRIANGLES, UNSIGNED_SHORT } = context;
 
     const rectCount = rectangles.length;
     if (rectCount > MAX_RECTANGLES) throw Error('reached limit!');
 
-    const arrayDataUnits = 2 * VERTEX_PER_QUAD; // x, y * 4 verti
-    const sizeDataUnits = 2;  // r, g, b, a
-    const colorDataUnits = 4;  // r, g, b, a
-    const worldMatrixDataUnits = 16; // mat4x4
-    
-    const arrayData = new Float32Array(rectCount * arrayDataUnits);
-    const sizeData = new Float32Array(rectCount * sizeDataUnits);
-    const colorData = new Float32Array(rectCount * colorDataUnits);
-    const worldMatrixData = new Float32Array(rectCount * worldMatrixDataUnits);
-
     for (let i = 0; i < rectangles.length; i++) {
       const rectangle = rectangles[i];
-      arrayData.set(this.getVerticesData(rectangle), i * arrayDataUnits);
-      sizeData.set(rectangle.size.data, i * sizeDataUnits);
-      colorData.set(rectangle.color.data, i * colorDataUnits);
-      worldMatrixData.set(rectangle.worldTransformMatrix.data, i * worldMatrixDataUnits);
+      const globalOffset = i * this.instanceUnitCount;
+
+      instanceDataArray.set(rectangle.size.data, globalOffset + this.sizeUnitOffset);
+      instanceDataArray.set(rectangle.offset.data, globalOffset + this.offsetUnitOffset);
+      instanceDataArray.set(rectangle.color.data, globalOffset + this.colorUnitOffset);
+      instanceDataArray.set(rectangle.worldTransformMatrix.data, globalOffset + this.worldMatrixUnitOffset);
     }
 
     this.stage();
 
-    context.bindBuffer(ARRAY_BUFFER, arrayBuffer);
-    context.bufferSubData(ARRAY_BUFFER, 0, arrayData);
-    
-    context.bindBuffer(ARRAY_BUFFER, sizeBuffer);
-    context.bufferSubData(ARRAY_BUFFER, 0, sizeData);
-
-    context.bindBuffer(ARRAY_BUFFER, colorBuffer);
-    context.bufferSubData(ARRAY_BUFFER, 0, colorData);
-
-    context.bindBuffer(ARRAY_BUFFER, worldMatrixBuffer);
-    context.bufferSubData(ARRAY_BUFFER, 0, worldMatrixData);
+    context.bindBuffer(ARRAY_BUFFER, instanceDataBuffer);
+    context.bufferSubData(ARRAY_BUFFER, 0, instanceDataArray.subarray(0, rectCount * this.instanceUnitCount));
 
     context.drawElementsInstanced(TRIANGLES, INDICES_PER_RECTANGLE * rectCount, UNSIGNED_SHORT, 0, rectCount);
 
     this.unstage();
-  }
-
-  private getVerticesData(r: RectangleComponent) {
-    return new Float32Array([
-      0, 0, // ↖ TOP LEFT VERTEX
-      1, 0, // ↗ TOP RIGHT VERTEX
-      0, 1, // ↙ BOT LEFT VERTEX
-      1, 1, // ↘ BOT RIGHT VERTEX
-    ]);
   }
 }

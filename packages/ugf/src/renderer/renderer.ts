@@ -1,5 +1,4 @@
 import { Component, Surface } from "../core";
-import { Mat4Arr } from "../types";
 import { Vec2 } from "../math";
 import { Mat4 } from "../math";
 

@@ -8,9 +8,6 @@ import { ComputedRef, Ref, computed, reactive, ref, watch } from "../utility/rea
 
 export class PositionComponent extends Component {
 
-  public static next = 0;
-  public readonly id: number = PositionComponent.next++;
-
   public readonly position: Vec2;
   public readonly scale: Vec2;
   public readonly size: Vec2;
@@ -41,11 +38,11 @@ export class PositionComponent extends Component {
       pivot: Pivot.center(),
     });
 
-    this.position = reactive(position.clone());
+    this.position = reactive(position);
     this._layer = ref(layer);
-    this.size = reactive(size.clone());
-    this.pivot = reactive(pivot.clone());
-    this.scale = scale;
+    this.size = reactive(size);
+    this.pivot = reactive(pivot);
+    this.scale = reactive(scale);
     this._rotation = ref(rotation);
 
     this._offset = computed(() => Vec2.multiply(this.pivot, this.size));
@@ -53,13 +50,15 @@ export class PositionComponent extends Component {
   
   protected onMount() {
     this.unsubcriptions.push(...[
-      watch(
-        [this.position],
-        () => this.updateLocalMatrix(true), { deep: true }
-      ),
+      watch([this.position, this._layer], () => this.updateTranslationMatrix(), { deep: true }),
+      watch([this._rotation], () => this.updateRotationMatrix(), { deep: true }),
+      watch(this.scale, () => this.updateScaleMatrix(), { deep: true })
     ]);
 
-    this.updateLocalMatrix(false); // we don't propagete matrix updates since `onMount` is called by every subsequent child
+    this.updateTranslationMatrix(false);
+    this.updateRotationMatrix(false);
+    this.updateScaleMatrix(false);
+    this.updateLocalMatrix(false); // we don't propagate matrix updates since `onMount` is called by every subsequent child
     super.onMount();
   }
 
@@ -68,19 +67,28 @@ export class PositionComponent extends Component {
     super.onUnmounted();
   }
 
-  private updateLocalMatrix(propagate: boolean = true) {
-    // translation:
+  private updateTranslationMatrix(shouldUpdateLocal: boolean = true, propagate: boolean = true) {
     this.translationMatrix.translateTo(this.position, this.layer);
+    if (shouldUpdateLocal) this.updateLocalMatrix(propagate);
+  }
 
-    // rotation:
-    
+  private updateRotationMatrix(shouldUpdateLocal: boolean = true, propagate: boolean = true) {
+    this.rotationMatrix.rotateAlongZTo(this.rotation);
+    if (shouldUpdateLocal) this.updateLocalMatrix(propagate);
+  }
+  
+  private updateScaleMatrix(shouldUpdateLocal: boolean = true, propagate: boolean = true) {
+    this.scaleMatrix.scaleTo(this.scale);
+    if (shouldUpdateLocal) this.updateLocalMatrix(propagate);
+  }
 
-    this.localTransformMatrix.setFromMat4(
-      Mat4.identity()
-        .multiply(this.translationMatrix)
-        .multiply(this.rotationMatrix)
-        .multiply(this.scaleMatrix)
-    );
+  private updateLocalMatrix(propagate: boolean = true) {
+    this.localTransformMatrix.set = Mat4.identity()
+      .multiply(this.translationMatrix)
+      .translateBy(this.position.negate())
+      .multiply(this.rotationMatrix)
+      .multiply(this.scaleMatrix)
+      .translateBy(this.position)
 
     this.updateWorldMatrix(propagate);
   }
@@ -113,13 +121,13 @@ export class PositionComponent extends Component {
   set x(n: number) { this.position.x = n }
   set y(n: number) { this.position.y = n }
 
-  get layer(): number { return this._layer.value };
+  get layer(): number { return this._layer.value }
 
   get worldX(): number { return this.worldTransformMatrix.tx }
   get worldY(): number { return this.worldTransformMatrix.ty }
   get worldLayer(): number { return this.worldTransformMatrix.layer }
 
-  get offset(): Vec2 { return this._offset.value };
+  get offset(): Vec2 { return this._offset.value }
 
   public setPivot(pivot: Vec2 | PivotPoint) {
     if (typeof pivot === 'string') {
@@ -129,4 +137,17 @@ export class PositionComponent extends Component {
     }
     return this;
   }
+
+  public get rotation(): number { return this._rotation.value }
+  public set rotation(n: number) { this._rotation.value = n }
+
+  public get scaleX(): number { return this.scale.x }
+  public get scaleY(): number { return this.scale.y }
+  public set scaleX(n: number) { this.scaleX = n }
+  public set scaleY(n: number) { this.scaleY = n }
+
+  public set scaleAll(n: number) { this.scale.set(n , n) }
+
+  public scaleBy(n: number) { this.scale.set(this.scaleX + n, this.scaleY + n) }
+
 }

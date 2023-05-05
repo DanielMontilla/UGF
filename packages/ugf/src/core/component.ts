@@ -2,6 +2,10 @@ import { TickCallback } from "../types";
 import { Surface } from "../core";
 
 export class Component {
+
+  private static next = 0;
+  public readonly id: number = Component.next++;
+
   public parent: Component | null = null;
   public readonly children: Component[] = [];
 

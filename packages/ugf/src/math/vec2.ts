@@ -18,6 +18,10 @@ export class Vec2 {
     return [this.x, this.y];
   }
 
+  public negate() {
+    return new Vec2(-this.x, -this.y);
+  }
+
   public set(x: number, y: number) {
     this.data.set([x, y], 0);
     this.x = this.x;

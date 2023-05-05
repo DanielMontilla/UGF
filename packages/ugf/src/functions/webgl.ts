@@ -188,3 +188,17 @@ export function generateQUADIndices(count: number): number[] {
 
   return result;
 }
+
+export function generateQUADPositions(count: number): number[] {
+  let result: number[] = [];
+  const pattern = [
+    0, 0, // ↖ TOP LEFT VERTEX
+    1, 0, // ↗ TOP RIGHT VERTEX
+    0, 1, // ↙ BOT LEFT VERTEX
+    1, 1, // ↘ BOT RIGHT VERTEX
+  ];
+
+  for (let i = 0; i < count; i++) result.push(...pattern);
+
+  return result;
+}
