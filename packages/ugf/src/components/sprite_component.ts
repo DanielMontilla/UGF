@@ -14,7 +14,7 @@ export class SpriteComponent extends PositionComponent {
       size: Vec2.all(32),
       rotation: 0,
       layer: 0,
-      anchor: 'center'
+      pivot: 'center'
     });
 
     super({ ...opts });

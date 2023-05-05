@@ -1,8 +1,10 @@
 import { defineOptions } from "solzu";
 import { Component } from "../core";
-import { Anchor, PositionComponentOptions } from "../types";
-import { Vec2 } from "../math";
+import { PivotPoint, PositionComponentOptions } from "../types";
+import { Vec2, vec2 } from "../math";
 import { Mat4 } from "../math/mat4";
+import { Pivot } from "../utility/pivot";
+import { ComputedRef, Ref, computed, reactive, ref, watch } from "../utility/reactivity";
 
 export class PositionComponent extends Component {
 
@@ -12,53 +14,84 @@ export class PositionComponent extends Component {
   public readonly position: Vec2;
   public readonly scale: Vec2;
   public readonly size: Vec2;
-  private _anchor: Anchor;
-  private _rotation: number;
-  private _layer: number;
+  public readonly pivot: Pivot;
+  private _rotation: Ref<number>;
+  private _layer: Ref<number>;
 
-  public readonly localMat: Mat4 = Mat4.identity();
-  public readonly worldMat: Mat4 = Mat4.identity();
+  private readonly _offset: ComputedRef<Vec2>;
+
+  public readonly localTransformMatrix: Mat4 = Mat4.identity();
+  public readonly worldTransformMatrix: Mat4 = Mat4.identity();
+
+  private readonly translationMatrix: Mat4 = Mat4.identity();
+  private readonly rotationMatrix: Mat4 = Mat4.identity();
+  private readonly scaleMatrix: Mat4 = Mat4.identity();
+
+  private unsubcriptions: Function[] = [];
 
   public constructor(options?: PositionComponentOptions) {
     super();
 
-    const { position, layer, anchor, size, scale, rotation } = defineOptions<PositionComponentOptions>(options, {
+    const { position, layer, pivot, size, scale, rotation } = defineOptions<PositionComponentOptions>(options, {
       position: Vec2.zero(),
       size: Vec2.zero(),
-      scale: Vec2.zero(),
+      scale: Vec2.all(1),
       rotation: 0,
       layer: 0,
-      anchor: 'center',
+      pivot: Pivot.center(),
     });
 
-    this.position = applyVecProxy(this, position);
-    this._layer = layer;
-    this.size = size;
-    this._anchor = anchor;
+    this.position = reactive(position.clone());
+    this._layer = ref(layer);
+    this.size = reactive(size.clone());
+    this.pivot = reactive(pivot.clone());
     this.scale = scale;
-    this._rotation = rotation;
+    this._rotation = ref(rotation);
+
+    this._offset = computed(() => Vec2.multiply(this.pivot, this.size));
   }
   
-  protected onMount(to: Component) {
-    this.updateLocalMatrix(false);
-    super.onMount(to);
+  protected onMount() {
+    this.unsubcriptions.push(...[
+      watch(
+        [this.position],
+        () => this.updateLocalMatrix(true), { deep: true }
+      ),
+    ]);
+
+    this.updateLocalMatrix(false); // we don't propagete matrix updates since `onMount` is called by every subsequent child
+    super.onMount();
   }
 
-  public updateLocalMatrix(propagate: boolean = true) {
-    this.localMat.tx = this.position.x;
-    this.localMat.ty = this.position.y;
-    this.localMat.tz = this._layer;
-    // this.localMat.rotation = this._rotation;
+  protected onUnmounted() {
+    this.unsubcriptions.forEach(s => s());
+    super.onUnmounted();
+  }
+
+  private updateLocalMatrix(propagate: boolean = true) {
+    // translation:
+    this.translationMatrix.translateTo(this.position, this.layer);
+
+    // rotation:
+    
+
+    this.localTransformMatrix.setFromMat4(
+      Mat4.identity()
+        .multiply(this.translationMatrix)
+        .multiply(this.rotationMatrix)
+        .multiply(this.scaleMatrix)
+    );
+
     this.updateWorldMatrix(propagate);
   }
 
-  public updateWorldMatrix(propagate: boolean = true) {
+  private updateWorldMatrix(propagate: boolean = true) {
     const parent = this.getNearestPositionParent();
 
-    this.worldMat.setFromMat4(
+    this.worldTransformMatrix.setFromMat4(
       parent === null
-        ? this.localMat
-        : this.localMat.multiplyBy(parent.worldMat)
+        ? this.localTransformMatrix
+        : this.localTransformMatrix.multiply(parent.worldTransformMatrix)
     );
 
     if (propagate) {
@@ -80,23 +113,20 @@ export class PositionComponent extends Component {
   set x(n: number) { this.position.x = n }
   set y(n: number) { this.position.y = n }
 
-  get rotation(): number { return this._rotation }
-  set rotation(n: number) {
-    this._rotation = n;
-    this.updateLocalMatrix(true);
-  }
+  get layer(): number { return this._layer.value };
 
-  get worldX(): number { return this.worldMat.tx }
-  get worldY(): number { return this.worldMat.ty }
-  get worldLayer(): number { return this.worldMat.layer }
-}
+  get worldX(): number { return this.worldTransformMatrix.tx }
+  get worldY(): number { return this.worldTransformMatrix.ty }
+  get worldLayer(): number { return this.worldTransformMatrix.layer }
 
-function applyVecProxy(component: PositionComponent, vector: Vec2) {
-  return new Proxy<Vec2>(vector, {
-    set<P extends 'x' | 'y'>(vec: Vec2, prop: P, value: Vec2[P]) {
-      vec[prop] = value; // update property
-      component.updateLocalMatrix(true);
-      return true;
+  get offset(): Vec2 { return this._offset.value };
+
+  public setPivot(pivot: Vec2 | PivotPoint) {
+    if (typeof pivot === 'string') {
+      this.pivot.setFrom(Pivot.fromPoint(pivot));
+    } else {
+      this.pivot.setFrom(pivot);
     }
-  });
+    return this;
+  }
 }

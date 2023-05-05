@@ -3,6 +3,7 @@ import { PositionComponent } from ".";
 import { RectangleComponentOptions } from "../types";
 import { Color } from "../utility";
 import { Vec2 } from "../math";
+import { Pivot } from "../utility/pivot";
 
 export class RectangleComponent extends PositionComponent {
 
@@ -15,7 +16,7 @@ export class RectangleComponent extends PositionComponent {
       size: Vec2.all(32),
       rotation: 0,
       layer: 0,
-      anchor: 'center',
+      pivot: Pivot.center(),
       color: Color.white()
     });
 

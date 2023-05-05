@@ -1,14 +1,21 @@
 import { Mat4Arr } from "../types";
 import { Vec2 } from "../math";
 
+/**
+ * Utility class for handeling 4x4 matrices.
+ * 
+ * The matrix is laid out the following way in memory (column-major order):
+ * ```
+ * | 0  1  2  3  |
+ * | 4  5  6  7  |
+ * | 8  9  10 11 |
+ * | 12 13 14 15 |
+ * ```
+ * But the indices are labeled as such:
+ */
 export class Mat4 {
 
-  /**
-   * | 0  1  2  3  |
-   * | 4  5  6  7  |
-   * | 8  9  10 11 |
-   * | 12 13 14 15 |
-   */
+  public order: 'colum-major' | 'row-major' = 'colum-major';
   public readonly data: Float32Array;
 
   constructor(array: Mat4Arr) {
@@ -20,17 +27,9 @@ export class Mat4 {
   get tz(): number { return this[11] } set tz(n: number) { this[11] = n}
   get layer(): number { return this.tz } set layer(n: number) { this.tz = n }
   get position(): Vec2 { return new Vec2(this.tx, this.ty) }
-  set rotation(angle: number) {
-    const c = Math.cos(angle);
-    const s = Math.sin(angle);
-    this.setElement(0, 0, c);
-    this.setElement(0, 1, -s);
-    this.setElement(1, 0, s);
-    this.setElement(1, 1, c);
-  }
 
   public setFromMat4(other: Mat4) {
-    for (let i: number = 0; i < 16; i++) this[i] = other[i];
+    this.data.set(other.data);
   }
   
   /**
@@ -54,11 +53,11 @@ export class Mat4 {
   }
   
   /**
-   * Multiplies this matrix by another matrix (this * other) and returns the result as a new Mat4 instance.
+   * Multiplies this matrix by another matrix (`this * other`) and returns the result as a new Mat4 instance.
    * @param other - The other matrix to multiply with.
    * @returns A new Mat4 instance with the result of the multiplication.
    */
-  public multiplyBy(other: Mat4): Mat4 {
+  public multiply(other: Mat4): Mat4 {
     const result = Mat4.empty();
     
     for (let i = 0; i < 4; i++) {
@@ -71,6 +70,12 @@ export class Mat4 {
       }
     }
     return result;
+  }
+
+  public translateTo(position: Vec2, layer: number) {
+    this.tx = position.x;
+    this.ty = position.y;
+    this.tz = layer;
   }
 
   /**
@@ -87,7 +92,6 @@ export class Mat4 {
       }
       result += row < 3 ? '\n' : '';
     }
-
     return result;
   }
 
