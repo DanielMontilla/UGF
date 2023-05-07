@@ -2,6 +2,7 @@ import { Vec2 } from "../math";
 import { Color } from "../utility";
 import { Sprite } from "../core";
 import { Pivot } from "../utility/pivot";
+import { Texture } from "../core/texture";
 
 export type AppOptions = {
   size?: Vec2;
@@ -26,5 +27,5 @@ export interface SpriteComponentOptions extends PositionComponentOptions {
 }
 
 export interface SpriteOptions {
-  image: HTMLImageElement
+  texture: Texture
 }

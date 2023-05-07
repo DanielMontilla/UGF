@@ -2,11 +2,12 @@ import { isErr } from "solzu";
 import { Component, Surface } from "../../core";
 import { tryCreateWebGL2Context } from "../../functions";
 import { Renderer } from "..";
-import { Uniform } from "../../types";
 import { RectangleComponent } from "../../components";
 import { Color } from "../../utility";
 import { Vec2 } from "../../math";
 import { RectanglePipeline } from "./pipelines/rectangle";
+import { TextureManager } from "./texture_manager";
+import { Texture } from "../../core/texture";
 
 export class WebGL2Renderer extends Renderer {
   public readonly context: WebGL2RenderingContext;
@@ -15,15 +16,14 @@ export class WebGL2Renderer extends Renderer {
 
   public readonly rectanglePipeline: RectanglePipeline;
 
-  public readonly globalUniforms!: Uniform[];
+  public readonly textureManager: TextureManager;
 
   public constructor(surfaceRef: Surface) {
     super(surfaceRef);
 
-    const contextResult = tryCreateWebGL2Context(this.canvas);
-    if (isErr(contextResult)) throw Error(contextResult.error);
+    this.context = tryCreateWebGL2Context(this.canvas).unwrap();
 
-    this.context = contextResult.value;
+    this.textureManager = new TextureManager(this);
 
     this.rectanglePipeline = new RectanglePipeline(this);
 
@@ -36,6 +36,14 @@ export class WebGL2Renderer extends Renderer {
     context.clearColor(r, g, b, 1);
     context.viewport(0, 0, width, height);
     context.clear(COLOR_BUFFER_BIT | DEPTH_BUFFER_BIT);
+  }
+
+  public declareTexture(texture: Texture): void {
+    this.textureManager.addTextureRef(texture);
+  }
+
+  public declareTextureRemoved(texture: Texture): void {
+    this.textureManager.removeTextureRef(texture);
   }
 
   public draw(components: Component[]): void {

@@ -3,6 +3,7 @@ import { PositionComponent } from "../components";
 import { SpriteComponentOptions } from "../types";
 import { defineOptions } from "solzu";
 import { Vec2 } from "../math";
+import { Pivot } from "../utility/pivot";
 
 export class SpriteComponent extends PositionComponent {
   public readonly sprite: Sprite;
@@ -14,7 +15,7 @@ export class SpriteComponent extends PositionComponent {
       size: Vec2.all(32),
       rotation: 0,
       layer: 0,
-      pivot: 'center'
+      pivot: Pivot.center(),
     });
 
     super({ ...opts });

@@ -1,5 +1,5 @@
 import { defineOptions } from "solzu";
-import { Camera, Component } from "../core";
+import { Camera, Component, Sprite } from "../core";
 import { DEFAULT_SURFACE_SIZE } from "../data";
 import { Renderer, WebGL2Renderer } from "../renderer";
 import { AppOptions } from "../types";
@@ -52,6 +52,16 @@ export class Surface extends Component {
   private syncCanvas(): void {
     this.canvas.width = this.size.x;
     this.canvas.height = this.size.y;
+  }
+
+  protected onDescendantAdded(child: Component): void {
+    if (child instanceof Sprite) this.renderer.declareTexture(child.texture);
+    super.onDescendantAdded(child);
+  }
+
+  protected onDescendantRemoved(child: Component): void {
+    if (child instanceof Sprite) this.renderer.declareTextureRemoved(child.texture);
+    super.onDescendantRemoved(child);
   }
 
   public mount(on: 'body'): void;

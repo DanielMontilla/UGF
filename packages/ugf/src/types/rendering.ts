@@ -1,7 +1,7 @@
 import { UNIT_COUNTS, GL_UNIT_TYPES, GL_TYPES } from "../data";
 
 export type ComponentPrimitive =
-  'rectangle' //| 'sprite' /* | 'polygon' | 'circle' */;
+  'rectangle' | 'sprite' /* | 'polygon' | 'circle' */;
 
 export type GLUnitType = typeof GL_UNIT_TYPES[number];
 export type GLType = typeof GL_TYPES[number];

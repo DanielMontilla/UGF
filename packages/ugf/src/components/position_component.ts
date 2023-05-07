@@ -1,7 +1,7 @@
 import { defineOptions } from "solzu";
 import { Component } from "../core";
 import { PivotPoint, PositionComponentOptions } from "../types";
-import { Vec2, vec2 } from "../math";
+import { Vec2 } from "../math";
 import { Mat4 } from "../math/mat4";
 import { Pivot } from "../utility/pivot";
 import { ComputedRef, Ref, computed, reactive, ref, watch } from "../utility/reactivity";
@@ -31,11 +31,11 @@ export class PositionComponent extends Component {
 
     const { position, layer, pivot, size, scale, rotation } = defineOptions<PositionComponentOptions>(options, {
       position: Vec2.zero(),
-      size: Vec2.zero(),
       scale: Vec2.all(1),
+      size: Vec2.zero(),
+      pivot: Pivot.center(),
       rotation: 0,
       layer: 0,
-      pivot: Pivot.center(),
     });
 
     this.position = reactive(position);
@@ -108,6 +108,7 @@ export class PositionComponent extends Component {
   }
 
   public getNearestPositionParent(): PositionComponent | null {
+    // TODO: `use traverseParents` funciton
     let component = this.parent;
     while (component !== null) {
       if (component instanceof PositionComponent) return component;

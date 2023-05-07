@@ -1,19 +1,18 @@
 import { SpriteOptions } from "../types";
+import { Texture } from "./texture";
 
 export class Sprite {
 
-  public readonly image: HTMLImageElement;
+  public readonly texture: Texture;
 
   constructor(options: SpriteOptions) {
-    const { image } = options;
+    const { texture } = options;
 
-    this.image = image;
+    this.texture = texture;
   }
 
   public static async fromAsset(path: string): Promise<Sprite> {
-    const image = new Image();
-    image.src = path;
-    await image.decode();
-    return new Sprite({ image });
+    const texture = await Texture.fromAsset(path);
+    return new Sprite({ texture });
   }
 }

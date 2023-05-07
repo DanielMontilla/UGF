@@ -19,10 +19,11 @@ export class Component {
     this.children.push(component);
 
     component.onAdded();
+    component.traverseParents(parent => parent.onDescendantAdded(component));
 
     if (component.isAttachedToSurface) {
       component.onMount();
-      component.traverseChildren(c => c.onMount());
+      component.traverseChildren(child => child.onMount());
     };
 
     return component;
@@ -57,6 +58,13 @@ export class Component {
     return false;
   }
 
+  // @ts-ignore unsused argument
+  protected onDescendantAdded(child: Component) {}
+
+  // TODO!
+  // @ts-ignore unsused argument
+  protected onDescendantRemoved(child: Component) {}
+
   /** When component is `.add` to parent */
   protected onAdded() {}
   /** When comopnent is `.remove` from parent */
@@ -78,6 +86,14 @@ export class Component {
       allChildren.push(...child.getAllChildren());
     }
     return allChildren;
+  }
+
+  public traverseParents(actionCallback: (parent: Component) => void) {
+    let parent = this.parent;
+    while (parent !== null) {
+      actionCallback(parent);
+      parent = parent.parent;
+    }
   }
 
   public traverseChildren(actionCallback: (child: Component) => void) {

@@ -202,3 +202,9 @@ export function generateQUADPositions(count: number): number[] {
 
   return result;
 }
+
+export function tryCreateTexture(context: WebGL2RenderingContext): Result<WebGLTexture, string> {
+  const result = context.createTexture();
+  if (result !== null) return ok(result);
+  return err('unable to create texture');
+}

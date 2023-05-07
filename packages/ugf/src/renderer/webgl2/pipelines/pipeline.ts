@@ -35,11 +35,11 @@ export abstract class Pipeline<C extends Component = Component> {
   protected readonly instanceDataBuffer: WebGLBuffer;
 
   public constructor(
-    renderRef: WebGL2Renderer,
+    rendererRef: WebGL2Renderer,
     vertexShaderSource: string,
     fragmentShaderSource: string,
   ) {
-    this.rendererRef = renderRef;
+    this.rendererRef = rendererRef;
     
     const { context } = this;
 
